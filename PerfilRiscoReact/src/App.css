@@ -1,0 +1,187 @@
+
+
+.App{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #F1F1F5;
+
+}
+
+.title{
+  margin-bottom: 15px;
+  color: #404041;
+  font-weight: normal;
+  padding: 10px 35px;
+}
+.form{
+  margin-bottom: 40px;
+}
+.upperForm{
+  display: flex;
+}
+.InputWrapper{
+  display: flex;
+  flex-direction: column;
+  margin: 5px 5px;
+}
+.inputLabel{
+  margin-bottom: 15px;
+  color: #404041;
+  font-size: 14px;
+}
+.input{
+  padding: 13px;
+  border-radius: 3px;
+  border: none;
+}
+.btnWrapper{
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.btn{
+  background-color: #0177c1;
+  border: none;
+  color:white;
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.btn:hover{
+  transform: scale(1.1);
+  
+}
+
+.form2{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wrapper{
+  margin-top: 25px;
+  width: 70%;
+}
+.results {
+  margin: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: space-evenly;
+  align-items: center;
+  color: black;
+  padding: 12px;
+  height: fit-content;
+  width: fit-content;
+  border: 4px solid #0000;
+  border-radius: 12px;
+  background: linear-gradient(#F1F1F5, #F1F1F5) padding-box, linear-gradient(
+        var(--angle),
+        #F1F1F5,
+        #687aff
+      ) border-box;
+  animation: 4s rotate linear infinite;
+}
+
+.resultWrapper{
+  display: flex;
+  align-items: center;
+  column-gap: 50px;
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.resultText{
+  margin: 5px;
+}
+
+p.errorMsg {
+  color: red;
+  font-size: 12px;
+  margin: 5px 0 10px 40px;
+}
+
+
+.questions{
+  display: flex;
+  gap: 1.5rem;
+}
+
+.box{
+  padding:2rem;
+  border-width: 3px 4px 3px 5px;
+  border-radius:95% 4% 92% 5%/4% 95% 6% 95%;
+  transform: rotate(2deg);
+  border: solid black;
+  border-color: black;
+ 
+}
+
+.boxInner{
+  transform: rotate(-2deg);
+}
+
+.circle{
+  width: 250px;
+    height: 250px;
+    border-radius: 250px;
+    background: green;
+    text-align: center;
+    align-content: space-evenly;
+    margin: 1.5rem;
+    transition: all 0.8s;
+}
+.semiCircle{
+  margin: 1rem;
+  width: 250px;
+  height: 250px;
+  -webkit-border-radius: 250px;
+  -moz-border-radius: 250px;
+  border-radius: 250px;
+  background: linear-gradient(green 50%, lightgray 50%);
+  text-align: center;
+  align-content: space-evenly;
+  transition: all 0.8s;
+}
+
+.box:hover{
+  scale: 1.1;
+}
+.fade{
+  -webkit-animation: fade-in 1.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+  animation: fade-in 1.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+  display: flex;
+  gap: 1.5rem;
+}
+
+@-webkit-keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,30 @@
+<div className="wrapperQuestion">
+    <h2><strong>Escolha o seu cenário: ganho certo ou ganho incerto?</strong><br/> 
+    O que você prefere?</h2>
+    <div className={fade ? 'fade' : 'questions'}
+        onAnimationEnd={() =>setFade(false)}
+        >
+        <div className='box' 
+            onClick={()=>{handleSelect('S')}}>
+            <div className="boxInner">
+                <strong>Ganho garantido de R$ {numberWithCommas(round2Nearest10or5(upSide))+',00'}</strong>
+                <div className="circle">
+                    <p><strong>+ R$ {numberWithCommas(round2Nearest10or5(upSide))+',00'}</strong></p>
+                </div>
+            </div>
+        </div>
+        <div className='box'  
+            onClick={()=>{handleSelect('R')}}
+            >
+            <div className="boxInner">
+                <strong>50% de chance de ganhar R$ {numberWithCommas(round2Nearest10or5(downSide))+',00'} <br/> 50% de chance de não ganhar nada</strong>
+                <div className="semiCircle">
+                    <p><strong>R$ {numberWithCommas(round2Nearest10or5(downSide))+',00'}</strong></p>
+                    <p><strong>50%</strong></p>
+                    <p><strong>Sem Ganhos</strong></p>
+                    <p><strong>50%</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
