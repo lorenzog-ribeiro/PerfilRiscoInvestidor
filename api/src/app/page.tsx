@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="flex flex-col items-center text-center justify-center min-h-screen py-2">
-      <Card className="w-120 p-12">
+      <Card className="w-full max-w-md p-6 sm:p-12">
         <h1 className="text-xl font-bold color text-orange-500">Qual é o seu perfil de investidor? </h1>
         <p className="text-sm text-left">Você sabe como suas emoções, metas e disposição para correr riscos podem te ajudar a escolher os investimentos mais adequados para você?
           <br /><b>Participe da nossa pesquisa e dê o primeiro passo para descobrir!</b></p>
