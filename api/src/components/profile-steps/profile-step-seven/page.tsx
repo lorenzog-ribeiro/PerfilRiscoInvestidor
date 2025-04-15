@@ -13,16 +13,16 @@ export default function StepSeven({ formData, setFormData }: any) {
                 <RadioGroup
                     className="space-y-2 pt-2"
                     value={formData.hasFinanceExperience}
-                    onValueChange={(value) => setFormData({ ...formData, incomeRange: value })}
+                    onValueChange={(value) => setFormData({ ...formData, hasFinanceExperience: value })}
                 >
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Sim" id="hasFinanceExperience-yes" />
-                        <label htmlFor="hasFinanceExperience-yes">Sim</label>
+                        <Label htmlFor="hasFinanceExperience-yes">Sim</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Não" id="hasFinanceExperience-no" />
-                        <label htmlFor="hasFinanceExperience-no">Não</label>
-                    </div>                    
+                        <Label htmlFor="hasFinanceExperience-no">Não</Label>
+                    </div>
                 </RadioGroup>
             </div>
         </div>

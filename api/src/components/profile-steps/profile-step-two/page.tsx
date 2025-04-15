@@ -18,19 +18,19 @@ export default function StepTwo({ formData, setFormData }: any) {
                 >
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Mulher" id="gen-1" />
-                        <label htmlFor="gen-1">Mulher</label>
+                        <Label htmlFor="gen-1">Mulher</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Homem" id="gen-2" />
-                        <label htmlFor="gen-2">Homem</label>
+                        <Label htmlFor="gen-2">Homem</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Queer, não-binário ou gênero fluido" id="gen-3" />
-                        <label htmlFor="gen-3">Queer, não-binário ou gênero fluido</label>
+                        <Label htmlFor="gen-3">Queer, não-binário ou gênero fluido</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Prefiro me autodescrever" id="gen-4" />
-                        <label htmlFor="gen-4">Prefiro me autodescrever</label>
+                        <Label htmlFor="gen-4">Prefiro me autodescrever</Label>
                     </div>
                 </RadioGroup>
             </div>

@@ -14,23 +14,23 @@ export default function StepThree({ formData, setFormData }: any) {
                 >
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Solteiro(a)" id="mar-1" />
-                        <label htmlFor="mar-1">Solteiro(a)</label>
+                        <Label htmlFor="mar-1">Solteiro(a)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Casado(a)" id="mar-2" />
-                        <label htmlFor="mar-2">Casado(a)</label>
+                        <Label htmlFor="mar-2">Casado(a)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Separado(a)" id="mar-3" />
-                        <label htmlFor="mar-3">Separado(a)</label>
+                        <Label htmlFor="mar-3">Separado(a)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Divorciado(a)" id="mar-4" />
-                        <label htmlFor="mar-4">Divorciado(a)</label>
+                        <Label htmlFor="mar-4">Divorciado(a)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Viúvo(a)" id="mar-5" />
-                        <label htmlFor="mar-5">Viúvo(a)</label>
+                        <Label htmlFor="mar-5">Viúvo(a)</Label>
                     </div>
                 </RadioGroup>
             </div>

@@ -17,19 +17,19 @@ export default function StepFour({ formData, setFormData }: any) {
                 >
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Ensino Fundamental" id="edu-1" />
-                        <label htmlFor="edu-1">Ensino Fundamental</label>
+                        <Label htmlFor="edu-1">Ensino Fundamental</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Ensino Médio" id="edu-2" />
-                        <label htmlFor="edu-2">Ensino Médio</label>
+                        <Label htmlFor="edu-2">Ensino Médio</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Graduação" id="edu-3" />
-                        <label htmlFor="edu-3">Graduação</label>
+                        <Label htmlFor="edu-3">Graduação</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Pós-graduação" id="edu-4" />
-                        <label htmlFor="edu-4">Pós-graduação</label>
+                        <Label htmlFor="edu-4">Pós-graduação</Label>
                     </div>
                 </RadioGroup>
             </div>
