@@ -1,7 +1,9 @@
 "use client";
-
 import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner"
+
 import StepOne from "@/components/profile-steps/profile-step-one/page";
 import StepTwo from "@/components/profile-steps/profile-step-two/page";
 import StepThree from "@/components/profile-steps/profile-step-three/page";
@@ -15,7 +17,6 @@ export default function Home() {
 
     const [formData, setFormData] = useState({
         birthDate: "",
-        age: "",
         gender: "",
         maritalStatus: "",
         hasFinanceExperience: "",
@@ -24,28 +25,23 @@ export default function Home() {
         educationLevel: "",
     });
 
-    // const isStepValid = () => {
-    //   if (step === 1) {
-    //     return (
-    //       formData.birthDate &&
-    //       formData.age &&
-    //       formData.gender &&
-    //       formData.maritalStatus
-    //     );
-    //   }
-    //   if (step === 2) return formData.hasFinanceExperience;
-    //   if (step === 3) return formData.financialStatus;
-    //   if (step === 4) return formData.incomeRange;
-    //   if (step === 5) return formData.educationLevel;
-    //   return true;
-    // };
+    const isStepValid = () => {
+        if (step === 1) return formData.birthDate;
+        if (step === 2) return formData.gender;
+        if (step === 3) return formData.maritalStatus;
+        if (step === 4) return formData.educationLevel;
+        if (step === 5) return formData.financialStatus;
+        if (step === 6) return formData.incomeRange;
+        if (step === 7) return formData.hasFinanceExperience;
+        return true;
+    };
 
     const handleNext = () => {
-        // if (isStepValid()) {
-        setStep((prev) => Math.min(prev + 1, 7));
-        // } else {
-        //   alert("Por favor, preencha todos os campos obrigatórios.");
-        // }
+        if (isStepValid()) {
+            setStep((prev) => Math.min(prev + 1, 7));
+        } else {
+            toast.warning("Preencha todos os campos obrigatórios!");
+        }
     };
 
     const progress = (step / 7) * 100;
@@ -54,7 +50,7 @@ export default function Home() {
         if (progress <= 40) return "from-orange-400 to-orange-400";
         if (progress <= 60) return "from-orange-400 to-orange-400";
         if (progress <= 80) return "from-orange-400 to-orange-400";
-        if (progress <= 10) return "from-orange-400 to-orange-400";
+        if (progress <= 100) return "from-orange-400 to-orange-400";
         return "from-orange-400 to-green-300";
     };
 
@@ -82,7 +78,7 @@ export default function Home() {
                         className="bg-gray-300 hover:bg-gray-400 text-black"
                         disabled={step === 1}
                     >
-                      Voltar
+                        Voltar
                     </Button>
                     <Button onClick={handleNext} className="bg-orange-500 hover:bg-orange-600 text-white">
                         {step === 7 ? "Finalizar" : "Continuar"}
