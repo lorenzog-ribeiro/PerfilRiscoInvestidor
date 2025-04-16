@@ -20,12 +20,13 @@ interface Props {
 }
 
 export default function DynamicQuestion({ question, value, onChange }: Props) {
-    function formatDate(value: string) {
-        let v = value.replace(/\D/g, "").slice(0, 8);
-        if (v.length >= 5) v = v.replace(/(\d{2})(\d{2})(\d{0,4})/, "$1/$2/$3");
-        else if (v.length >= 3) v = v.replace(/(\d{2})(\d{0,2})/, "$1/$2");
-        return v;
-    }
+    function maskDate(value: string) {
+        value = value.replace(/\D/g, ""); // remove tudo que não é número
+        if (value.length <= 2) return value;
+        if (value.length <= 4) return `${value.slice(0, 2)}/${value.slice(2)}`;
+        return `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4, 8)}`;
+      }    
+       
     return (
         <div className="space-y-4">
             <Label className="font-medium text-base text-gray-800">{question.pergunta}</Label>
@@ -47,7 +48,7 @@ export default function DynamicQuestion({ question, value, onChange }: Props) {
                 <Input
                     type="text"
                     value={value}
-                    onChange={(e) => onChange(formatDate(e.target.value))}
+                    onChange={(e) => onChange(maskDate(e.target.value))}
                     placeholder="dd/mm/aaaa"
                     maxLength={10}
                 />
