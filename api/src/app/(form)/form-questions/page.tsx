@@ -3,6 +3,7 @@ import { useState } from "react";
 import questions from "../../../../perguntas_categorizadas.json";
 import { Button } from "@/components/ui/button";
 import DynamicQuestion from "../../../components/dynamic-form/page";
+import { toast } from "sonner";
 
 export default function QuizPage() {
     const [index, setIndex] = useState(0);
@@ -13,9 +14,33 @@ export default function QuizPage() {
         setRespostas((prev) => ({ ...prev, [current.id]: value }));
     };
 
+    function isValidDate(dateStr: string): boolean {
+        const [day, month, year] = dateStr.split("/").map(Number);
+        const currentYear = new Date().getFullYear();
+        
+        if (!day || !month || !year || day < 1 || month < 1 || month > 12 || year < 1900 || year > currentYear)
+        {
+            return false;
+        }
+
+        // Cria o objeto Date com mês - 1 (pois janeiro = 0)
+        const date = new Date(year, month - 1, day);
+
+        return (
+            date.getFullYear() === year &&
+            date.getMonth() === month - 1 &&
+            date.getDate() === day
+        );
+    }
+
     const handleNext = () => {
         if (!respostas[current.id]) {
-            alert("Responda a pergunta antes de continuar");
+            toast.warning("Responda a pergunta antes de continuar");
+            return;
+        }
+
+        if (current.tipo === "data" && !isValidDate(respostas[current.id])) {
+            toast.error("Digite uma data válida no formato dd/mm/aaaa.");
             return;
         }
         setIndex((prev) => Math.min(prev + 1, questions.length - 1));
