@@ -1,155 +1,90 @@
 "use client";
-import * as React from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label, Pie, PieChart } from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { PieChart, Pie, Cell, Label } from "recharts";
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "green",
-  },
-  safari: {
-    label: "Safari",
-    color: "red",
-  },
-} satisfies ChartConfig;
-
-// Data for the first chart
-const chartData1 = [
-  { browser: "chrome", visitors: 100, fill: "var(--color-chrome)" },
+const dataB = [
+    { name: "Ganho", value: 50, color: "#16a34a", label: "+R$1.000" },
+    { name: "Perda", value: 50, color: "#808080", label: "-R$500" },
 ];
 
-// Data for the second chart
-const chartData2 = [
-  { browser: "chrome", visitors: 80, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 20, fill: "var(--color-safari)" },
-];
+export default function TradeoffVisual() {
+    const [selected, setSelected] = useState<"A" | "B" | null>(null);
 
-export default function QuizPage() {
-  // Calculate total visitors for first chart
-  const totalVisitors1 = React.useMemo(() => {
-    return chartData1.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
+    return (
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4 py-10">
+            <div className="w-full max-w-5xl space-y-6">
+                <h1 className="text-2xl font-semibold text-center text-gray-900">
+                    Qual dessas opções te deixa mais confortável?
+                </h1>
 
-  // Calculate total visitors for second chart
-  const totalVisitors2 = React.useMemo(() => {
-    return chartData2.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card
+                        onClick={() => setSelected("A")}
+                        className={`cursor-pointer border-2 ${
+                            selected === "A" ? "border-blue-500" : "border-transparent"
+                        }`}
+                    >
+                        <CardContent className="p-4 space-y-4">
+                            <div className="flex items-center justify-center">
+                                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    Alternativa A
+                                </span>
+                            </div>
+                            <h2 className="text-lg font-semibold text-gray-800 text-center">Ganho com certeza</h2>
+                            <div className="flex justify-center items-center">
+                                <PieChart width={180} height={180}>
+                                    <Pie
+                                        data={[{ name: "Ganho", value: 100, color: "#16a34a" }]}
+                                        dataKey="value"
+                                        nameKey="name"
+                                    >
+                                        <Cell fill="#16a34a" />
+                                        <Label
+                                            value="+R$500"
+                                            position="center"
+                                            className="text-xs font-bold text-gray-800"
+                                        />
+                                    </Pie>
+                                </PieChart>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gray-100">
-      <div className="w-full max-w-4xl bg-white rounded-2xl p-6 shadow-md space-y-6">
-        <h3 className="text-center text-lg font-medium">
-          Qual dessas opções te deixa mais confortável?
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* First Card */}
-          <Card className="flex flex-col">
-            <CardContent className="flex-1 pt-6">
-              <ChartContainer
-                config={chartConfig}
-                className="mx-auto aspect-square max-h-64"
-              >
-                <PieChart>
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
-                  />
-                  <Pie
-                    data={chartData1}
-                    dataKey="visitors"
-                    nameKey="browser"
-                    innerRadius={20}
-                    outerRadius={40}
-                    strokeWidth={5}
-                  >
-                    <Label
-                      content={({ viewBox }) => {
-                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                          return (
-                            <text
-                              x={viewBox.cx}
-                              y={viewBox.cy}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                            >
-                              <tspan
-                                x={viewBox.cx}
-                                y={viewBox.cy}
-                                className="fill-foreground text-sm font-bold"
-                              >
-                                {totalVisitors1.toLocaleString()}
-                              </tspan>
-                            </text>
-                          );
-                        }
-                      }}
-                    />
-                  </Pie>
-                </PieChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-
-          {/* Second Card */}
-          <Card className="flex flex-col">
-            <CardContent className="flex-1 pt-6">
-              <ChartContainer
-                config={chartConfig}
-                className="mx-auto aspect-square max-h-64"
-              >
-                <PieChart>
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
-                  />
-                  <Pie
-                    data={chartData2}
-                    dataKey="visitors"
-                    nameKey="browser"
-                    innerRadius={20}
-                    outerRadius={40}
-                    strokeWidth={5}
-                  >
-                    <Label
-                      content={({ viewBox }) => {
-                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                          return (
-                            <text
-                              x={viewBox.cx}
-                              y={viewBox.cy}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                            >
-                              <tspan
-                                x={viewBox.cx}
-                                y={viewBox.cy}
-                                className="fill-foreground text-sm font-bold"
-                              >
-                                {totalVisitors2.toLocaleString()}
-                              </tspan>
-                            </text>
-                          );
-                        }
-                      }}
-                    />
-                  </Pie>
-                </PieChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+                    <Card
+                        onClick={() => setSelected("B")}
+                        className={`cursor-pointer border-2 ${
+                            selected === "B" ? "border-yellow-500" : "border-transparent"
+                        }`}
+                    >
+                        <CardContent className="p-6 space-y-4">
+                            <div className="flex items-center justify-center">
+                                <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    Alternativa B
+                                </span>
+                            </div>
+                            <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
+                            <div className="text-xs text-center text-gray-600">
+                                <div>
+                                    <b>50% chance de +R$1.000</b>
+                                </div>
+                                <div>
+                                    <b>50% chance de -R$500</b>
+                                </div>
+                            </div>
+                            <div className="flex justify-center items-center">
+                                <PieChart width={180} height={180}>
+                                    <Pie data={dataB} dataKey="value" nameKey="name" cx="50%" cy="50%">
+                                        {dataB.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
