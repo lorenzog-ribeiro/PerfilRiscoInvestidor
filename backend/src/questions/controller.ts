@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getQuestionCount, getUniqueQuestions } from "./service";
 
-export const getQuestionsCount = async (res: Response) => {
+export const getQuestionsCount = async (req: Request, res: Response) => {
     try {
         const questions = await getQuestionCount();
         res.status(200).json(questions);

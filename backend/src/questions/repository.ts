@@ -8,13 +8,12 @@ export const getCount = () => {
 
 
 export const getUnique = (data: number) => {
-    console.log(data);
     return prisma.perguntas.findFirstOrThrow({
-        where:{
+        where: {
             ordem: data
         },
-        include:{
-            respostas:true
+        include: {
+            respostas: true
         }
     });
 };

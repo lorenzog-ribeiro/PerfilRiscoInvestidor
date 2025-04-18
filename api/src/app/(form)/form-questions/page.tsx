@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useMemo, useState } from "react";
 // import questions from "../../../../perguntas_categorizadas.json";
 import { Button } from "@/components/ui/button";
 import DynamicQuestion from "../../../components/dynamic-form/page";
@@ -11,7 +11,11 @@ export interface Question {
     texto: string;
     tipo: string;
     ordem: string;
-    respostas: string[];
+    respostas: {
+        id: string;
+        texto: string;
+        indexOf: number;
+    }[];
 }
 
 export default function QuizPage() {
@@ -20,27 +24,33 @@ export default function QuizPage() {
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
     var current = 4;
-    const questionService = new QuestionService();
+    const questionService = useMemo(() => new QuestionService(), []);
 
     useEffect(() => {
-        questionService.getCountQuestion()
-            .then((response) => {
+        questionService
+            .getCountQuestion()
+            .then((response: { data: SetStateAction<number | undefined> }) => {
                 setQuantity(response.data);
-            }).catch((error) => {
+            })
+            .catch((error: { message: string }) => {
                 console.log(error.message);
             });
-        questionService.getUnique(current)
-            .then((response) => {
+        questionService
+            .getUnique(current)
+            .then((response: { data: SetStateAction<Question | null> }) => {
+                console.log(response.data);
                 setQuestion(response.data);
-            }).catch((error) => {
+            })
+            .catch((error: { message: string }) => {
                 console.log(error.message);
             });
-    }, [current]);
+    }, [current, questionService]);
 
-    const handleChange = (value: string) => {
-        console.log(value);
-        setRespostas((prev) => ({ ...prev, id: value }));
+    const handleChange = (questionId: string, value: string) => {
+        console.log(questionId, value);
+        setRespostas((prev) => ({ ...prev, [questionId]: value }));
     };
+
 
     //button "Proximo"
     const handleNext = () => {
@@ -99,7 +109,7 @@ export default function QuizPage() {
                     </div>
 
                     {/* Pergunta */}
-                    <DynamicQuestion question={question} value={question.id} onChange={handleChange} />
+                    <DynamicQuestion question={question} value={respostas[question.id]} onChange={(value) => handleChange(question.id, value)} />
 
                     {/* Navegação */}
                     <div className="flex justify-between pt-4">
