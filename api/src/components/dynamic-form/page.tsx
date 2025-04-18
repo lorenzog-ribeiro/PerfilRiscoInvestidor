@@ -1,17 +1,10 @@
 // components/DynamicQuestion.tsx
 "use client";
 
+import { Question } from "@/app/(form)/form-questions/page";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-interface Question {
-    id: string;
-    categoria: string;
-    pergunta: string;
-    tipo: string;
-    respostas: string[];
-}
 
 interface Props {
     question: Question;
@@ -29,21 +22,21 @@ export default function DynamicQuestion({ question, value, onChange }: Props) {
        
     return (
         <div className="space-y-4">
-            <Label className="font-medium text-base text-gray-800">{question.pergunta}</Label>
+            <Label className="font-medium text-base text-gray-800">{question.texto}</Label>
 
             {question.tipo === "radio" && (
                 <RadioGroup value={value} onValueChange={onChange} className="space-y-2 pt-2">
-                    {question.respostas.map((resposta, index) => (
-                        <div className="flex items-center space-x-2" key={index}>
-                            <RadioGroupItem id={`${question.id}-${index}`} value={resposta} />
-                            <label htmlFor={`${question.id}-${index}`} className="text-sm text-gray-700">
-                                {resposta}
+                    {question.respostas.map((reposta) => (
+                        <div className="flex items-center space-x-2" key={reposta.id}>
+                            <RadioGroupItem id={`${question.id}-${reposta.id}`} value={reposta.texto} />
+                            <label htmlFor={`${question.id}-${reposta.id}`} className="text-sm text-gray-700">
+                                {reposta.texto}
                             </label>
                         </div>
                     ))}
                 </RadioGroup>
             )}
-
+            
             {question.tipo === "data" && (
                 <Input
                     type="text"

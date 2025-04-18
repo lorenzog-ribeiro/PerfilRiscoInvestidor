@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categorias {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome      String
+  perguntas perguntas[]
+}
+
+model perfis {
+  id        Int     @id @default(autoincrement())
+  nome      String
+  min_media Decimal @db.Decimal
+  max_media Decimal @db.Decimal
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model perguntas {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  categoria_id       String?              @db.Uuid
+  texto              String
+  tipo               String
+  ordem              Int
+  categorias         categorias?          @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  respostas          respostas[]
+  respostas_usuarios respostas_usuarios[]
+}
+
+model respostas {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pergunta_id String?    @db.Uuid
+  texto       String
+  peso        Int?
+  perguntas   perguntas? @relation(fields: [pergunta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model respostas_usuarios {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id    String?    @db.Uuid
+  pergunta_id   String?    @db.Uuid
+  resposta      String
+  respondido_em DateTime?  @default(now()) @db.Timestamp(6)
+  perguntas     perguntas? @relation(fields: [pergunta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuarios      usuarios?  @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model usuarios {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email              String?              @unique
+  nome               String?
+  criado_em          DateTime?            @default(now()) @db.Timestamp(6)
+  respostas_usuarios respostas_usuarios[]
+}
