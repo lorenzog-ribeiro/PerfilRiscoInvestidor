@@ -19,11 +19,11 @@ export interface Question {
 }
 
 export default function QuizPage() {
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
-    var current = 4;
+    var current = index;
     const questionService = useMemo(() => new QuestionService(), []);
 
     useEffect(() => {
@@ -47,19 +47,19 @@ export default function QuizPage() {
     }, [current, questionService]);
 
     const handleChange = (questionId: string, value: string) => {
-        console.log(questionId, value);
         setRespostas((prev) => ({ ...prev, [questionId]: value }));
     };
 
 
     //button "Proximo"
     const handleNext = () => {
-        if (!respostas.id) {
+
+        if (!respostas[question.id]) {
             toast.warning("Responda a pergunta antes de continuar");
             return;
         }
 
-        if (question?.tipo === "data" && !isValidDate(respostas.id)) {
+        if (question?.tipo === "data" && !isValidDate(respostas[question.id])) {
             toast.error("Digite uma data válida no formato dd/mm/aaaa.");
             return;
         }
@@ -67,7 +67,7 @@ export default function QuizPage() {
     };
 
     //progress bar
-    const progresso = ((index + 1) / current) * 100;
+    const progresso = ((index + 1) / quantity!) * 100;
 
     const getBarColor = () => {
         if (index === quantity! - 1) {
