@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import { toast } from "sonner";
 import { QuestionService } from "../../../../services/QuestionsService";
+import { useSearchParams } from 'next/navigation';
+import { AnswerService } from "../../../../services/AnswerService";
 
 export interface Question {
     id: string;
@@ -25,6 +27,14 @@ export default function QuizPage() {
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
     var current = index;
     const questionService = useMemo(() => new QuestionService(), []);
+    const searchParams = useSearchParams();
+    const answerService = useMemo(() => new AnswerService(), []);
+    const userId = searchParams.get('userId');
+
+    const respostasComUsuario = {
+      ...respostas,
+      userId: userId,
+    };
 
     useEffect(() => {
         questionService
@@ -54,7 +64,8 @@ export default function QuizPage() {
     //button "Proximo"
     const handleNext = () => {
 
-        if (!respostas[question.id]) {
+        console.log(respostasComUsuario);
+        if (!respostas[question!.id]) {
             toast.warning("Responda a pergunta antes de continuar");
             return;
         }
@@ -63,6 +74,14 @@ export default function QuizPage() {
             toast.error("Digite uma data válida no formato dd/mm/aaaa.");
             return;
         }
+        
+        answerService.save(respostasComUsuario)
+        .then((response: { data: SetStateAction<string> }) => {
+        })
+        .catch((error: { message: string }) => {
+            console.log(error.message);
+        });
+
         setIndex((prev) => Math.min(prev + 1, quantity! - 1));
     };
 
