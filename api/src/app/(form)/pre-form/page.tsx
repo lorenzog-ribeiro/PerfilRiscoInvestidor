@@ -45,7 +45,7 @@ export default function Instructions() {
                         <Link href="/">Sair</Link>
                     </Button>
                     <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                        <Link href="/form-questions">Continuar</Link>
+                        <Link href="/user-questions">Continuar</Link>
                     </Button>
                 </div>
             </div>

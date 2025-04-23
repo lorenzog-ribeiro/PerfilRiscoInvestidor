@@ -1,8 +1,4 @@
-import axios from "axios";
-
-export const AxiosInstance = axios.create({
-    baseURL: "http://localhost:3333"
-});
+import { AxiosInstance } from "./Axios";
 
 export class QuestionService{
     getUnique(question:number){

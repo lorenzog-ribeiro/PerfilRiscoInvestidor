@@ -45,25 +45,7 @@ export default function DynamicQuestion({ question, value, onChange }: Props) {
                     maxLength={10}
                 />
             )}
-
-            {question.tipo === "name" && (
-                <Input
-                    type="text"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder="Escreva seu nome"
-                />
-            )}
-
-            {question.tipo === "email" && (
-                <Input
-                    type="email"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder="Escreva email"
-                />
-            )}
-
+            
         </div>
     );
 }

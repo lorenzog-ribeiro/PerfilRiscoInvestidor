@@ -3,12 +3,16 @@ import { UserModel } from './model';
 
 const prisma = new PrismaClient();
 
+export const getUnique = async (data: string) => {
+    return prisma.usuarios.findFirst({
+        where: {
+            email: data
+        }
+    });
+};
+
 export const createUserProfile = async (data: UserModel) => {
     return prisma.usuarios.create({
-        data: {
-            email: data.email,
-            nome: data.name,
-            criado_em: new Date(),
-        }
+        data: data
     });
 }
