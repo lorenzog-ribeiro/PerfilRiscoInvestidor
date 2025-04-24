@@ -3,7 +3,7 @@ import { SetStateAction, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserService } from "../../../../services/UserService";
+import { UserService } from "../../../../services/userService";
 import { useRouter } from "next/navigation";
 
 export default function UserPage() {

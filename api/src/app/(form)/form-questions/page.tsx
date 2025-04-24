@@ -1,12 +1,12 @@
 "use client";
-import { SetStateAction, useEffect, useMemo, useState } from "react";
-// import questions from "../../../../perguntas_categorizadas.json";
-import { Button } from "@/components/ui/button";
-import DynamicQuestion from "../../../components/dynamic-form/page";
 import { toast } from "sonner";
-import { QuestionService } from "../../../../services/QuestionsService";
-import { useSearchParams } from 'next/navigation';
-import { AnswerService } from "../../../../services/AnswerService";
+import isValidDate from "@/lib/dataValidator";
+import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
+import { AnswerService } from "../../../../services/answerService";
+import DynamicQuestion from "../../../components/dynamic-form/page";
+import { SetStateAction, useEffect, useMemo, useState } from "react";
+import { QuestionService } from "../../../../services/questionsService";
 
 export interface Question {
     id: string;
@@ -25,15 +25,15 @@ export default function QuizPage() {
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
-    var current = index;
+    const current = index;
     const questionService = useMemo(() => new QuestionService(), []);
     const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get("userId");
 
     const respostasComUsuario = {
-      ...respostas,
-      userId: userId,
+        ...respostas,
+        userId: userId,
     };
 
     useEffect(() => {
@@ -60,10 +60,8 @@ export default function QuizPage() {
         setRespostas((prev) => ({ ...prev, [questionId]: value }));
     };
 
-
     //button "Proximo"
     const handleNext = () => {
-
         console.log(respostasComUsuario);
         if (!respostas[question!.id]) {
             toast.warning("Responda a pergunta antes de continuar");
@@ -74,13 +72,16 @@ export default function QuizPage() {
             toast.error("Digite uma data válida no formato dd/mm/aaaa.");
             return;
         }
-        
-        answerService.save(respostasComUsuario)
-        .then((response: { data: SetStateAction<string> }) => {
-        })
-        .catch((error: { message: string }) => {
-            console.log(error.message);
-        });
+
+        answerService
+            .save(respostasComUsuario)
+            .then((response: { data: SetStateAction<string> }) => {
+                console.log(response.data);
+                toast.success("Resposta salva com sucesso!");
+            })
+            .catch((error: { message: string }) => {
+                console.log(error.message);
+            });
 
         setIndex((prev) => Math.min(prev + 1, quantity! - 1));
     };
@@ -95,29 +96,9 @@ export default function QuizPage() {
         return "from-red-500 to-orange-400"; // Cores iniciais da barra
     };
 
-    //validat date and mask
-    function isValidDate(dateStr: string): boolean {
-        const [day, month, year] = dateStr.split("/").map(Number);
-        const currentYear = new Date().getFullYear();
-
-        if (!day || !month || !year || day < 1 || month < 1 || month > 12 || year < 1900 || year > currentYear) {
-            return false;
-        }
-
-        // Cria o objeto Date com mês - 1 (pois janeiro = 0)
-        const date = new Date(year, month - 1, day);
-
-        return (
-            date.getFullYear() === year &&
-            date.getMonth() === month - 1 &&
-            date.getDate() === day
-        );
-    }
-
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
             {question ? (
-
                 <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6">
                     {/* Barra de Progresso */}
                     <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
@@ -128,11 +109,14 @@ export default function QuizPage() {
                     </div>
 
                     {/* Pergunta */}
-                    <DynamicQuestion question={question} value={respostas[question.id]} onChange={(value) => handleChange(question.id, value)} />
+                    <DynamicQuestion
+                        question={question}
+                        value={respostas[question.id]}
+                        onChange={(value) => handleChange(question.id, value)}
+                    />
 
                     {/* Navegação */}
                     <div className="flex justify-between pt-4">
-
                         <Button onClick={handleNext} className="bg-orange-500 hover:bg-orange-600 text-white">
                             {index === quantity! - 1 ? "Finalizar" : "Continuar"}
                         </Button>
