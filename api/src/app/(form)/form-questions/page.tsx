@@ -1,11 +1,12 @@
 "use client";
-import { SetStateAction, useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import DynamicQuestion from "../../../components/dynamic-form/page";
 import { toast } from "sonner";
-import { QuestionService } from "../../../../services/QuestionsService";
-import { useSearchParams } from 'next/navigation';
-import { AnswerService } from "../../../../services/AnswerService";
+import isValidDate from "@/lib/dataValidator";
+import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
+import { AnswerService } from "../../../../services/answerService";
+import DynamicQuestion from "../../../components/dynamic-form/page";
+import { SetStateAction, useEffect, useMemo, useState } from "react";
+import { QuestionService } from "../../../../services/questionsService";
 
 export interface Question {
     id: string;
@@ -24,6 +25,7 @@ export default function QuizPage() {
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
+    const current = index;
     const questionService = useMemo(() => new QuestionService(), []);
     const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
@@ -92,22 +94,6 @@ export default function QuizPage() {
         return "from-red-500 to-orange-400";
     };
 
-    function isValidDate(dateStr: string): boolean {
-        const [day, month, year] = dateStr.split("/").map(Number);
-        const currentYear = new Date().getFullYear();
-
-        if (!day || !month || !year || day < 1 || month < 1 || month > 12 || year < 1900 || year > currentYear) {
-            return false;
-        }
-
-        const date = new Date(year, month - 1, day);
-        return (
-            date.getFullYear() === year &&
-            date.getMonth() === month - 1 &&
-            date.getDate() === day
-        );
-    }
-
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
             {question ? (
@@ -118,7 +104,15 @@ export default function QuizPage() {
                             style={{ width: `${progresso}%` }}
                         ></div>
                     </div>
-                    <DynamicQuestion question={question} value={respostas[question.id]} onChange={(value) => handleChange(question.id, value)} />
+
+                    {/* Pergunta */}
+                    <DynamicQuestion
+                        question={question}
+                        value={respostas[question.id]}
+                        onChange={(value) => handleChange(question.id, value)}
+                    />
+
+                    {/* Navegação */}
                     <div className="flex justify-between pt-4">
                         <Button onClick={handleNext} className="bg-orange-500 hover:bg-orange-600 text-white">
                             {index === quantity! - 1 ? "Finalizar" : "Continuar"}
