@@ -1,6 +1,5 @@
 "use client";
 import { SetStateAction, useEffect, useMemo, useState } from "react";
-// import questions from "../../../../perguntas_categorizadas.json";
 import { Button } from "@/components/ui/button";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import { toast } from "sonner";
@@ -25,16 +24,10 @@ export default function QuizPage() {
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
-    var current = index;
     const questionService = useMemo(() => new QuestionService(), []);
     const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
     const userId = searchParams.get('userId');
-
-    const respostasComUsuario = {
-      ...respostas,
-      userId: userId,
-    };
 
     useEffect(() => {
         questionService
@@ -46,25 +39,20 @@ export default function QuizPage() {
                 console.log(error.message);
             });
         questionService
-            .getUnique(current)
+            .getUnique(index)
             .then((response: { data: SetStateAction<Question | null> }) => {
-                console.log(response.data);
                 setQuestion(response.data);
             })
             .catch((error: { message: string }) => {
                 console.log(error.message);
             });
-    }, [current, questionService]);
+    }, [index, questionService]);
 
     const handleChange = (questionId: string, value: string) => {
         setRespostas((prev) => ({ ...prev, [questionId]: value }));
     };
 
-
-    //button "Proximo"
     const handleNext = () => {
-
-        console.log(respostasComUsuario);
         if (!respostas[question!.id]) {
             toast.warning("Responda a pergunta antes de continuar");
             return;
@@ -74,28 +62,36 @@ export default function QuizPage() {
             toast.error("Digite uma data válida no formato dd/mm/aaaa.");
             return;
         }
+
+        // Verifica se todas as respostas foram dadas
+        // if (Object.keys(respostas).length !== quantity) {
+        //     toast.warning("Você precisa responder todas as perguntas antes de continuar.");
+        //     return;
+        // }
+        const respostasComUsuario = {
+            resposta: respostas[question!.id],
+            pergunta_id: question!.id,
+            usuario_id: userId,
+        };
         
         answerService.save(respostasComUsuario)
-        .then((response: { data: SetStateAction<string> }) => {
-        })
-        .catch((error: { message: string }) => {
-            console.log(error.message);
-        });
+            .then(() => { })
+            .catch((error: { message: string }) => {
+                console.log(error.message);
+            });
 
         setIndex((prev) => Math.min(prev + 1, quantity! - 1));
     };
 
-    //progress bar
-    const progresso = ((index + 1) / quantity!) * 100;
+    const progresso = quantity ? ((index + 1) / quantity) * 100 : 0;
 
     const getBarColor = () => {
         if (index === quantity! - 1) {
-            return "from-green-500 to-green-400"; // Cor verde no final
+            return "from-green-500 to-green-400";
         }
-        return "from-red-500 to-orange-400"; // Cores iniciais da barra
+        return "from-red-500 to-orange-400";
     };
 
-    //validat date and mask
     function isValidDate(dateStr: string): boolean {
         const [day, month, year] = dateStr.split("/").map(Number);
         const currentYear = new Date().getFullYear();
@@ -104,9 +100,7 @@ export default function QuizPage() {
             return false;
         }
 
-        // Cria o objeto Date com mês - 1 (pois janeiro = 0)
         const date = new Date(year, month - 1, day);
-
         return (
             date.getFullYear() === year &&
             date.getMonth() === month - 1 &&
@@ -117,22 +111,15 @@ export default function QuizPage() {
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
             {question ? (
-
                 <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6">
-                    {/* Barra de Progresso */}
                     <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
                         <div
                             className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500`}
                             style={{ width: `${progresso}%` }}
                         ></div>
                     </div>
-
-                    {/* Pergunta */}
                     <DynamicQuestion question={question} value={respostas[question.id]} onChange={(value) => handleChange(question.id, value)} />
-
-                    {/* Navegação */}
                     <div className="flex justify-between pt-4">
-
                         <Button onClick={handleNext} className="bg-orange-500 hover:bg-orange-600 text-white">
                             {index === quantity! - 1 ? "Finalizar" : "Continuar"}
                         </Button>

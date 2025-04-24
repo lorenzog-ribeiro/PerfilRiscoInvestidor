@@ -1,5 +1,5 @@
-import { createUserProfile } from './repository';
+import { saveAnswers } from './repository';
 
 export const save = async (data: any) => {
-    return createUserProfile(data);
+    return saveAnswers(data);
 };
