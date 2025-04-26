@@ -4,7 +4,7 @@ import express from 'express'
 import cors from 'cors';
 import routerUser from './user/router';
 import routerAnswers from './answers/router';
-import routerGanho from './calculations/router';
+import routerScenario from './calculations/router';
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(express.json())
 app.use('/', router);
 app.use('/', routerUser);
 app.use('/', routerAnswers);
-app.use('/', routerGanho);
+app.use('/', routerScenario);
 
 app.use(route)
 
