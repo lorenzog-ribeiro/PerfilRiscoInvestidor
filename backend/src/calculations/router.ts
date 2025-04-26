@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { winScenario, lossSCenario, onlyLossScenario } from "./controller";
 
-const routerGanho = Router();
+const routerScenario = Router();
 
-routerGanho.post("/win", winScenario);
-routerGanho.post("/loss", lossSCenario);
-routerGanho.post("/lossAggregate", onlyLossScenario);
+routerScenario.post("/win", winScenario);
+routerScenario.post("/loss", lossSCenario);
+routerScenario.post("/lossAggregate", onlyLossScenario);
 
-export default routerGanho;
+export default routerScenario;
