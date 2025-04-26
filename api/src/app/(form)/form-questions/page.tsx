@@ -3,10 +3,10 @@ import { toast } from "sonner";
 import isValidDate from "@/lib/dataValidator";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
-import { AnswerService } from "../../../../services/AnswerService";
+import { AnswerService } from "../../../../services/answerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import { SetStateAction, useEffect, useMemo, useState } from "react";
-import { QuestionService } from "../../../../services/QuestionsService";
+import { QuestionService } from "../../../../services/questionsService";
 
 export interface Question {
     id: string;
@@ -25,11 +25,10 @@ export default function QuizPage() {
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
-    const current = index;
     const questionService = useMemo(() => new QuestionService(), []);
     const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get("userId");
 
     useEffect(() => {
         questionService
@@ -75,9 +74,10 @@ export default function QuizPage() {
             pergunta_id: question!.id,
             usuario_id: userId,
         };
-        
-        answerService.save(respostasComUsuario)
-            .then(() => { })
+
+        answerService
+            .save(respostasComUsuario)
+            .then(() => {})
             .catch((error: { message: string }) => {
                 console.log(error.message);
             });

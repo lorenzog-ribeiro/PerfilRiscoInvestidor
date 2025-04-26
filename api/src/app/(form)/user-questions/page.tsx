@@ -3,12 +3,12 @@ import { SetStateAction, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserService } from "../../../../services/UserService";
+import { UserService } from "../../../../services/userService";
 import { useRouter } from "next/navigation";
 
 export default function UserPage() {
-    const [nome, setNome] = useState('');
-    const [email, setEmail] = useState('');
+    const [nome, setNome] = useState("");
+    const [email, setEmail] = useState("");
 
     const userService = useMemo(() => new UserService(), []);
     const router = useRouter();
@@ -16,7 +16,8 @@ export default function UserPage() {
     const handleCreateUser = async () => {
         const userData = { nome, email };
 
-        userService.createUser(userData)
+        userService
+            .createUser(userData)
             .then((response: { data: SetStateAction<string> }) => {
                 const userId = response.data;
                 router.push(`/form-questions?userId=${userId}`);
