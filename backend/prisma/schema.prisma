@@ -56,5 +56,42 @@ model usuarios {
   email              String?              @unique
   nome               String?
   criado_em          DateTime?            @default(now()) @db.Timestamp(6)
+  primeira_etapa     primeira_etapa[]
   respostas_usuarios respostas_usuarios[]
+  segunda_etapa      segunda_etapa[]
+  terceira_etapa     terceira_etapa[]
+}
+
+model Perguntas_Ganho {
+  id       String   @id @db.Uuid
+  Pergunta Int?
+  Valor    Decimal? @db.Money
+  Mediana  Decimal? @db.Money
+}
+
+model primeira_etapa {
+  id                Int       @id @default(autoincrement())
+  valor_selecionado Int
+  mediana           Decimal   @db.Decimal(10, 2)
+  lado_selecionado  String?   @db.Char(1)
+  usuario_id        String?   @db.Uuid
+  usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_primeira_etapa_usuario")
+}
+
+model segunda_etapa {
+  id                Int       @id @default(autoincrement())
+  valor_selecionado Int
+  mediana           Decimal   @db.Decimal(10, 2)
+  lado_selecionado  String?   @db.Char(1)
+  usuario_id        String?   @db.Uuid
+  usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_segunda_etapa_usuario")
+}
+
+model terceira_etapa {
+  id                Int       @id @default(autoincrement())
+  valor_selecionado Int
+  mediana           Decimal   @db.Decimal(10, 2)
+  lado_selecionado  String?   @db.Char(1)
+  usuario_id        String?   @db.Uuid
+  usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_terceira_etapa_usuario")
 }
