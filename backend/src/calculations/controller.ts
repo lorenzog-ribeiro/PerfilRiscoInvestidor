@@ -1,80 +1,55 @@
 import { Request, Response } from "express";
 
-// export const ganho = async (req: Request, res: Response) => {
-//     try {
-//         const { Inteiro, Ganho, Perda, Pergunta } = req.body;
-//         const calculo: number[] = [];
-//         console.log(Inteiro, Ganho, Perda, Pergunta);
-
-//         const base = (((Inteiro * 1 / 2) + (Perda * 1 / 2)) - (0 * 0) / 100);
-//         var Acumulado = base;
-
-//         for(var i = 1; i < Pergunta; i++)
-//         {
-//             Acumulado = Acumulado + (base/2**i);
-//             calculo.push(parseFloat(Acumulado.toFixed(2)));
-//         }
-
-//         res.status(200).json({ calculo });
-//     } catch (error: any) {
-
-//     }
-// }
-
-export const ganho = async (req: Request, res: Response) => {
+export const winScenario = async (req: Request, res: Response) => {
     try {
-        const { Inteiro, Ganho, Perda, Pergunta } = req.body;
-        var calculo: any = 0;
-        var calculoAnterior: any = 0;
+        const { aOption, bOption, scenario } = req.body;
+        const forecast: number[] = [0];
 
-        const base = (((Inteiro * 0.5) + (Perda * 0.5)) - (0 * 0) / 100);
-        console.log(base);
-        if (Pergunta == 1) {
-            calculo = base;
-        }
-        if (Pergunta == 2) {
-            calculo = base + (base / (2 ** (Pergunta - 1)));
-        }
-        if (Pergunta > 1) {
-            calculoAnterior = base + (base / (2 ** (Pergunta - 1)));
-            console.log(calculoAnterior)
-        }
-        if (Pergunta > 2) {
-            calculoAnterior = calculoAnterior + (base / (2 ** (Pergunta - 1)));
-        }
-        calculo = calculoAnterior + (base / (2 ** (Pergunta)));
+        const base = (((aOption * 1 / 2) + (bOption * 1 / 2)) - (0 * 0) / 100);
+        var aggregate = base;
+        forecast.push(parseFloat(aggregate.toFixed(2)));
 
-
-        res.status(200).json({ calculo });
+        for (var i = 1; i < scenario; i++) {
+            aggregate = aggregate + (base / 2 ** i);
+            forecast.push(parseFloat(aggregate.toFixed(2)));
+        }
+        res.status(200).json({ forecast });
     } catch (error: any) {
 
     }
 }
 
-export const perda = async (req: Request, res: Response) => {
+export const lossSCenario = async (req: Request, res: Response) => {
     try {
-        const { Inteiro, Ganho, Perda, Pergunta } = req.body;
-        const calculo: number[] = [];
-        console.log(Inteiro, Ganho, Perda, Pergunta);
+        const { aOption, bOption, scenario } = req.body;
+        const forecast: number[] = [0];
 
-        const base = (((Inteiro * 1 / 2) + (Perda * 1 / 2)) - (0 * 0) / 100);
-        var Acumulado = base;
+        const base = (((aOption * 100) + (aOption * 0)) - (bOption * 1 / 2) / (1 / 2)) * -1;
+        var aggregate = base;
 
-        for (var i = 1; i < Pergunta; i++) {
-            Acumulado = Acumulado - (base / 2 ** i);
-            calculo.push(parseFloat(Acumulado.toFixed(2)));
+        for (var i = 1; i < scenario; i++) {
+            aggregate = aggregate + (base / 2 ** i);
+            console.log(aggregate);
+            forecast.push(parseFloat(aggregate.toFixed(2)));
         }
-
-        res.status(200).json({ calculo });
+        res.status(200).json({ forecast });
     } catch (error: any) {
-
     }
 }
 
-export const perdaperganho = async (req: Request, res: Response) => {
+export const onlyLossScenario = async (req: Request, res: Response) => {
     try {
+        const { aOption, bOption, scenario } = req.body;
+        const forecast: number[] = [0];
 
-        res.status(200).json();
+        const base = (((aOption * 1 / 2) + (bOption * 1 / 2)) - (0 * 0) / 100);
+        var aggregate = base;
+
+        for (var i = 1; i < scenario; i++) {
+            aggregate = aggregate + (base / 2 ** i);
+            forecast.push(parseFloat(aggregate.toFixed(2)));
+        }
+        res.status(200).json({ forecast });
     } catch (error: any) {
 
     }

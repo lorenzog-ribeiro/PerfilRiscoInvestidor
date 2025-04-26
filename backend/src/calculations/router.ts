@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { ganho,perda } from "./controller";
+import { winScenario, lossSCenario, onlyLossScenario } from "./controller";
 
 const routerGanho = Router();
 
-routerGanho.post("/ganho", ganho);
-routerGanho.post("/perda", perda);
+routerGanho.post("/win", winScenario);
+routerGanho.post("/loss", lossSCenario);
+routerGanho.post("/lossAggregate", onlyLossScenario);
 
 export default routerGanho;
