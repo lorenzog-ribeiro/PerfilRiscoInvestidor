@@ -19,7 +19,7 @@ export const getFirstStageValues = async (data: any) => {
                 const baseValue = base(Safe, Risk);
 
                 return await saveScenarioSelectedFirstStage({
-                    valor_selecionado: 0,
+                    valor_selecionado: data.valueSelected,
                     mediana: baseValue,
                     lado_selecionado: data.optionSelected,
                     usuario_id: data.userId,

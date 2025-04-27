@@ -22,6 +22,7 @@ export const getWinScenario = async (req: Request, res: Response) => {
 export const winScenario = async (req: Request, res: Response) => {
     try {
         const { scenario, optionSelected, valueSelected, userId } = req.body;
+        console.log("winScenario", { scenario, optionSelected, valueSelected, userId });
 
         const forecast = saveFirstStage({ scenario, optionSelected, valueSelected, userId });
 
