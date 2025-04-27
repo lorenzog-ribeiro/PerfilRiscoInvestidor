@@ -1,9 +1,160 @@
+import { useEffect, useMemo, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { PieChart, Pie, Cell, Label } from "recharts";
+import { Button } from "@/components/ui/button";
+import { ScenariosService } from "../../../services/scenariosService";
+import { useSearchParams } from "next/navigation";
+
+const dataB = [
+  { name: "Ganho", value: 50, color: "#228b22", label: "+R$1.000" },
+  { name: "Perda", value: 50, color: "gray", label: "R$0" },
+];
+
 export default function FirstScenario() {
-    
+  const [index, setIndex] = useState(1);
+  const [quantity, setQuantity] = useState<number>();
+  const [value, setValue] = useState<number>();
+  const [fixedValue, setFixedValue] = useState<number>();
+  const [selected, setSelected] = useState<"A" | "B" | null>(null);
+  const answerService = useMemo(() => new ScenariosService(), []);
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
+
+  useEffect(() => {
+    answerService
+      .getwin(index, userId)
+      .then((response: { data: any }) => {
+        setValue(response.data.forecast.mediana)
+        setFixedValue(response.data.forecast.valor_fixo)
+      })
+      .catch((error: { message: string }) => {
+        console.log(error.message);
+      });
+  }, [index, ScenariosService]);
   return (
     <div>
-      <h1>Primeiro Cenário</h1>
-      <p>Descrição do primeiro cenário.</p>
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-2">
+        <Card
+          onClick={() => setSelected("A")}
+          className={`cursor-pointer border-2 ${selected === "A" ? "border-blue-500" : "border-transparent"
+            }`}
+        >
+          <CardContent className="p-2 space-y-2">
+            <div className="flex items-center justify-center">
+              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                Alternativa A
+              </span>
+            </div>
+            <h2 className="text-lg font-semibold text-gray-800 text-center">Ganho com certeza</h2>
+            <div className="flex justify-center items-center pt-9.5">
+              <PieChart width={180} height={180}>
+                <Pie
+                  data={[{ name: "Ganho", value: 100, color: "#228b22", label: "teste" }]}
+                  dataKey="value"
+                  nameKey="name"
+                  stroke="none"
+                  strokeWidth={0}
+                >
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
+                            <tspan
+                              className="fill-white text-sm font-bold text-white"
+                            >
+                              +{value}
+                            </tspan>
+                          </text>
+                        )
+                      }
+                    }}
+                  />
+                  <Cell key={`cell-1`} fill="#228b22" />
+                </Pie>
+              </PieChart>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card
+          onClick={() => setSelected("B")}
+          className={`cursor-pointer border-2 ${selected === "B" ? "border-yellow-500" : "border-transparent"
+            }`}
+        >
+          <CardContent className="p-2 space-y-2">
+            <div className="flex items-center justify-center">
+              <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                Alternativa B
+              </span>
+            </div>
+            <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
+            <div className="text-xs text-center text-gray-600">
+              <div>
+                <b>50% chance de ganhar</b>
+              </div>
+              <div>
+                <b>50% chance de não ter ganho</b>
+              </div>
+            </div>
+            <div className="flex justify-center items-center">
+              <PieChart width={180} height={180}>
+                <Pie
+                  stroke="none"
+                  strokeWidth={0}
+                  data={dataB}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                >
+                  {dataB.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        const { cx, cy } = viewBox;
+                        return (
+                          <>
+                            <text
+                              x={cx}
+                              y={(cy ?? 0) - 30}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan className="fill-white text-sm font-bold">+{fixedValue}</tspan>
+                            </text>
+                            <text
+                              x={cx}
+                              y={(cy ?? 0) + 30}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan className="fill-white text-sm font-bold">0</tspan>
+                            </text>
+                          </>
+                        );
+                      }
+                    }}
+                  />
+                </Pie>
+              </PieChart>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="flex justify-between pt-4">
+        <Button className="mb-4 bg-orange-400 hover:bg-orange-300">
+          Proximo
+        </Button>
+      </div>
+
     </div>
   );
 }

@@ -62,19 +62,14 @@ model usuarios {
   terceira_etapa     terceira_etapa[]
 }
 
-model Perguntas_Ganho {
-  id       String   @id @db.Uuid
-  Pergunta Int?
-  Valor    Decimal? @db.Money
-  Mediana  Decimal? @db.Money
-}
-
 model primeira_etapa {
   id                Int       @id @default(autoincrement())
   valor_selecionado Int
   mediana           Decimal   @db.Decimal(10, 2)
   lado_selecionado  String?   @db.Char(1)
   usuario_id        String?   @db.Uuid
+  pergunta          Int?
+  valor_fixo        Int?
   usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_primeira_etapa_usuario")
 }
 
