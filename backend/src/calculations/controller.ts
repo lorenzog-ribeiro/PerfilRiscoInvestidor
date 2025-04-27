@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getFirstStageValues, saveFirstStage, saveSecondStage, saveThirdStage } from "./service";
+import { getFirstStageValues, getSecondStageValues, saveFirstStage, saveSecondStage, saveThirdStage } from "./service";
 
 // const sessionAnswers: Record<string, any[]> = {};
 
@@ -8,9 +8,9 @@ export const getWinScenario = async (req: Request, res: Response) => {
     try {
         const { scenario, userId } = req.query;
 
-        const forecast = await getFirstStageValues({ 
-            scenario: parseInt(scenario as string || "0"), 
-            userId 
+        const forecast = await getFirstStageValues({
+            scenario: parseInt(scenario as string || "0"),
+            userId
         });
         res.status(200).json({ forecast });
     }
@@ -22,9 +22,8 @@ export const getWinScenario = async (req: Request, res: Response) => {
 export const winScenario = async (req: Request, res: Response) => {
     try {
         const { scenario, optionSelected, valueSelected, userId } = req.body;
-        console.log("winScenario", { scenario, optionSelected, valueSelected, userId });
 
-        const forecast = saveFirstStage({ scenario, optionSelected, valueSelected, userId });
+        const forecast = await saveFirstStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
 
         res.status(200).json({ forecast });
     }
@@ -33,31 +32,31 @@ export const winScenario = async (req: Request, res: Response) => {
     }
 }
 
+export const getLossScenario = async (req: Request, res: Response) => {
+
+    try {
+        const { scenario, userId } = req.query;
+
+        const forecast = await getSecondStageValues({
+            scenario: parseInt(scenario as string || "0"),
+            userId
+        });
+        res.status(200).json({ forecast });
+    }
+    catch (error: any) {
+        res.status(500).json({ error: "Erro no cálculo" });
+    }
+}
 export const lossSCenario = async (req: Request, res: Response) => {
     try {
-        const { aOption, bOption, scenario, optionSelected, valueSelected, usuario_id } = req.body;
-        const forecast: number[] = [0];
+        const { scenario, optionSelected, valueSelected, userId } = req.body;
 
-        const base = (((aOption * 100) + (aOption * 0)) - (bOption * 1 / 2) / (1 / 2));
-        var aggregate = base;
-        forecast.push(parseFloat(aggregate.toFixed(2)));
+        const forecast = await saveSecondStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
 
-        switch (optionSelected) {
-            case ("B"):
-                for (var i = 1; i < scenario; i++) {
-                    aggregate = aggregate + (base / 2 ** i);
-                    forecast.push(parseFloat(aggregate.toFixed(2)));
-                }
-                break;
-            case ("A"):
-                for (var i = 1; i < scenario; i++) {
-                    aggregate = aggregate - (base / 2 ** i);
-                    forecast.push(parseFloat(aggregate.toFixed(2)));
-                }
-                break;
-        }
         res.status(200).json({ forecast });
-    } catch (error: any) {
+    }
+    catch (error: any) {
+        res.status(500).json({ error: "Erro no cálculo" });
     }
 }
 

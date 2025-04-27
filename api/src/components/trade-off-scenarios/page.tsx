@@ -2,9 +2,11 @@
 "use client";
 
 import FirstScenario from "../first-scenario/page";
+import SecondScenario from "../second-scenario/page";
 
 export default function ScenarioController() {
-    return <FirstScenario />;
+    ////return <FirstScenario />;
+    return <SecondScenario />;
 
     // switch (currentScenario.tipo) {
     //   case "ganho":
