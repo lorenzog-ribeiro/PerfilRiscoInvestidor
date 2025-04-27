@@ -89,3 +89,29 @@ export const onlyLossScenario = async (req: Request, res: Response) => {
 
     }
 }
+
+// tentando simplificar o codigo dentro das funcoes.
+function calculateForecast(aOption: number, bOption: number, scenario: number, optionSelected: string) {
+    const forecast: number[] = [0];
+
+    const base = (((aOption * 1 / 2) + (bOption * 1 / 2)) - (0 * 0) / 100);
+    var aggregate = base;
+    forecast.push(parseFloat(aggregate.toFixed(2)));
+
+    switch (optionSelected) {
+        case ("A"):
+            for (var i = 1; i < scenario; i++) {
+                aggregate = aggregate + (base / 2 ** i);
+                forecast.push(parseFloat(aggregate.toFixed(2)));
+            }
+            break;
+        case ("B"):
+            for (var i = 1; i < scenario; i++) {
+                aggregate = aggregate - (base / 2 ** i);
+                forecast.push(parseFloat(aggregate.toFixed(2)));
+            }
+            break;
+    }
+
+    return forecast;
+}
