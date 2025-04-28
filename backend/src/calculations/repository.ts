@@ -27,7 +27,22 @@ export const searchValueSecondStage = async (data: any) => {
         });
         return result;
     } catch (error) {
-        console.error('Erro ao buscar na primeira etapa:', error);
+        console.error('Erro ao buscar na segunda etapa:', error);
+        throw error;
+    }
+}
+
+export const searchValueThirdStage = async (data: any) => {
+    try {
+        const result = await prisma.terceira_etapa.findFirst({
+            where: {
+                usuario_id: data.usuario_id,
+                pergunta: data.pergunta
+            }
+        });
+        return result;
+    } catch (error) {
+        console.error('Erro ao buscar na terceira etapa:', error);
         throw error;
     }
 }

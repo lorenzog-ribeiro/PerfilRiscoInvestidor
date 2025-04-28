@@ -90,5 +90,7 @@ model terceira_etapa {
   mediana           Decimal   @db.Decimal(10, 2)
   lado_selecionado  String?   @db.Char(1)
   usuario_id        String?   @db.Uuid
+  pergunta          Int?
+  valorFixo         Int?
   usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_terceira_etapa_usuario")
 }
