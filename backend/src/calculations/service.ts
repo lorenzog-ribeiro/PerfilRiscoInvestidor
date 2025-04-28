@@ -8,9 +8,6 @@ import {
 } from "./repository";
 
 export const getFirstStageValues = async (data: any) => {
-    const Safe = 1000;
-    const Risk = 0;
-
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueFirstStage({
@@ -23,6 +20,9 @@ export const getFirstStageValues = async (data: any) => {
                     pergunta: data.scenario
                 });
             }
+
+            const Safe = 1000;
+            const Risk = 0;
             const baseValue = base(Safe, Risk, 1);
             return await saveScenarioSelectedFirstStage({
                 valor_selecionado: 0,
@@ -70,9 +70,6 @@ export const saveFirstStage = async (data: any) => {
 }
 
 export const getSecondStageValues = async (data: any) => {
-    const Safe = 0;
-    const Risk = 1000;
-
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueSecondStage({
@@ -85,6 +82,9 @@ export const getSecondStageValues = async (data: any) => {
                     pergunta: data.scenario
                 });
             }
+
+            const Safe = 0;
+            const Risk = 1000;
             const baseValue = base(Safe, Risk, 2);
             return await saveScenarioSelectedFirstStage({
                 valor_selecionado: 0,
@@ -103,7 +103,6 @@ export const getSecondStageValues = async (data: any) => {
             break;
     }
 }
-
 
 export const saveSecondStage = async (data: any) => {
     const Safe = 0;
@@ -131,16 +130,6 @@ export const saveSecondStage = async (data: any) => {
 }
 
 export const getThirdStageValues = async (data: any) => {
-    let safeBase = 0;
-    const initialRisk = await searchValueSecondStage({
-        usuario_id: data.usuario_id,
-        pergunta: 6
-    });
-
-    const Risk = initialRisk?.mediana ?? 0;
-
-    safeBase = ((((Number(Risk) * 1) / 2) + (0 * 1 / 2)) - (0 * 0) / 100);
-
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueThirdStage({
@@ -154,7 +143,9 @@ export const getThirdStageValues = async (data: any) => {
                 });
             }
 
-            const baseValue = base(safeBase, Number(Risk), 1);
+            const Safe = 0;
+            const Risk = await getSecondForThird(data);
+            const baseValue = base(Safe, Number(Risk?.valor_selecionado) , 3);
             return await saveScenarioSelectedThirdStage({
                 valor_selecionado: 0,
                 mediana: baseValue,
@@ -163,7 +154,6 @@ export const getThirdStageValues = async (data: any) => {
                 pergunta: 0,
                 valor_fixo: 0,
             });
-
             break;
         default:
             return await searchValueThirdStage({
@@ -175,28 +165,35 @@ export const getThirdStageValues = async (data: any) => {
 }
 
 export const saveThirdStage = async (data: any) => {
-    const Safe = 1000;
-    const Risk = 0;
+    const Safe = 0;
+    const Risk = await getSecondForThird(data);
     let aggregate: any;
 
-    const baseValue = base(Safe, Risk, 1) ?? 0;
+    const baseValue = base(Safe, Number(Risk?.valor_selecionado) , 3);
 
     switch (data.optionSelected) {
         case ("A"):
-            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
+            aggregate = data.valueSelected + ((baseValue ?? 0) / (2 ** data.scenario));
             break;
         case ("B"):
-            aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
+            aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
             break;
     }
     return saveScenarioSelectedThirdStage({
         valor_selecionado: data.valueSelected,
-        mediana: data.valueSelected,
+        mediana: aggregate,
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: 0
+        valor_fixo: Risk?.valor_selecionado
     });
+}
+
+
+export const result = async(data:any) => {
+    const firstFirstStage = saveFirstStage({usuario_id: data.usuario_id,pergunta: data.scenario});
+    const lastFirstStage = saveFirstStage({usuario_id: data.usuario_id,pergunta: data.scenario});
+
 }
 
 function base(Safe: number, Risk: number, type: number) {
@@ -208,7 +205,14 @@ function base(Safe: number, Risk: number, type: number) {
             return (((0 * 1) + (0 * 0)) - (Risk * 1 / 2) / (1 / 2));
             break;
         case 3:
-            return (((0 * 1) + (0 * 0)) - (Risk * 1 / 2) / (1 / 2));
+            return (((Risk * 1 / 2) + (Safe * 1 / 2)) - (0 * 0) / 100);
             break;
     }
+}
+
+async function getSecondForThird(data: any) {
+    return await searchValueSecondStage({
+        usuario_id: data.usuario_id,
+        pergunta: 6
+    });
 }

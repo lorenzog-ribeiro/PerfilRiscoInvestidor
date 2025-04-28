@@ -87,12 +87,15 @@ export const saveScenarioSelectedSecondStage = async (data: any) => {
 
 export const saveScenarioSelectedThirdStage = async (data: any) => {
     try {
+        console.log(data);
         const result = await prisma.terceira_etapa.create({
             data: {
                 usuario_id: data.usuario_id,
                 valor_selecionado: data.valor_selecionado,
                 lado_selecionado: data.lado_selecionado,
                 mediana: data.mediana,
+                pergunta: data.pergunta,
+                valor_fixo: data.valor_fixo
             }
         });
         return result;
