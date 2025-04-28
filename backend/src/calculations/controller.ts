@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getFirstStageValues, getSecondStageValues, getThirdStageValues, saveFirstStage, saveSecondStage, saveThirdStage } from "./service";
+import { getFirstStageValues, getSecondStageValues, getThirdStageValues, saveFirstStage, saveSecondStage, saveThirdStage, result } from "./service";
 
 // const sessionAnswers: Record<string, any[]> = {};
 //1
@@ -87,7 +87,7 @@ export const onlyLossScenario = async (req: Request, res: Response) => {
     }
 }
 
-export const calcResult = async (req: Request, res: Response) =>{
+export const calcResult = async (req: Request, res: Response) => {
     try {
         const { userId } = req.body;
 
