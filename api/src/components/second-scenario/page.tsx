@@ -5,134 +5,140 @@ import { Progress } from "@/components/ui/progress";
 import { ScenariosService } from "../../../services/scenariosService";
 import { useSearchParams } from "next/navigation";
 
-interface selectedInterface {
+interface SelectedInterface {
   optionSelected: string,
   valueSelected: number
 }
 
 const dataB = [
-  { name: "Ganho", value: 50, color: "#228b22", label: "+R$1.000" },
-  { name: "Perda", value: 50, color: "gray", label: "R$0" },
+  { name: "Ganho", value: 50, color: "red", label: "+R$1.000" },
+  { name: "Perda", value: 50, color: "#228b22", label: "R$1000" },
 ];
 
 export default function FirstScenario() {
   const [index, setIndex] = useState(0);
-  const [value, setValue] = useState<number>();   // Mediana
-  const [fixedValue, setFixedValue] = useState<number>();  // Valor Fixo
-  const [selected, setSelected] = useState<selectedInterface | null>(null);  // Inicialmente nenhuma opção selecionada
-  const [loading, setLoading] = useState(false);  // Estado para controlar a animação de carregamento
-  const [totalQuestions] = useState(8); // Total de perguntas
+  const [value, setValue] = useState<number>(); // Mediana
+  const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
+  const [selected, setSelected] = useState<SelectedInterface | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [totalQuestions] = useState(8);
   const scenariosService = useMemo(() => new ScenariosService(), []);
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId");
 
-  // Usando useRef para manter a seleção atual
-  const selectedRef = useRef<selectedInterface | null>(null);
+  // Ref para controlar se já fizemos a primeira chamada
+  const initialLoadDone = useRef(false);
+  // Ref para monitorar o estado de carregamento
+  const isLoadingRef = useRef(false);
 
-  // Função para obter e atualizar os valores após a chamada da API
-  const fetchData = () => {
+  // Função para buscar dados para uma questão específica
+  const fetchQuestionData = (questionIndex: number) => {
+    if (!userId) return;
+    
     setLoading(true);
+    isLoadingRef.current = true;
+    
+    console.log(`Fetching data for question index: ${questionIndex}`);
+    
     scenariosService
-      .getloss(index, userId)
+      .getloss(questionIndex, userId)
       .then((response: { data: any }) => {
         console.log("API Response:", response.data);
-        setValue(response.data.forecast.mediana);  // Atualizando o valor da mediana
-        setFixedValue(response.data.forecast.valor_fixo);  // Atualizando o valor fixo
+        setValue(response.data.forecast.mediana);
+        setFixedValue(response.data.forecast.valor_fixo);
         setLoading(false);
+        isLoadingRef.current = false;
       })
       .catch((error: { message: string }) => {
         console.log("API Error:", error.message);
         setLoading(false);
+        isLoadingRef.current = false;
       });
   };
 
-  // Carregar dados apenas na inicialização do componente
+  // Carrega os dados da primeira questão apenas uma vez na inicialização
   useEffect(() => {
-    if (userId) {
-      fetchData();
+    if (userId && !initialLoadDone.current) {
+      initialLoadDone.current = true;
+      fetchQuestionData(index);
     }
-  }, [userId]);  // Dependência apenas do userId, não do index
+  }, [userId]);
 
+  // Reseta a seleção quando os valores são atualizados
   useEffect(() => {
     setSelected(null);
-    selectedRef.current = null;
   }, [value, fixedValue]);
 
-
   const getBarColor = () => {
-    if (index === totalQuestions! - 1) {
+    if (index === totalQuestions - 1) {
       return "from-green-500 to-green-400";
     }
     return "from-red-500 to-orange-400";
   };
 
-  const sideSelected = (data: selectedInterface) => {
-    // Não processar cliques enquanto estiver carregando
-    if (loading) return;
-    selectedRef.current = data;
+  const sideSelected = (data: SelectedInterface) => {
+    // Não processar cliques se estiver carregando
+    if (loading || isLoadingRef.current) return;
+    
     setSelected(data);
-
-    // Avançar automaticamente para a próxima pergunta (substituindo o comportamento do botão)
+    
+    // Avançar para a próxima pergunta após um breve delay
     setTimeout(() => handleNext(data), 500);
   };
 
-  const handleNext = (currentSelected: selectedInterface) => {
-    if (!currentSelected) return;
+  const handleNext = (currentSelected: SelectedInterface) => {
+    if (!currentSelected || !userId || loading || isLoadingRef.current) return;
 
     setLoading(true);
+    isLoadingRef.current = true;
 
-    // Regra específica para o índice 0
-    let newIndex = index;
+    // Determinar qual valor enviar
+    const valueToSend = currentSelected.optionSelected === "A" ? fixedValue : value;
+    
+    // Determinar o próximo índice considerando a regra especial para índice 0
+    let currentIndex = index;
+    let nextIndex: number;
+    
     if (index === 0) {
-      newIndex = 1;
-      setIndex(1);
+      // Regra específica para o índice 0
+      currentIndex = 1;
+      nextIndex = 2;
+    } else {
+      // Regra normal para os outros índices
+      nextIndex = Math.min(index + 1, totalQuestions);
     }
-
-    console.log("Executing handleNext with option:", currentSelected);
-
-    const valueToSend = currentSelected.optionSelected === "A" ? value : fixedValue;
-
-    if (currentSelected.optionSelected === "A" || currentSelected.optionSelected === "B") {
-      scenariosService
-        .loss({
-          scenario: newIndex,  // Usando newIndex em vez de index
-          optionSelected: currentSelected.optionSelected,
-          valueSelected: valueToSend,
-          userId: userId,
-        })
-        .then((response: { data: any }) => {
-          console.log(response.data);
-
-          // Simulando um tempo de carregamento para dar sensação de mudança
-          setTimeout(() => {
-            // Calcula o próximo índice após resposta
-            const nextIndex = index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
-
-            // Depois busca os dados para o novo índice
-            scenariosService
-              .getloss(nextIndex, userId)
-              .then((nextResponse: { data: any }) => {
-                setValue(nextResponse.data.forecast.mediana);
-                setFixedValue(nextResponse.data.forecast.valor_fixo);
-                setIndex(nextIndex);
-                setLoading(false);
-              })
-              .catch((error: { message: string }) => {
-                console.log("API Error fetching next question:", error.message);
-                setLoading(false);
-              });
-          }, 800);
-        })
-        .catch((error: { message: string }) => {
-          console.log(error.message);
-          setLoading(false);
-        });
-    }
+    
+    console.log(`Submitting answer for question ${currentIndex} with option: ${currentSelected.optionSelected}, value: ${valueToSend}`);
+    
+    // Enviar a resposta atual
+    scenariosService
+      .loss({
+        scenario: currentIndex,
+        optionSelected: currentSelected.optionSelected,
+        valueSelected: valueToSend,
+        userId: userId,
+      })
+      .then((response: { data: any }) => {
+        console.log("Submit response:", response.data);
+        
+        // Atualizar o índice após enviar a resposta atual
+        setIndex(nextIndex);
+        
+        // Buscar dados para a próxima pergunta após um curto delay
+        setTimeout(() => {
+          fetchQuestionData(nextIndex);
+        }, 800);
+      })
+      .catch((error: { message: string }) => {
+        console.log("Submit error:", error.message);
+        setLoading(false);
+        isLoadingRef.current = false;
+      });
   };
 
-  // Calcular o progresso baseado na pergunta atual, excluindo a pergunta 0
-  const adjustedIndex = index === 0 ? 0 : index;
-  const progressQuestions = totalQuestions; // Excluindo a pergunta 0 do total
+  // Calcular o progresso baseado na pergunta atual
+  const adjustedIndex = index === 0 ? 1 : index;
+  const progressQuestions = totalQuestions;
   const progress = Math.min((adjustedIndex / progressQuestions) * 100, 100);
 
   return (
@@ -161,7 +167,7 @@ export default function FirstScenario() {
             <div className="flex justify-center items-center pt-9.5">
               <PieChart width={180} height={180}>
                 <Pie
-                  data={[{ name: "Ganho", value: 100, color: "#228b22", label: "teste" }]}
+                  data={[{ name: "Ganho", value: 100, color: "#808080", label: "teste" }]}
                   dataKey="value"
                   nameKey="name"
                   stroke="none"
@@ -178,7 +184,7 @@ export default function FirstScenario() {
                             dominantBaseline="middle"
                           >
                             <tspan className="fill-white text-sm font-bold text-white">
-                              {fixedValue}
+                              Sem Ganho ou Perda
                             </tspan>
                           </text>
                         );
@@ -208,7 +214,7 @@ export default function FirstScenario() {
                 <b>50% chance de perder</b>
               </div>
               <div>
-                <b>50% chance de não ter perder</b>
+                <b>50% chance de não perder</b>
               </div>
             </div>
             <div className="flex justify-center items-center">
@@ -247,7 +253,7 @@ export default function FirstScenario() {
                               textAnchor="middle"
                               dominantBaseline="middle"
                             >
-                              <tspan className="fill-white text-sm font-bold">0</tspan>
+                              <tspan className="fill-white text-sm font-bold">+1000</tspan>
                             </text>
                           </>
                         );
