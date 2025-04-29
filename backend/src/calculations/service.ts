@@ -92,7 +92,7 @@ export const getSecondStageValues = async (data: any) => {
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
-                valor_fixo: -Risk.toFixed(0),
+                valor_fixo: -Risk,
             });
             break;
         default:
@@ -152,7 +152,7 @@ export const getThirdStageValues = async (data: any) => {
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
-                valor_fixo: Number(Risk?.valor_selecionado).toFixed(0),
+                valor_fixo: Number(Risk?.valor_selecionado),
             });
             break;
         default:
