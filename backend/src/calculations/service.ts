@@ -60,7 +60,7 @@ export const saveFirstStage = async (data: any) => {
     }
 
     return await saveScenarioSelectedFirstStage({
-        valor_selecionado: data.valueSelected.toFixed(0),
+        valor_selecionado: data.valueSelected,
         mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
@@ -120,7 +120,7 @@ export const saveSecondStage = async (data: any) => {
             break;
     }
     return await saveScenarioSelectedSecondStage({
-        valor_selecionado: data.valueSelected.toFixed(0),
+        valor_selecionado: data.valueSelected,
         mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
@@ -180,7 +180,7 @@ export const saveThirdStage = async (data: any) => {
             break;
     }
     return saveScenarioSelectedThirdStage({
-        valor_selecionado: data.valueSelected.toFixed(0),
+        valor_selecionado: data.valueSelected,
         mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
