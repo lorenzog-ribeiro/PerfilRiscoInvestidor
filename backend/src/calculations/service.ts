@@ -65,7 +65,7 @@ export const saveFirstStage = async (data: any) => {
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Safe.toFixed(0)
+        valor_fixo: Safe
     });
 }
 
@@ -125,7 +125,7 @@ export const saveSecondStage = async (data: any) => {
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: -Risk.toFixed(0)
+        valor_fixo: -Risk
     });
 }
 
@@ -185,7 +185,7 @@ export const saveThirdStage = async (data: any) => {
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Risk?.valor_selecionado.toFixed(0)
+        valor_fixo: Risk?.valor_selecionado
     });
 }
 
