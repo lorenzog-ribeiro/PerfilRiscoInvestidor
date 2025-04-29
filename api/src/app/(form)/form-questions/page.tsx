@@ -3,10 +3,10 @@ import { toast } from "sonner";
 import isValidDate from "@/lib/dataValidator";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
-import { AnswerService } from "../../../../services/AnswerService";
+import { AnswerService } from "../../../../services/answerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import { SetStateAction, useEffect, useMemo, useState } from "react";
-import { QuestionService } from "../../../../services/QuestionsService";
+import { QuestionService } from "../../../../services/questionsService";
 
 export interface Question {
     id: string;

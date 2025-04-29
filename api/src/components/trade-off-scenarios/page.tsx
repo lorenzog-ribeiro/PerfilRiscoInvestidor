@@ -3,17 +3,12 @@
 
 import FirstScenario from "../first-scenario/page";
 import SecondScenario from "../second-scenario/page";
+import ThridScenario from "../third-scenario/page";
 
 export default function ScenarioController() {
-    ////return <FirstScenario />;
-    return <SecondScenario />;
-
-    // switch (currentScenario.tipo) {
-    //   case "ganho":
-    //
-    //   case "ganho_perda":
-    //     return <Etapa2 scenario={currentScenario} onConclude={handleConclude} />;
-    //   case "perda":
-    //     return <Etapa3 scenario={currentScenario} onConclude={handleConclude} />;
-    // }
+    return (
+        <div className="flex flex-col items-center justify-center space-y-6">
+            <ThridScenario />
+        </div>
+    );
 }
