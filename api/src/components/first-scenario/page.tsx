@@ -16,7 +16,7 @@ const dataB = [
     { name: "Perda", value: 50, color: "gray", label: "R$0" },
 ];
 
-export default function FirstScenario() {
+export default function FirstScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
     const [value, setValue] = useState<number>(); // Mediana
     const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
@@ -108,7 +108,9 @@ export default function FirstScenario() {
                     setTimeout(() => {
                         // Calcula o próximo índice após resposta
                         const nextIndex = index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
-
+                        if (nextIndex === totalQuestions - 1) {
+                            onAnswered(); // Chama a função de callback quando chegar na última pergunta
+                        }
                         // Depois busca os dados para o novo índice
                         scenariosService
                             .getwin(nextIndex, userId)
@@ -132,26 +134,12 @@ export default function FirstScenario() {
     };
 
     // Calcular o progresso baseado na pergunta atual, excluindo a pergunta 0
-    const adjustedIndex = index === 0 ? 0 : index;
-    const progressQuestions = totalQuestions; // Excluindo a pergunta 0 do total
-    const progress = Math.min((adjustedIndex / progressQuestions) * 100, 100);
+    const adjustedIndex = index === 0 ? 0 : index - 1;
+    const progressQuestions = totalQuestions - 1;
+    const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
 
     return (
         <div>
-            {/* Barra de progresso */}
-            <div className="mb-4">
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                    <span>
-                        Pergunta {index === 0 ? 1 : index} de {progressQuestions}
-                    </span>
-                    <span>{Math.round(progress)}%</span>
-                </div>
-                <Progress
-                    value={progress}
-                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500`}
-                />
-            </div>
-
             <div className={`grid grid-cols-2 md:grid-cols-2 gap-2 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
@@ -269,6 +257,13 @@ export default function FirstScenario() {
                         </div>
                     </CardContent>
                 </Card>
+            </div>
+            {/* Barra de progresso */}
+            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
+                <div
+                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
+                    style={{ width: `${progress}%` }}
+                ></div>
             </div>
 
             {/* Indicador de carregamento quando estiver mudando de pergunta */}

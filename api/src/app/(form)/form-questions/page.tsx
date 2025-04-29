@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 import isValidDate from "@/lib/dataValidator";
 import { Button } from "@/components/ui/button";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { AnswerService } from "../../../../services/answerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import { SetStateAction, useEffect, useMemo, useState } from "react";
@@ -78,6 +78,9 @@ export default function QuizPage() {
             });
 
         setIndex((prev) => Math.min(prev + 1, quantity! - 1));
+        if (index == 7) {
+            redirect("/finance-questions?userId=" + userId);
+        }
     };
 
     const progresso = quantity ? ((index + 1) / quantity) * 100 : 0;

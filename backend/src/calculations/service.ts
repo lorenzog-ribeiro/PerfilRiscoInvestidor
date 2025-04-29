@@ -169,11 +169,12 @@ export const saveThirdStage = async (data: any) => {
     const Risk = await getSecondForThird(data);
     let aggregate: any;
 
-    const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
 
+    const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
     switch (data.optionSelected) {
         case ("A"):
-            aggregate = data.valueSelected + ((baseValue ?? 0) / (2 ** data.scenario));
+            const adjustedBaseValue = baseValue! * -1;
+            aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
             break;
         case ("B"):
             aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
@@ -197,10 +198,9 @@ export const result = async (data: any) => {
 
     const firstThirdStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 0 });
     const lastThirdStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 5 });
-    console.log(firstFirstStage);
 
-    const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) / 
-    ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
+    const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) /
+        ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
 
     console.log(result);
 

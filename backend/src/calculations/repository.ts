@@ -87,7 +87,6 @@ export const saveScenarioSelectedSecondStage = async (data: any) => {
 
 export const saveScenarioSelectedThirdStage = async (data: any) => {
     try {
-        console.log(data);
         const result = await prisma.terceira_etapa.create({
             data: {
                 usuario_id: data.usuario_id,

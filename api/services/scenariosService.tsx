@@ -3,7 +3,6 @@ import { AxiosInstance } from "./axios";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class ScenariosService {
     win(winScenario: any) {
-        console.log(winScenario);
         return AxiosInstance.post("/win", winScenario);
     }
     getwin(scenario: any, userId: any) {
