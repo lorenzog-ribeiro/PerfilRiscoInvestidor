@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getWinScenario, winScenario, getLossScenario, lossSCenario, onlyLossScenario, getOnlyLossScenario } from "./controller";
+import { getWinScenario, winScenario, getLossScenario, lossSCenario, onlyLossScenario, getOnlyLossScenario, calcResult } from "./controller";
 
 const routerScenario = Router();
 
@@ -12,5 +12,7 @@ routerScenario.get("/getloss", getLossScenario);
 //3
 routerScenario.post("/onlyloss", onlyLossScenario);
 routerScenario.get("/getonlyloss", getOnlyLossScenario);
+
+routerScenario.get("/result", calcResult);
 
 export default routerScenario;

@@ -89,8 +89,7 @@ export const onlyLossScenario = async (req: Request, res: Response) => {
 
 export const calcResult = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.body;
-
+        const { userId } = req.query;
         const forecast = await result(userId);
 
         res.status(200).json({ forecast });

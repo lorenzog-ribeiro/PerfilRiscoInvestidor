@@ -86,7 +86,7 @@ export const getSecondStageValues = async (data: any) => {
             const Safe = 0;
             const Risk = 1000;
             const baseValue = base(Safe, Risk, 2);
-            return await saveScenarioSelectedFirstStage({
+            return await saveScenarioSelectedSecondStage({
                 valor_selecionado: 0,
                 mediana: baseValue,
                 lado_selecionado: null,
@@ -145,7 +145,7 @@ export const getThirdStageValues = async (data: any) => {
 
             const Safe = 0;
             const Risk = await getSecondForThird(data);
-            const baseValue = base(Safe, Number(Risk?.valor_selecionado) , 3);
+            const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await saveScenarioSelectedThirdStage({
                 valor_selecionado: 0,
                 mediana: baseValue,
@@ -169,7 +169,7 @@ export const saveThirdStage = async (data: any) => {
     const Risk = await getSecondForThird(data);
     let aggregate: any;
 
-    const baseValue = base(Safe, Number(Risk?.valor_selecionado) , 3);
+    const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
 
     switch (data.optionSelected) {
         case ("A"):
@@ -190,9 +190,19 @@ export const saveThirdStage = async (data: any) => {
 }
 
 
-export const result = async(data:any) => {
-    const firstFirstStage = saveFirstStage({usuario_id: data.usuario_id,pergunta: data.scenario});
-    const lastFirstStage = saveFirstStage({usuario_id: data.usuario_id,pergunta: data.scenario});
+export const result = async (data: any) => {
+    const firstFirstStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 0 });
+    const lastFirstStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 6 });
+
+
+    const firstThirdStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 0 });
+    const lastThirdStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 5 });
+    console.log(firstFirstStage);
+
+    const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) / 
+    ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
+
+    console.log(result);
 
 }
 
