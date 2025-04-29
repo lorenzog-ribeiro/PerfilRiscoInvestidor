@@ -26,7 +26,7 @@ export const getFirstStageValues = async (data: any) => {
             const baseValue = base(Safe, Risk, 1);
             return await saveScenarioSelectedFirstStage({
                 valor_selecionado: 0,
-                mediana: baseValue,
+                mediana: baseValue?.toFixed(0),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -60,12 +60,12 @@ export const saveFirstStage = async (data: any) => {
     }
 
     return await saveScenarioSelectedFirstStage({
-        valor_selecionado: data.valueSelected,
-        mediana: aggregate,
+        valor_selecionado: data.valueSelected.toFixed(0),
+        mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Safe
+        valor_fixo: Safe.toFixed(0)
     });
 }
 
@@ -88,11 +88,11 @@ export const getSecondStageValues = async (data: any) => {
             const baseValue = base(Safe, Risk, 2);
             return await saveScenarioSelectedSecondStage({
                 valor_selecionado: 0,
-                mediana: baseValue,
+                mediana: baseValue?.toFixed(0),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
-                valor_fixo: -Risk,
+                valor_fixo: -Risk.toFixed(0),
             });
             break;
         default:
@@ -120,12 +120,12 @@ export const saveSecondStage = async (data: any) => {
             break;
     }
     return await saveScenarioSelectedSecondStage({
-        valor_selecionado: data.valueSelected,
-        mediana: aggregate,
+        valor_selecionado: data.valueSelected.toFixed(0),
+        mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: -Risk
+        valor_fixo: -Risk.toFixed(0)
     });
 }
 
@@ -148,11 +148,11 @@ export const getThirdStageValues = async (data: any) => {
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await saveScenarioSelectedThirdStage({
                 valor_selecionado: 0,
-                mediana: baseValue,
+                mediana: baseValue?.toFixed(0),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
-                valor_fixo: Number(Risk?.valor_selecionado),
+                valor_fixo: Number(Risk?.valor_selecionado).toFixed(0),
             });
             break;
         default:
@@ -180,12 +180,12 @@ export const saveThirdStage = async (data: any) => {
             break;
     }
     return saveScenarioSelectedThirdStage({
-        valor_selecionado: data.valueSelected,
-        mediana: aggregate,
+        valor_selecionado: data.valueSelected.toFixed(0),
+        mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Risk?.valor_selecionado
+        valor_fixo: Risk?.valor_selecionado.toFixed(0)
     });
 }
 
