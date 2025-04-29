@@ -1,178 +1,280 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { atualizarMediana } from "@/lib/mediana";
-import { Button } from "@/components/ui/button";
-import { PieChart, Pie, Cell, Label } from "recharts";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { PieChart, Pie, Cell, Label } from "recharts";
+import { ScenariosService } from "../../../services/scenariosService";
+import { useSearchParams } from "next/navigation";
 
-function renderCustomLabel(props: any, label: string) {
-    const { viewBox } = props;
-    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-        const { cx, cy } = viewBox as { cx: number; cy: number };
-        return (
-            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle">
-                <tspan className="fill-white text-sm font-bold">{label}</tspan>
-            </text>
-        );
-    }
-    return null;
+interface SelectedInterface {
+    optionSelected: string;
+    valueSelected: number;
 }
 
-export default function Etapa3({ scenario, onConclude }: any) {
-    const [estado, setEstado] = useState(scenario);
-    const [selected, setSelected] = useState<"A" | "B" | null>(null);
+const dataB = [
+    { name: "Sem Ganho", value: 50, color: "red", label: "+R$1.000" },
+    { name: "Sem Perda", value: 50, color: "gray"},
+];
 
+export default function SecondScenario() {
+    const [index, setIndex] = useState(0);
+    const [value, setValue] = useState<number>(); // Mediana
+    const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
+    const [selected, setSelected] = useState<SelectedInterface | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [totalQuestions] = useState(10);
+    const scenariosService = useMemo(() => new ScenariosService(), []);
+    const searchParams = useSearchParams();
+    const userId = searchParams.get("userId");
+
+    // Ref para controlar se já fizemos a primeira chamada
+    const initialLoadDone = useRef(false);
+    // Ref para monitorar o estado de carregamento
+    const isLoadingRef = useRef(false);
+
+    // Função para buscar dados para uma questão específica
+    const fetchQuestionData = (questionIndex: number) => {
+        if (!userId) return;
+
+        setLoading(true);
+        isLoadingRef.current = true;
+
+        scenariosService
+            .getOnlyLossScenario(questionIndex, userId)
+            .then((response: { data: any }) => {
+                console.log("API Response:", response.data);
+                setValue(response.data.forecast.mediana);
+                setFixedValue(response.data.forecast.valor_fixo);
+                setLoading(false);
+                isLoadingRef.current = false;
+            })
+            .catch((error: { message: string }) => {
+                console.log("API Error:", error.message);
+                setLoading(false);
+                isLoadingRef.current = false;
+            });
+    };
+
+    // Carrega os dados da primeira questão apenas uma vez na inicialização
     useEffect(() => {
-        if (selected) {
-            const atualizado = atualizarMediana(estado, selected);
-            if (atualizado.convergiu) {
-                toast.success("Etapa concluída!");
-                onConclude(atualizado);
-            } else {
-                setEstado(atualizado);
-                setSelected(null);
-            }
+        if (userId && !initialLoadDone.current) {
+            initialLoadDone.current = true;
+            fetchQuestionData(index);
         }
-    }, [selected]);
+    }, [userId]);
 
-    const dataA = [
-        {
-            name: "Perda Certa",
-            value: 100,
-            color: "#d22e2e",
-            label: `-R$${Math.abs(estado.a.valor)}`,
-        },
-    ];
+    // Reseta a seleção quando os valores são atualizados
+    useEffect(() => {
+        console.log("Valores atualizados:", value, fixedValue);
+        setSelected(null);
+    }, [value, fixedValue]);
 
-    const dataB = [
-        {
-            name: "Perda",
-            value: 50,
-            color: "#d22e2e",
-            label: `-R$${Math.abs(estado.b.perda)}`,
-        },
-        {
-            name: "Sem Perda",
-            value: 50,
-            color: "#A9A9A9",
-            label: "R$0",
-        },
-    ];
+    const getBarColor = () => {
+        if (index === totalQuestions - 1) {
+            return "from-green-500 to-green-400";
+        }
+        return "from-red-500 to-orange-400";
+    };
+
+    const sideSelected = (data: SelectedInterface) => {
+        // Não processar cliques se estiver carregando
+        if (loading || isLoadingRef.current) return;
+        setSelected(data);
+
+        // Avançar para a próxima pergunta após um breve delay
+        setTimeout(() => handleNext(data), 500);
+    };
+
+    const handleNext = (currentSelected: SelectedInterface) => {
+        if (!currentSelected || !userId || loading || isLoadingRef.current) return;
+
+        setLoading(true);
+        isLoadingRef.current = true;
+
+        // Determinar qual valor enviar
+        const valueToSend = currentSelected.optionSelected === "A" ? fixedValue : value;
+
+        // Determinar o próximo índice considerando a regra especial para índice 0
+        let currentIndex = index;
+        let nextIndex: number;
+
+        if (index === 0) {
+            // Regra específica para o índice 0
+            currentIndex = 1;
+            nextIndex = 2;
+        } else {
+            // Regra normal para os outros índices
+            nextIndex = Math.min(index + 1, totalQuestions);
+        }
+
+        console.log(
+            `Submitting answer for question ${currentIndex} with option: ${currentSelected.optionSelected}, value: ${valueToSend}`
+        );
+
+        // Enviar a resposta atual
+        scenariosService
+            .totalLossScenario({
+                scenario: currentIndex,
+                optionSelected: currentSelected.optionSelected,
+                valueSelected: valueToSend,
+                userId: userId,
+            })
+            .then((response: { data: any }) => {
+                console.log("Submit response:", response.data);
+
+                // Atualizar o índice após enviar a resposta atual
+                setIndex(nextIndex);
+                // Buscar dados para a próxima pergunta após um curto delay
+                setTimeout(() => {
+                    fetchQuestionData(nextIndex);
+                }, 800);
+            })
+            .catch((error: { message: string }) => {
+                console.log("Submit error:", error.message);
+                setLoading(false);
+                isLoadingRef.current = false;
+            });
+    };
+
+    // Calcular o progresso baseado na pergunta atual
+    const adjustedIndex = index === 0 ? 1 : index;
+    const progressQuestions = totalQuestions;
+    const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center md:px-1">
-            <div className="w-full max-w-5xl space-y-6 flex flex-col items-center justify-center">
-                <h1 className="text-2xl font-semibold text-center text-gray-900">
-                    Você prefere uma perda certa ou uma perda incerta?
-                    <br />
-                    <span className="text-lg text-gray-600">Escolha com cuidado.</span>
-                </h1>
+        <div>
+            <div
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 ml-3 mr-3 ${
+                    loading ? "opacity-50 pointer-events-none" : ""
+                }`}
+            >
+                <Card
+                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${
+                        selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
+                    } ${loading ? "animate-pulse" : ""}`}
+                >
+                    <CardContent className="p-2 space-y-2">
+                        <div className="flex items-center justify-center">
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                Alternativa A
+                            </span>
+                        </div>
+                        <h2 className="text-lg font-semibold text-gray-800 text-center">Perda com certeza</h2>
+                        <div className="flex justify-center items-center pt-9.5">
+                            <PieChart width={180} height={180}>
+                                <Pie
+                                    data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    stroke="none"
+                                    strokeWidth={0}
+                                >
+                                    <Label
+                                        content={({ viewBox }) => {
+                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                                return (
+                                                    <text
+                                                        x={viewBox.cx}
+                                                        y={viewBox.cy}
+                                                        textAnchor="middle"
+                                                        dominantBaseline="middle"
+                                                    >
+                                                        <tspan className="fill-white text-sm font-bold ">
+                                                            Sem Ganho ou Perda
+                                                        </tspan>
+                                                    </text>
+                                                );
+                                            }
+                                        }}
+                                    />
+                                    <Cell key={`cell-1`} fill="gray" />
+                                </Pie>
+                            </PieChart>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-2">
-                    {/* Alternativa A */}
-                    <Card
-                        onClick={() => setSelected("A")}
-                        className={`cursor-pointer border-2 ${
-                            selected === "A" ? "border-blue-500" : "border-transparent"
-                        }`}
-                    >
-                        <CardContent className="p-2 space-y-2">
-                            <div className="flex items-center justify-center">
-                                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                    Alternativa A
-                                </span>
+                <Card
+                    onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${
+                        selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
+                    } ${loading ? "animate-pulse" : ""}`}
+                >
+                    <CardContent className="p-2 space-y-2">
+                        <div className="flex items-center justify-center">
+                            <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                                Alternativa B
+                            </span>
+                        </div>
+                        <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
+                        <div className="text-xs text-center text-gray-600">
+                            <div>
+                                <b>50% chance de perder</b>
                             </div>
-                            <h2 className="text-lg font-semibold text-gray-800 text-center">Perda certa</h2>
-                            <div className="flex justify-center items-center pt-9.5">
-                                <PieChart width={180} height={180}>
-                                    <Pie data={dataA} dataKey="value" nameKey="name" stroke="none" strokeWidth={0}>
-                                        <Label content={(props) => renderCustomLabel(props, dataA[0].label)} />
-                                        <Cell fill={dataA[0].color} />
-                                    </Pie>
-                                </PieChart>
+                            <div>
+                                <b>50% chance de não perder</b>
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Alternativa B */}
-                    <Card
-                        onClick={() => setSelected("B")}
-                        className={`cursor-pointer border-2 ${
-                            selected === "B" ? "border-yellow-500" : "border-transparent"
-                        }`}
-                    >
-                        <CardContent className="p-2 space-y-2">
-                            <div className="flex items-center justify-center">
-                                <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                                    Alternativa B
-                                </span>
-                            </div>
-                            <h2 className="text-lg font-semibold text-gray-800 text-center">Perda incerta</h2>
-                            <div className="text-xs text-center text-gray-600">
-                                <div>
-                                    <b>50% chance de perder</b>
-                                </div>
-                                <div>
-                                    <b>50% chance de não perder</b>
-                                </div>
-                            </div>
-                            <div className="flex justify-center items-center">
-                                <PieChart width={180} height={180}>
-                                    <Pie data={dataB} dataKey="value" nameKey="name" stroke="none" strokeWidth={0}>
-                                        {dataB.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                        <Label
-                                            content={({ viewBox }) => {
-                                                if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) return null;
-
-                                                const { cx, cy } = viewBox as { cx: number; cy: number };
-
-                                                const topLabel = dataB[0].label;
-                                                const bottomLabel = dataB[1].label;
-
+                        </div>
+                        <div className="flex justify-center items-center">
+                            <PieChart width={180} height={180}>
+                                <Pie
+                                    stroke="none"
+                                    strokeWidth={0}
+                                    data={dataB}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    cx="50%"
+                                    cy="50%"
+                                >
+                                    {dataB.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                    ))}
+                                    <Label
+                                        content={({ viewBox }) => {
+                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                                const { cx, cy } = viewBox;
                                                 return (
                                                     <>
                                                         <text
                                                             x={cx}
-                                                            y={cy - 30}
+                                                            y={(cy ?? 0) - 30}
                                                             textAnchor="middle"
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                {topLabel}
+                                                                {value}
                                                             </tspan>
                                                         </text>
                                                         <text
                                                             x={cx}
-                                                            y={cy + 30}
+                                                            y={(cy ?? 0) + 30}
                                                             textAnchor="middle"
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                {bottomLabel}
+                                                                Sem Perda
                                                             </tspan>
                                                         </text>
                                                     </>
                                                 );
-                                            }}
-                                        />
-                                    </Pie>
-                                </PieChart>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                <Button
-                    className="mb-4 bg-orange-400 hover:bg-orange-300"
-                    onClick={() => toast.warning("Escolha uma opção acima!")}
-                >
-                    Próximo
-                </Button>
+                                            }
+                                        }}
+                                    />
+                                </Pie>
+                            </PieChart>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
+            {/* Barra de progresso */}
+            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
+                <div
+                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
+                    style={{ width: `${progress}%` }}
+                ></div>
+            </div>
+
+            {/* Indicador de carregamento quando estiver mudando de pergunta */}
+            {loading && <div className="text-center mt-4 text-sm text-gray-600">Carregando próxima pergunta...</div>}
         </div>
     );
 }
