@@ -58,7 +58,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
             initialLoadDone.current = true;
             fetchQuestionData(index);
         }
-    }, [userId]);
+    }, [fetchQuestionData,userId]);
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {
@@ -111,7 +111,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                 valueSelected: valueToSend,
                 userId: userId,
             })
-            .then((response: { data: any }) => {
+            .then(() => {
                 // Atualizar o índice após enviar a resposta atual
                 setIndex(nextIndex);
                 if (nextIndex === totalQuestions - 1) {

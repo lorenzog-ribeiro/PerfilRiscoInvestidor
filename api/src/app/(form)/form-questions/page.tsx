@@ -29,7 +29,6 @@ export default function QuizPage() {
     const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
     const userId = searchParams.get("userId");
-    const lastQuestionIndex = index;
 
     useEffect(() => {
         const lastIndex = document.cookie

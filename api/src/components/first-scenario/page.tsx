@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Label } from "recharts";
-import { Progress } from "@/components/ui/progress";
 import { ScenariosService } from "../../../services/scenariosService";
 import { useSearchParams } from "next/navigation";
 
