@@ -1,8 +1,9 @@
-"use client"
-import { useRouter } from "next/router"; // Importando o useRouter
+"use client";  // Marca o componente como cliente
+
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";  // Importando 'useRouter' de 'next/navigation' para componentes cliente
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import isValidDate from "@/lib/dataValidator";
@@ -21,7 +22,7 @@ export interface Question {
 }
 
 export default function QuizPage() {
-    const router = useRouter(); // Usando o useRouter
+    const router = useRouter(); // Agora 'useRouter' pode ser usado, pois o componente é cliente
     const [index, setIndex] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
