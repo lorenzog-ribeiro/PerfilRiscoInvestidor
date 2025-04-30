@@ -1,7 +1,6 @@
-"use client"
+"use client";  // Marca o componente como cliente
 
 import { useState, useEffect, useMemo, SetStateAction } from "react";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
@@ -21,7 +20,6 @@ export interface Question {
         indexOf: number;
     }[];
 }
-
 export default function QuizPage() {
     const [index, setIndex] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
@@ -32,7 +30,17 @@ export default function QuizPage() {
     const answerService = useMemo(() => new AnswerService(), []);
 
     useEffect(() => {
-        // Acessando cookies e parâmetros da URL apenas no cliente
+        const storedUserId = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userId="))
+            ?.split("=")[1];
+        if (storedUserId) {
+            setUserId(storedUserId);
+        } else {
+            console.log("User ID not found in cookie");
+        }
+
+        // Acessando cookies para obter o índice da última questão
         const lastIndex = document.cookie
             .split("; ")
             .find((row) => row.startsWith("lastQuestionIndex="))
@@ -40,10 +48,6 @@ export default function QuizPage() {
         if (lastIndex) {
             setIndex(Number(lastIndex));
         }
-
-        const searchParams = useSearchParams();
-        const userIdParam = searchParams.get("userId");
-        setUserId(userIdParam);  // Atribuindo userId no estado
 
         questionService
             .getCountQuestion()
@@ -87,7 +91,7 @@ export default function QuizPage() {
 
         answerService
             .save(respostasComUsuario)
-            .then(() => {})
+            .then(() => { })
             .catch((error: { message: string }) => {
                 console.log(error.message);
             });
