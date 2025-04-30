@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AxiosInstance } from "./Axios";
+import { AxiosInstance } from "./axios";
 
 export class AnswerService {
     save(answer: any) {

@@ -1,4 +1,4 @@
-import { AxiosInstance } from "./Axios";
+import { AxiosInstance } from "./axios";
 
 export class ScenariosService {
     win(winScenario: any) {

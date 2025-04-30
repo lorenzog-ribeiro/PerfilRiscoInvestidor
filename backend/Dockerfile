@@ -11,6 +11,9 @@ RUN npm ci --only=production
 # Copia o restante dos arquivos
 COPY . .
 
+COPY prisma ./prisma
+RUN npx prisma generate
+
 # Configura a porta onde o Node.js irá rodar
 ENV PORT=3333
 
