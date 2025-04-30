@@ -143,7 +143,7 @@ const getThirdStageValues = async (data) => {
             break;
         default:
             return await (0, repository_1.searchValueThirdStage)({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario - 1
             });
             break;

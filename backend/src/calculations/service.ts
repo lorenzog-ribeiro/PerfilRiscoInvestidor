@@ -157,7 +157,7 @@ export const getThirdStageValues = async (data: any) => {
             break;
         default:
             return await searchValueThirdStage({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario - 1
             });
             break;
