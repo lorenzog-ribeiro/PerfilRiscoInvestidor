@@ -1,7 +1,7 @@
 FROM node:20-alpine AS base
 
 # Configuração de ambiente
-ENV PORT=3000
+ENV PORT=3001
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -28,6 +28,9 @@ RUN if [ ! -f next.config.js ]; then \
 # Compila a aplicação
 RUN npm run build
 
+# Adiciona script para garantir que o servidor use a porta 3001
+RUN echo 'process.env.PORT = process.env.PORT || 3001;' > server-port-config.js
+
 # Produção
 FROM base AS runner
 WORKDIR /app
@@ -48,7 +51,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 # Expõe a porta
-EXPOSE 3000
+EXPOSE 3001
 
-# Comando para iniciar a aplicação
-CMD ["node", "server.js"]
+# Comando para iniciar a aplicação com configuração de porta correta
+CMD ["node", "-r", "./server-port-config.js", "server.js"]
