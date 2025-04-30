@@ -49,8 +49,8 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
         scenariosService
             .getOnlyLossScenario(questionIndex, userId)
             .then((response: { data: ApiResponse  }) => {
-                setValue(response.data.value.forecast.mediana);
-                setFixedValue(response.data.value.forecast.valor_fixo);
+                setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
+                setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                 setLoading(false);
                 isLoadingRef.current = false;
             })
