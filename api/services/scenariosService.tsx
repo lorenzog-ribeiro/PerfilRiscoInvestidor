@@ -1,6 +1,5 @@
-import { AxiosInstance } from "./axios";
+import { AxiosInstance } from "./Axios";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export class ScenariosService {
     win(winScenario: any) {
         return AxiosInstance.post("/win", winScenario);
