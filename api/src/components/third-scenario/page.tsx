@@ -48,7 +48,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
 
         scenariosService
             .getOnlyLossScenario(questionIndex, userId)
-            .then((response: { data: ApiResponse  }) => {
+            .then((response: { data: ApiResponse }) => {
                 setValue(response.data.value.forecast.mediana); // Atualizando o valor da mediana
                 setFixedValue(response.data.value.forecast.valor_fixo); // Atualizando o valor fixo
                 setLoading(false);
@@ -67,7 +67,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
             initialLoadDone.current = true;
             fetchQuestionData(index);
         }
-    }, [fetchQuestionData,userId]);
+    }, [fetchQuestionData, userId]);
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {
@@ -153,7 +153,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                 ></div>
             </div>
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 ml-3 mr-3 ${
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2${
                     loading ? "opacity-50 pointer-events-none" : ""
                 }`}
             >

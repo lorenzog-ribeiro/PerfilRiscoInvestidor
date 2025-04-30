@@ -154,7 +154,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                 ></div>
             </div>
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 ml-3 mr-3 ${
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m2 ${
                     loading ? "opacity-50 pointer-events-none" : ""
                 }`}
             >

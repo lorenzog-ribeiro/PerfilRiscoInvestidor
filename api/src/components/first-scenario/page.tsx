@@ -156,13 +156,15 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                 ></div>
             </div>
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
-                    }`}
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${
+                    loading ? "opacity-50 pointer-events-none" : ""
+                }`}
             >
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
-                        } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${
+                        selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
+                    } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
@@ -207,8 +209,9 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: fixedValue ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
-                        } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${
+                        selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
+                    } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
