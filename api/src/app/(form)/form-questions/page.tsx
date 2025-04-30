@@ -1,11 +1,12 @@
-"use client";
+"use client";  // Marca o componente como cliente
+
+import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
-import isValidDate from "@/lib/dataValidator";
 import { Button } from "@/components/ui/button";
-import { redirect, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
-import { SetStateAction, useEffect, useMemo, useState } from "react";
+import isValidDate from "@/lib/dataValidator";
 import { QuestionService } from "../../../../services/QuestionsService";
 
 export interface Question {
@@ -19,18 +20,27 @@ export interface Question {
         indexOf: number;
     }[];
 }
-
 export default function QuizPage() {
     const [index, setIndex] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
+    const [userId, setUserId] = useState<string | null>(null); // Estado para o userId
     const questionService = useMemo(() => new QuestionService(), []);
-    const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
-    const userId = searchParams.get("userId");
 
     useEffect(() => {
+        const storedUserId = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userId="))
+            ?.split("=")[1];
+        if (storedUserId) {
+            setUserId(storedUserId);
+        } else {
+            console.log("User ID not found in cookie");
+        }
+
+        // Acessando cookies para obter o índice da última questão
         const lastIndex = document.cookie
             .split("; ")
             .find((row) => row.startsWith("lastQuestionIndex="))
@@ -38,6 +48,7 @@ export default function QuizPage() {
         if (lastIndex) {
             setIndex(Number(lastIndex));
         }
+
         questionService
             .getCountQuestion()
             .then((response: { data: SetStateAction<number | undefined> }) => {
@@ -46,6 +57,7 @@ export default function QuizPage() {
             .catch((error: { message: string }) => {
                 console.log(error.message);
             });
+
         questionService
             .getUnique(index)
             .then((response: { data: SetStateAction<Question | null> }) => {
@@ -79,7 +91,7 @@ export default function QuizPage() {
 
         answerService
             .save(respostasComUsuario)
-            .then(() => {})
+            .then(() => { })
             .catch((error: { message: string }) => {
                 console.log(error.message);
             });
