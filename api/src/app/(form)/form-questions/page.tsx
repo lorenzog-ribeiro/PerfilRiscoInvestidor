@@ -29,8 +29,16 @@ export default function QuizPage() {
     const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
     const userId = searchParams.get("userId");
+    const lastQuestionIndex = index;
 
     useEffect(() => {
+        const lastIndex = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("lastQuestionIndex="))
+            ?.split("=")[1];
+        if (lastIndex) {
+            setIndex(Number(lastIndex));
+        }
         questionService
             .getCountQuestion()
             .then((response: { data: SetStateAction<number | undefined> }) => {
@@ -79,6 +87,7 @@ export default function QuizPage() {
 
         setIndex((prev) => Math.min(prev + 1, quantity! - 1));
         if (index == 7) {
+            document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
             redirect("/finance-questions?userId=" + userId);
         }
     };
@@ -96,7 +105,7 @@ export default function QuizPage() {
         <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
             {question ? (
                 <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6">
-                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
                             className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500`}
                             style={{ width: `${progresso}%` }}
