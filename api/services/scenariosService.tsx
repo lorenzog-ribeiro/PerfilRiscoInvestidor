@@ -1,10 +1,11 @@
-import { AxiosInstance } from "./axios";
+import { AxiosInstance } from "./Axios";
 
 export class ScenariosService {
     win(winScenario: any) {
         return AxiosInstance.post("/win", winScenario);
     }
     getwin(scenario: any, userId: any) {
+        console.log('a',userId);
         return AxiosInstance.get("/getwin", {
             params: { scenario, userId },
         });
