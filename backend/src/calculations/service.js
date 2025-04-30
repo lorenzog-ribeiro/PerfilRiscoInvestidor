@@ -200,6 +200,6 @@ function base(Safe, Risk, type) {
 async function getSecondForThird(data) {
     return await (0, repository_1.searchValueSecondStage)({
         usuario_id: data.userId,
-        pergunta: 6
+        pergunta: 5
     });
 }

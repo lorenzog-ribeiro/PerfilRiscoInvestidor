@@ -223,6 +223,6 @@ function base(Safe: number, Risk: number, type: number) {
 async function getSecondForThird(data: any) {
     return await searchValueSecondStage({
         usuario_id: data.userId,
-        pergunta: 6
+        pergunta: 5
     });
 }
