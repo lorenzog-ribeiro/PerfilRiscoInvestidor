@@ -67,7 +67,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
             initialLoadDone.current = true;
             fetchQuestionData(index);
         }
-    }, [userId]);
+    }, [fetchQuestionData,userId]);
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {

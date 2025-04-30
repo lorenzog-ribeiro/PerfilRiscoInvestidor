@@ -1,4 +1,4 @@
-import { AxiosInstance } from "./axios";
+import { AxiosInstance } from "./Axios";
 
 export class QuestionService{
     getUnique(question:number){
