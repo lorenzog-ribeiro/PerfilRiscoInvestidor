@@ -1,11 +1,11 @@
-"use client";
+import { useState, useEffect, useMemo, SetStateAction } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import isValidDate from "@/lib/dataValidator";
 import { Button } from "@/components/ui/button";
-import { redirect, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
-import { SetStateAction, useEffect, useMemo, useState } from "react";
+import isValidDate from "@/lib/dataValidator";
 import { QuestionService } from "../../../../services/QuestionsService";
 
 export interface Question {
@@ -25,12 +25,12 @@ export default function QuizPage() {
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
+    const [userId, setUserId] = useState<string | null>(null); // Estado para o userId
     const questionService = useMemo(() => new QuestionService(), []);
-    const searchParams = useSearchParams();
     const answerService = useMemo(() => new AnswerService(), []);
-    const userId = searchParams.get("userId");
 
     useEffect(() => {
+        // Acessando cookies e parâmetros da URL apenas no cliente
         const lastIndex = document.cookie
             .split("; ")
             .find((row) => row.startsWith("lastQuestionIndex="))
@@ -38,6 +38,11 @@ export default function QuizPage() {
         if (lastIndex) {
             setIndex(Number(lastIndex));
         }
+
+        const searchParams = useSearchParams();
+        const userIdParam = searchParams.get("userId");
+        setUserId(userIdParam);  // Atribuindo userId no estado
+
         questionService
             .getCountQuestion()
             .then((response: { data: SetStateAction<number | undefined> }) => {
@@ -46,6 +51,7 @@ export default function QuizPage() {
             .catch((error: { message: string }) => {
                 console.log(error.message);
             });
+
         questionService
             .getUnique(index)
             .then((response: { data: SetStateAction<Question | null> }) => {
