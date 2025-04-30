@@ -31,8 +31,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
     const [loading, setLoading] = useState(false); // Estado para controlar a animação de carregamento
     const [totalQuestions] = useState(8); // Total de perguntas
     const scenariosService = useMemo(() => new ScenariosService(), []);
-    const searchParams = useSearchParams();
-    const userId = searchParams.get("userId");
+    const [userId, setUserId] = useState<string | null>(null);
 
     // Usando useRef para manter a seleção atual
     const selectedRef = useRef<selectedInterface | null>(null);
@@ -43,6 +42,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
         scenariosService
             .getwin(index, userId)
             .then((response: { data: ApiResponse }) => {
+                console.log("Fetching data for index:", index, "User ID:", userId);
                 console.log("API Response:", response.data);
                 setValue(response.data.value.forecast.mediana); // Atualizando o valor da mediana
                 setFixedValue(response.data.value.forecast.valor_fixo); // Atualizando o valor fixo
@@ -56,6 +56,15 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
     // Carregar dados apenas na inicialização do componente
     useEffect(() => {
+        const storedUserId = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userId="))
+            ?.split("=")[1];
+        if (storedUserId) {
+            setUserId(storedUserId);
+        } else {
+            console.log("User ID not found in cookie");
+        }
         if (userId) {
             fetchData();
         }
@@ -261,7 +270,9 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                                             textAnchor="middle"
                                                             dominantBaseline="middle"
                                                         >
-                                                            <tspan className="fill-white text-sm font-bold">Sem Ganho</tspan>
+                                                            <tspan className="fill-white text-sm font-bold">
+                                                                Sem Ganho
+                                                            </tspan>
                                                         </text>
                                                     </>
                                                 );
