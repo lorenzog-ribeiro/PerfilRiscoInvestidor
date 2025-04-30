@@ -6,19 +6,18 @@ const getFirstStageValues = async (data) => {
     switch (data.scenario) {
         case 0:
             const scenario = await (0, repository_1.searchValueFirstStage)({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario
             });
             if (scenario) {
                 return await (0, repository_1.searchValueFirstStage)({
-                    usuario_id: data.usuario_id,
+                    usuario_id: data.userId,
                     pergunta: data.scenario
                 });
             }
             const Safe = 1000;
             const Risk = 0;
             const baseValue = base(Safe, Risk, 1);
-            console.log(data.userId);
             return await (0, repository_1.saveScenarioSelectedFirstStage)({
                 valor_selecionado: 0,
                 mediana: baseValue?.toFixed(0),
@@ -30,7 +29,7 @@ const getFirstStageValues = async (data) => {
             break;
         default:
             return await (0, repository_1.searchValueFirstStage)({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario - 1
             });
             break;
@@ -64,12 +63,12 @@ const getSecondStageValues = async (data) => {
     switch (data.scenario) {
         case 0:
             const scenario = await (0, repository_1.searchValueSecondStage)({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario
             });
             if (scenario) {
                 return await (0, repository_1.searchValueSecondStage)({
-                    usuario_id: data.usuario_id,
+                    usuario_id: data.userId,
                     pergunta: data.scenario
                 });
             }
@@ -87,7 +86,7 @@ const getSecondStageValues = async (data) => {
             break;
         default:
             return await (0, repository_1.searchValueSecondStage)({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario - 1
             });
             break;
@@ -121,12 +120,12 @@ const getThirdStageValues = async (data) => {
     switch (data.scenario) {
         case 0:
             const scenario = await (0, repository_1.searchValueThirdStage)({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario
             });
             if (scenario) {
                 return await (0, repository_1.searchValueThirdStage)({
-                    usuario_id: data.usuario_id,
+                    usuario_id: data.userId,
                     pergunta: data.scenario
                 });
             }

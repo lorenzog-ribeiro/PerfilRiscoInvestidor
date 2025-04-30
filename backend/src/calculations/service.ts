@@ -11,12 +11,12 @@ export const getFirstStageValues = async (data: any) => {
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueFirstStage({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario
             });
             if (scenario) {
                 return await searchValueFirstStage({
-                    usuario_id: data.usuario_id,
+                    usuario_id: data.userId,
                     pergunta: data.scenario
                 });
             }
@@ -24,7 +24,6 @@ export const getFirstStageValues = async (data: any) => {
             const Safe = 1000;
             const Risk = 0;
             const baseValue = base(Safe, Risk, 1);
-            console.log(data.userId);
             return await saveScenarioSelectedFirstStage({
                 valor_selecionado: 0,
                 mediana: baseValue?.toFixed(0),
@@ -37,7 +36,7 @@ export const getFirstStageValues = async (data: any) => {
             break;
         default:
             return await searchValueFirstStage({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario - 1
             });
             break;
@@ -74,12 +73,12 @@ export const getSecondStageValues = async (data: any) => {
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueSecondStage({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario
             });
             if (scenario) {
                 return await searchValueSecondStage({
-                    usuario_id: data.usuario_id,
+                    usuario_id: data.userId,
                     pergunta: data.scenario
                 });
             }
@@ -98,7 +97,7 @@ export const getSecondStageValues = async (data: any) => {
             break;
         default:
             return await searchValueSecondStage({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario - 1
             });
             break;
@@ -134,12 +133,12 @@ export const getThirdStageValues = async (data: any) => {
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueThirdStage({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario
             });
             if (scenario) {
                 return await searchValueThirdStage({
-                    usuario_id: data.usuario_id,
+                    usuario_id: data.userId,
                     pergunta: data.scenario
                 });
             }
