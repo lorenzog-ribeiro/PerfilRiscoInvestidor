@@ -140,7 +140,18 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
     return (
         <div>
-            <div className={`grid grid-cols-2 md:grid-cols-2 gap-2 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
+            {/* Barra de progresso */}
+            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
+                <div
+                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
+                    style={{ width: `${progress}%` }}
+                ></div>
+            </div>
+            <div
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${
+                    loading ? "opacity-50 pointer-events-none" : ""
+                }`}
+            >
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
                     className={`cursor-pointer border-2 transition-all duration-300 ${
@@ -245,7 +256,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                                             textAnchor="middle"
                                                             dominantBaseline="middle"
                                                         >
-                                                            <tspan className="fill-white text-sm font-bold">0</tspan>
+                                                            <tspan className="fill-white text-sm font-bold">Sem Ganho</tspan>
                                                         </text>
                                                     </>
                                                 );
@@ -257,13 +268,6 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                         </div>
                     </CardContent>
                 </Card>
-            </div>
-            {/* Barra de progresso */}
-            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
-                <div
-                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
-                    style={{ width: `${progress}%` }}
-                ></div>
             </div>
 
             {/* Indicador de carregamento quando estiver mudando de pergunta */}

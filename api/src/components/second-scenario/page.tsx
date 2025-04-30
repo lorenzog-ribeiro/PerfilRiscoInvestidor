@@ -10,8 +10,8 @@ interface SelectedInterface {
 }
 
 const dataB = [
-    { name: "Ganho", value: 50, color: "#228b22", label: "+R$1.000" },
-    { name: "Perda", value: 50, color: "red", label: "R$1000" },
+    { name: "Ganho", value: 50, color: "red", label: "+R$1.000" },
+    { name: "Perda", value: 50, color: "green", label: "R$1000" },
 ];
 
 export default function SecondScenario({ onAnswered }: { onAnswered: () => void }) {
@@ -137,6 +137,13 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
 
     return (
         <div>
+            {/* Barra de progresso */}
+            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
+                <div
+                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
+                    style={{ width: `${progress}%` }}
+                ></div>
+            </div>
             <div
                 className={`grid grid-cols-2 md:grid-cols-2 gap-2 ml-3 mr-3 ${
                     loading ? "opacity-50 pointer-events-none" : ""
@@ -261,14 +268,6 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                     </CardContent>
                 </Card>
             </div>
-            {/* Barra de progresso */}
-            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
-                <div
-                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div>
-
             {/* Indicador de carregamento quando estiver mudando de pergunta */}
             {loading && <div className="text-center mt-4 text-sm text-gray-600">Carregando próxima pergunta...</div>}
         </div>
