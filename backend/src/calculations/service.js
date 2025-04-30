@@ -134,7 +134,7 @@ const getThirdStageValues = async (data) => {
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await (0, repository_1.saveScenarioSelectedThirdStage)({
                 valor_selecionado: 0,
-                mediana: Number(baseValue?.toFixed(0)),
+                mediana: Number(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
