@@ -123,8 +123,8 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                         scenariosService
                             .getwin(nextIndex, userId)
                             .then((nextResponse: { data: ApiResponse }) => {
-                                setValue(nextResponse.data.value.forecast.mediana);
-                                setFixedValue(nextResponse.data.value.forecast.valor_fixo);
+                                setValue(nextResponse.data.forecast.mediana); // Atualizando o valor da mediana
+                                setFixedValue(nextResponse.data.forecast.valor_fixo); // Atualizando o valor fixo
                                 setIndex(nextIndex);
                                 setLoading(false);
                             })
