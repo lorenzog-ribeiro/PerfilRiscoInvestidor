@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";  // Importando 'useRouter' de 'next/navigation' para componentes cliente
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import isValidDate from "@/lib/dataValidator";
@@ -20,7 +20,9 @@ export interface Question {
         indexOf: number;
     }[];
 }
+
 export default function QuizPage() {
+    const router = useRouter(); // Agora 'useRouter' pode ser usado, pois o componente é cliente
     const [index, setIndex] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
@@ -72,7 +74,7 @@ export default function QuizPage() {
         setRespostas((prev) => ({ ...prev, [questionId]: value }));
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (!respostas[question!.id]) {
             toast.warning("Responda a pergunta antes de continuar");
             return;
@@ -93,14 +95,14 @@ export default function QuizPage() {
             console.log(error.message);
         });
 
-        // ⛔ ANTES de incrementar o index, checa se precisa redirecionar
+        // antes de incrementar o index, checa se precisa redirecionar
         if (index === 7) {
             document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
             redirect("/finance-questions?userId=" + userId);
             return; // Evita que continue a execução
         }
 
-        // ✅ Incrementa normalmente
+        //  Incrementa normalmente
         const newIndex = Math.min(index + 1, quantity! - 1);
         document.cookie = `lastQuestionIndex=${newIndex}; path=/; max-age=3600;`;
         setIndex(newIndex);
@@ -141,7 +143,7 @@ export default function QuizPage() {
                     </div>
                 </div>
             ) : (
-                <p>carregando</p>
+                <p>Carregando...</p>
             )}
         </div>
     );
