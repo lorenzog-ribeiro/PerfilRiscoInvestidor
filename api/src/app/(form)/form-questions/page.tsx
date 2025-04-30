@@ -1,3 +1,4 @@
+"use client"
 import { useRouter } from "next/router"; // Importando o useRouter
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
