@@ -134,7 +134,7 @@ const getThirdStageValues = async (data) => {
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await (0, repository_1.saveScenarioSelectedThirdStage)({
                 valor_selecionado: 0,
-                mediana: baseValue?.toFixed(0),
+                mediana: Number(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -143,7 +143,7 @@ const getThirdStageValues = async (data) => {
             break;
         default:
             return await (0, repository_1.searchValueThirdStage)({
-                usuario_id: data.usuario_id,
+                usuario_id: data.userId,
                 pergunta: data.scenario - 1
             });
             break;
@@ -199,7 +199,7 @@ function base(Safe, Risk, type) {
 }
 async function getSecondForThird(data) {
     return await (0, repository_1.searchValueSecondStage)({
-        usuario_id: data.usuario_id,
-        pergunta: 6
+        usuario_id: data.userId,
+        pergunta: 5
     });
 }

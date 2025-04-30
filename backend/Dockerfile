@@ -16,6 +16,7 @@ COPY . .
 
 # Copia o diretório do Prisma e gera os tipos necessários
 COPY prisma ./prisma
+RUN npx prisma db pull
 RUN npx prisma generate
 
 # Configura a porta onde o Node.js irá rodar
