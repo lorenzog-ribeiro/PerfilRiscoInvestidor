@@ -7,6 +7,7 @@ export const getWinScenario = async (req: Request, res: Response) => {
 
     try {
         const { scenario, userId } = req.query;
+        console.log(userId);
 
         const forecast = await getFirstStageValues({
             scenario: parseInt(scenario as string || "0"),
