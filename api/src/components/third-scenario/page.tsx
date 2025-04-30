@@ -11,10 +11,10 @@ interface SelectedInterface {
 
 const dataB = [
     { name: "Sem Ganho", value: 50, color: "red", label: "+R$1.000" },
-    { name: "Sem Perda", value: 50, color: "gray"},
+    { name: "Sem Perda", value: 50, color: "gray" },
 ];
 
-export default function SecondScenario() {
+export default function SecondScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
     const [value, setValue] = useState<number>(); // Mediana
     const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
@@ -40,7 +40,6 @@ export default function SecondScenario() {
         scenariosService
             .getOnlyLossScenario(questionIndex, userId)
             .then((response: { data: any }) => {
-                console.log("API Response:", response.data);
                 setValue(response.data.forecast.mediana);
                 setFixedValue(response.data.forecast.valor_fixo);
                 setLoading(false);
@@ -63,7 +62,6 @@ export default function SecondScenario() {
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {
-        console.log("Valores atualizados:", value, fixedValue);
         setSelected(null);
     }, [value, fixedValue]);
 
@@ -105,10 +103,6 @@ export default function SecondScenario() {
             nextIndex = Math.min(index + 1, totalQuestions);
         }
 
-        console.log(
-            `Submitting answer for question ${currentIndex} with option: ${currentSelected.optionSelected}, value: ${valueToSend}`
-        );
-
         // Enviar a resposta atual
         scenariosService
             .totalLossScenario({
@@ -118,10 +112,11 @@ export default function SecondScenario() {
                 userId: userId,
             })
             .then((response: { data: any }) => {
-                console.log("Submit response:", response.data);
-
                 // Atualizar o índice após enviar a resposta atual
                 setIndex(nextIndex);
+                if (nextIndex === totalQuestions - 1) {
+                    onAnswered(); // Chama a função de callback quando chegar na última pergunta
+                }
                 // Buscar dados para a próxima pergunta após um curto delay
                 setTimeout(() => {
                     fetchQuestionData(nextIndex);
@@ -135,8 +130,8 @@ export default function SecondScenario() {
     };
 
     // Calcular o progresso baseado na pergunta atual
-    const adjustedIndex = index === 0 ? 1 : index;
-    const progressQuestions = totalQuestions;
+    const adjustedIndex = index === 0 ? 0 : index - 1;
+    const progressQuestions = totalQuestions - 1;
     const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
 
     return (
@@ -178,15 +173,15 @@ export default function SecondScenario() {
                                                         textAnchor="middle"
                                                         dominantBaseline="middle"
                                                     >
-                                                        <tspan className="fill-white text-sm font-bold ">
-                                                            Sem Ganho ou Perda
+                                                        <tspan className="fill-white text-sm font-bold">
+                                                            {fixedValue}
                                                         </tspan>
                                                     </text>
                                                 );
                                             }
                                         }}
                                     />
-                                    <Cell key={`cell-1`} fill="gray" />
+                                    <Cell key={`cell-1`} fill="red" />
                                 </Pie>
                             </PieChart>
                         </div>
