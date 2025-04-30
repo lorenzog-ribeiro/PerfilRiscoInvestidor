@@ -1,14 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Label } from "recharts";
-import { Progress } from "@/components/ui/progress";
 import { ScenariosService } from "../../../services/scenariosService";
 import { useSearchParams } from "next/navigation";
 
 interface selectedInterface {
     optionSelected: string;
     valueSelected: number;
+}
+
+interface ApiResponse {
+    value: {
+        forecast: {
+            mediana: number;
+            valor_fixo: number;
+        };
+    };
 }
 
 const dataB = [
@@ -35,10 +42,10 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
         setLoading(true);
         scenariosService
             .getwin(index, userId)
-            .then((response: { data: any }) => {
+            .then((response: { data: ApiResponse }) => {
                 console.log("API Response:", response.data);
-                setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
-                setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
+                setValue(response.data.value.forecast.mediana); // Atualizando o valor da mediana
+                setFixedValue(response.data.value.forecast.valor_fixo); // Atualizando o valor fixo
                 setLoading(false);
             })
             .catch((error: { message: string }) => {
@@ -101,9 +108,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                     valueSelected: valueToSend,
                     userId: userId,
                 })
-                .then((response: { data: any }) => {
-                    console.log(response.data);
-
+                .then(() => {
                     // Simulando um tempo de carregamento para dar sensação de mudança
                     setTimeout(() => {
                         // Calcula o próximo índice após resposta
@@ -114,9 +119,9 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                         // Depois busca os dados para o novo índice
                         scenariosService
                             .getwin(nextIndex, userId)
-                            .then((nextResponse: { data: any }) => {
-                                setValue(nextResponse.data.forecast.mediana);
-                                setFixedValue(nextResponse.data.forecast.valor_fixo);
+                            .then((nextResponse: { data: ApiResponse }) => {
+                                setValue(nextResponse.data.value.forecast.mediana);
+                                setFixedValue(nextResponse.data.value.forecast.valor_fixo);
                                 setIndex(nextIndex);
                                 setLoading(false);
                             })

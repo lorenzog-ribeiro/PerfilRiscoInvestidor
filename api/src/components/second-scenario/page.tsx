@@ -9,6 +9,15 @@ interface SelectedInterface {
     valueSelected: number;
 }
 
+interface ApiResponse {
+    value: {
+        forecast: {
+            mediana: number;
+            valor_fixo: number;
+        };
+    };
+}
+
 const dataB = [
     { name: "Ganho", value: 50, color: "red", label: "+R$1.000" },
     { name: "Perda", value: 50, color: "green", label: "R$1000" },
@@ -39,9 +48,9 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
 
         scenariosService
             .getloss(questionIndex, userId)
-            .then((response: { data: any }) => {
-                setValue(response.data.forecast.mediana);
-                setFixedValue(response.data.forecast.valor_fixo);
+            .then((response: { data: ApiResponse }) => {
+                setValue(response.data.value.forecast.mediana);
+                setFixedValue(response.data.value.forecast.valor_fixo);
                 setLoading(false);
                 isLoadingRef.current = false;
             })
@@ -111,7 +120,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                 valueSelected: valueToSend,
                 userId: userId,
             })
-            .then((response: { data: any }) => {
+            .then(() => {
                 // Atualizar o índice após enviar a resposta atual
                 if (nextIndex === totalQuestions - 1) {
                     onAnswered(); // Chama a função de callback quando chegar na última pergunta
