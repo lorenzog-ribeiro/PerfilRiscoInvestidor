@@ -1,9 +1,7 @@
-"use client";  // Marca o componente como cliente
-
+import { useRouter } from "next/router"; // Importando o useRouter
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import isValidDate from "@/lib/dataValidator";
@@ -20,7 +18,9 @@ export interface Question {
         indexOf: number;
     }[];
 }
+
 export default function QuizPage() {
+    const router = useRouter(); // Usando o useRouter
     const [index, setIndex] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
@@ -72,7 +72,7 @@ export default function QuizPage() {
         setRespostas((prev) => ({ ...prev, [questionId]: value }));
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (!respostas[question!.id]) {
             toast.warning("Responda a pergunta antes de continuar");
             return;
@@ -89,17 +89,19 @@ export default function QuizPage() {
             usuario_id: userId,
         };
 
-        answerService
-            .save(respostasComUsuario)
-            .then(() => { })
-            .catch((error: { message: string }) => {
-                console.log(error.message);
-            });
+        try {
+            await answerService.save(respostasComUsuario); // Salvar resposta
 
-        setIndex((prev) => Math.min(prev + 1, quantity! - 1));
-        if (index == 7) {
-            document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
-            redirect("/finance-questions?userId=" + userId);
+            setIndex((prev) => Math.min(prev + 1, quantity! - 1)); // Atualizar índice
+
+            if (index == 7) {
+                document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
+
+                // Usando router.push para redirecionamento
+                router.push(`/finance-questions?userId=${userId}`);
+            }
+        } catch (error: any) {
+            console.log(error.message);
         }
     };
 
@@ -138,7 +140,7 @@ export default function QuizPage() {
                     </div>
                 </div>
             ) : (
-                <p>carregando</p>
+                <p>Carregando...</p>
             )}
         </div>
     );
