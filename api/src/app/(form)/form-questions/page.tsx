@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
