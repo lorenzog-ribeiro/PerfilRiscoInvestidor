@@ -166,7 +166,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                                 Alternativa A
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Perda com certeza</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 text-center">Sem perda ou Ganho</h2>
                         <div className="flex justify-center items-center pt-9.5">
                             <PieChart width={180} height={180}>
                                 <Pie
