@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.result = exports.saveThirdStage = exports.getThirdStageValues = exports.saveSecondStage = exports.getSecondStageValues = exports.saveFirstStage = exports.getFirstStageValues = void 0;
 const repository_1 = require("./repository");
 const getFirstStageValues = async (data) => {
-    console.log(data);
     switch (data.scenario) {
         case 0:
             const scenario = await (0, repository_1.searchValueFirstStage)({
@@ -19,6 +18,7 @@ const getFirstStageValues = async (data) => {
             const Safe = 1000;
             const Risk = 0;
             const baseValue = base(Safe, Risk, 1);
+            console.log(data.userId);
             return await (0, repository_1.saveScenarioSelectedFirstStage)({
                 valor_selecionado: 0,
                 mediana: baseValue?.toFixed(0),

@@ -8,7 +8,6 @@ import {
 } from "./repository";
 
 export const getFirstStageValues = async (data: any) => {
-    console.log(data)
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueFirstStage({
@@ -25,6 +24,7 @@ export const getFirstStageValues = async (data: any) => {
             const Safe = 1000;
             const Risk = 0;
             const baseValue = base(Safe, Risk, 1);
+            console.log(data.userId);
             return await saveScenarioSelectedFirstStage({
                 valor_selecionado: 0,
                 mediana: baseValue?.toFixed(0),
