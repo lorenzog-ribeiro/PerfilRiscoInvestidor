@@ -43,8 +43,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
 
         scenariosService
             .getOnlyLossScenario(questionIndex, userId)
-            .then((response: { data: ApiResponse }) => {
-                console.log("API Response:", response.data.forecast);
+            .then((response: { data: any }) => {
                 setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
                 setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                 setLoading(false);
