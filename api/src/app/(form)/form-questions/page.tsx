@@ -1,4 +1,4 @@
-"use client";  // Marca o componente como cliente
+"use client"; // Marca o componente como cliente
 
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
@@ -89,18 +89,21 @@ export default function QuizPage() {
             usuario_id: userId,
         };
 
-        answerService
-            .save(respostasComUsuario)
-            .then(() => { })
-            .catch((error: { message: string }) => {
-                console.log(error.message);
-            });
+        answerService.save(respostasComUsuario).catch((error: { message: string }) => {
+            console.log(error.message);
+        });
 
-        setIndex((prev) => Math.min(prev + 1, quantity! - 1));
-        if (index == 7) {
+        // ⛔ ANTES de incrementar o index, checa se precisa redirecionar
+        if (index === 7) {
             document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
             redirect("/finance-questions?userId=" + userId);
+            return; // Evita que continue a execução
         }
+
+        // ✅ Incrementa normalmente
+        const newIndex = Math.min(index + 1, quantity! - 1);
+        document.cookie = `lastQuestionIndex=${newIndex}; path=/; max-age=3600;`;
+        setIndex(newIndex);
     };
 
     const progresso = quantity ? ((index + 1) / quantity) * 100 : 0;
