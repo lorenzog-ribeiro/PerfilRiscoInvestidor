@@ -10,13 +10,9 @@ interface SelectedInterface {
 }
 
 interface ApiResponse {
-    value: {
-        forecast: {
-            mediana: number;
-            valor_fixo: number;
-        };
-    };
+    forecast: any;
 }
+
 
 const dataB = [
     { name: "Ganho", value: 50, color: "red", label: "+R$1.000" },
@@ -48,7 +44,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
 
         scenariosService
             .getloss(questionIndex, userId)
-            .then((response: { data: any }) => {
+            .then((response: { data: ApiResponse }) => {
                 setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
                 setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                 setLoading(false);

@@ -18,7 +18,7 @@ const dataB = [
     { name: "Sem Perda", value: 50, color: "gray" },
 ];
 
-export default function SecondScenario({ onAnswered }: { onAnswered: () => void }) {
+export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
     const [value, setValue] = useState<number>(); // Mediana
     const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
