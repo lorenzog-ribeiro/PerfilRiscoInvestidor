@@ -8,6 +8,7 @@ import {
 } from "./repository";
 
 export const getFirstStageValues = async (data: any) => {
+    console.log(data)
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueFirstStage({
