@@ -18,6 +18,11 @@ const dataB = [
     { name: "Perda", value: 50, color: "green", label: "R$1000" },
 ];
 
+const userId = document.cookie
+.split("; ")
+.find((row) => row.startsWith("userId="))
+?.split("=")[1];
+
 export default function SecondScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
     const [value, setValue] = useState<number>(); // Mediana
@@ -26,9 +31,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
     const [loading, setLoading] = useState(false);
     const [totalQuestions] = useState(7);
     const scenariosService = useMemo(() => new ScenariosService(), []);
-    const searchParams = useSearchParams();
-    const userId = searchParams.get("userId");
-
+    
     // Ref para controlar se já fizemos a primeira chamada
     const initialLoadDone = useRef(false);
     // Ref para monitorar o estado de carregamento

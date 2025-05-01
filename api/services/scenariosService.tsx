@@ -5,7 +5,6 @@ export class ScenariosService {
         return AxiosInstance.post("/win", winScenario);
     }
     getwin(scenario: any, userId: any) {
-        console.log('a',userId);
         return AxiosInstance.get("/getwin", {
             params: { scenario, userId },
         });
@@ -26,6 +25,12 @@ export class ScenariosService {
     getOnlyLossScenario(scenario: any, userId: any) {
         return AxiosInstance.get("/getonlyloss", {
             params: { scenario, userId },
+        });
+    }
+    
+    calcResult(userId:any){
+        return AxiosInstance.get("/result", {
+            params: { userId },
         });
     }
 }

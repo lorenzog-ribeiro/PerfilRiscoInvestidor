@@ -18,6 +18,11 @@ const dataB = [
     { name: "Perda", value: 50, color: "gray", label: "R$0" },
 ];
 
+const storedUserId = document.cookie
+.split("; ")
+.find((row) => row.startsWith("userId="))
+?.split("=")[1];
+
 export default function FirstScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
     const [value, setValue] = useState<number>(); // Mediana
@@ -26,7 +31,6 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
     const [loading, setLoading] = useState(false); // Estado para controlar a animação de carregamento
     const [totalQuestions] = useState(8); // Total de perguntas
     const scenariosService = useMemo(() => new ScenariosService(), []);
-    const [userId, setUserId] = useState<string | null>(null);
 
     // Usando useRef para manter a seleção atual
     const selectedRef = useRef<selectedInterface | null>(null);
@@ -35,9 +39,8 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
     const fetchData = () => {
         setLoading(true);
         scenariosService
-            .getwin(index, userId)
+            .getwin(index, storedUserId)
             .then((response: { data: any }) => {
-                console.log("Fetching data for index:", index, "User ID:", userId);
                 setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
                 setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                 setLoading(false);
@@ -48,21 +51,6 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
             });
     };
 
-    // Carregar dados apenas na inicialização do componente
-    useEffect(() => {
-        const storedUserId = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("userId="))
-            ?.split("=")[1];
-        if (storedUserId) {
-            setUserId(storedUserId);
-        } else {
-            console.log("User ID not found in cookie");
-        }
-        if (userId) {
-            fetchData();
-        }
-    }, [userId]); // Dependência apenas do userId, não do index
 
     useEffect(() => {
         setSelected(null);
@@ -99,8 +87,6 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
             setIndex(1);
         }
 
-        console.log("Executing handleNext with option:", currentSelected);
-
         const valueToSend = currentSelected.optionSelected === "A" ? value : fixedValue;
 
         if (currentSelected.optionSelected === "A" || currentSelected.optionSelected === "B") {
@@ -109,7 +95,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                     scenario: newIndex, // Usando newIndex em vez de index
                     optionSelected: currentSelected.optionSelected,
                     valueSelected: valueToSend,
-                    userId: userId,
+                    userId: storedUserId,
                 })
                 .then(() => {
                     // Simulando um tempo de carregamento para dar sensação de mudança
@@ -121,7 +107,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                         }
                         // Depois busca os dados para o novo índice
                         scenariosService
-                            .getwin(nextIndex, userId)
+                            .getwin(nextIndex, storedUserId)
                             .then((nextResponse: { data: ApiResponse }) => {
                                 setValue(nextResponse.data.forecast.mediana); // Atualizando o valor da mediana
                                 setFixedValue(nextResponse.data.forecast.valor_fixo); // Atualizando o valor fixo

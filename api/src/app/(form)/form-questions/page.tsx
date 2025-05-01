@@ -27,21 +27,10 @@ export default function QuizPage() {
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
     const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
-    const [userId, setUserId] = useState<string | null>(null); // Estado para o userId
     const questionService = useMemo(() => new QuestionService(), []);
     const answerService = useMemo(() => new AnswerService(), []);
 
     useEffect(() => {
-        const storedUserId = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("userId="))
-            ?.split("=")[1];
-        if (storedUserId) {
-            setUserId(storedUserId);
-        } else {
-            console.log("User ID not found in cookie");
-        }
-
         // Acessando cookies para obter o índice da última questão
         const lastIndex = document.cookie
             .split("; ")
@@ -85,15 +74,24 @@ export default function QuizPage() {
             return;
         }
 
+        const storedUserId = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("userId="))
+        ?.split("=")[1];
+        
         const respostasComUsuario = {
             resposta: respostas[question!.id],
             pergunta_id: question!.id,
-            usuario_id: userId,
+            usuario_id: storedUserId,
         };
 
         answerService.save(respostasComUsuario).catch((error: { message: string }) => {
             console.log(error.message);
         });
+        if (index === 17) {
+            redirect("/result");
+            return; // Evita que continue a execução
+        }
 
         // antes de incrementar o index, checa se precisa redirecionar
         if (index === 7) {
