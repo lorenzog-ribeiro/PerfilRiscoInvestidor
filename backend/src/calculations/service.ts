@@ -55,9 +55,10 @@ export const saveFirstStage = async (data: any) => {
             aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
             break;
         case ("B"):
-            aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
+            aggregate = data.valueSelected - (baseValue / (2 ** data.scenario));
             break;
     }
+    console.log(baseValue, aggregate, data.valueSelected)
 
     return await saveScenarioSelectedFirstStage({
         valor_selecionado: data.valueSelected,
@@ -173,11 +174,11 @@ export const saveThirdStage = async (data: any) => {
     const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
     switch (data.optionSelected) {
         case ("A"):
-            const adjustedBaseValue = baseValue! * -1;
-            aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
+            aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
             break;
         case ("B"):
-            aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
+            const adjustedBaseValue = baseValue! * -1;
+            aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
             break;
     }
     return saveScenarioSelectedThirdStage({
