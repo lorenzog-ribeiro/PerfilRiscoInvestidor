@@ -46,9 +46,10 @@ const saveFirstStage = async (data) => {
             aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
             break;
         case ("B"):
-            aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
+            aggregate = data.valueSelected - (baseValue / (2 ** data.scenario));
             break;
     }
+    console.log(baseValue, aggregate, data.valueSelected);
     return await (0, repository_1.saveScenarioSelectedFirstStage)({
         valor_selecionado: data.valueSelected,
         mediana: aggregate.toFixed(0),
@@ -134,7 +135,7 @@ const getThirdStageValues = async (data) => {
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await (0, repository_1.saveScenarioSelectedThirdStage)({
                 valor_selecionado: 0,
-                mediana: Number(baseValue),
+                mediana: Number(baseValue.toFixed(0)), // Updated to use toFixed(0)
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -157,11 +158,11 @@ const saveThirdStage = async (data) => {
     const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
     switch (data.optionSelected) {
         case ("A"):
-            const adjustedBaseValue = baseValue * -1;
-            aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
+            aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
             break;
         case ("B"):
-            aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
+            const adjustedBaseValue = baseValue * -1;
+            aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
             break;
     }
     return (0, repository_1.saveScenarioSelectedThirdStage)({
