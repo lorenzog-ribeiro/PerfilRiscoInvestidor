@@ -4,8 +4,10 @@ import {
     saveScenarioSelectedFirstStage,
     saveScenarioSelectedSecondStage,
     saveScenarioSelectedThirdStage,
-    searchValueThirdStage
+    searchValueThirdStage,
+    searchResultCalc
 } from "./repository";
+import { getbyId } from '../user/repository';
 
 export const getFirstStageValues = async (data: any) => {
     switch (data.scenario) {
@@ -193,18 +195,42 @@ export const saveThirdStage = async (data: any) => {
 
 
 export const result = async (data: any) => {
-    const firstFirstStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 0 });
-    const lastFirstStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 6 });
+    console.log(data);
+    const firstFirstStage = await searchResultCalc({ usuario_id: data, order: 'asc', stage: 1 });
+    const lastFirstStage = await searchResultCalc({ usuario_id: data, order: 'desc', stage: 1 });
 
-
-    const firstThirdStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 0 });
-    const lastThirdStage = await searchValueFirstStage({ usuario_id: data.usuario_id, pergunta: 5 });
+    const firstThirdStage = await searchResultCalc({ usuario_id: data, order: 'asc', stage: 3 });
+    const lastThirdStage = await searchResultCalc({ usuario_id: data, order: 'desc', stage: 3 });
 
     const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) /
         ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
 
-    console.log(result);
+    return getProfile({ indice: result, usuario: await getbyId(data)});
+}
 
+function getProfile(data: any) {
+    if (data.indice < 1) {
+        return {
+            usuario:data.usuario,
+            valor: data.indice,
+            perfil: "Tolerante à perda",
+            descricao: "Você valoriza segurança e prefere evitar riscos.",
+        };
+    } else if (data.indice = 1) {
+        return {
+            usuario:data.usuario,
+            valor: data.indice,
+            perfil: "Neutro à perda",
+            descricao: "Você aceita algum risco em troca de retorno moderado.",
+        };
+    } else {
+        return {
+            usuario:data.usuario,
+            valor: data.indice,
+            perfil: "Avesso à perda",
+            descricao: "Você busca maiores retornos mesmo com maior risco.",
+        };
+    }
 }
 
 function base(Safe: number, Risk: number, type: number) {

@@ -96,9 +96,9 @@ export const onlyLossScenario = async (req: Request, res: Response) => {
 export const calcResult = async (req: Request, res: Response) => {
     try {
         const { userId } = req.query;
-        const forecast = await result(userId);
+        const profile = await result(userId);
 
-        res.status(200).json({ forecast });
+        res.status(200).json({ profile });
     }
     catch (error: any) {
         res.status(500).json({ error: "Erro no cálculo" });

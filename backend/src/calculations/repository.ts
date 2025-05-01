@@ -103,3 +103,45 @@ export const saveScenarioSelectedThirdStage = async (data: any) => {
         throw error;
     }
 }
+
+export const searchResultCalc = async (data: any) => {
+    try {
+        let result;
+        switch (data.stage) {
+            case 1:
+                result = await prisma.primeira_etapa.findFirstOrThrow({
+                    where: {
+                        usuario_id: data.usuario_id
+                    },
+                    orderBy: {
+                        pergunta: data.order,
+                    }
+                });
+                break;
+            case 2:
+                result = await prisma.segunda_etapa.findFirstOrThrow({
+                    where: {
+                        usuario_id: data.usuario_id
+                    },
+                    orderBy: {
+                        pergunta: data.order,
+                    }
+                });
+                break;
+            case 3:
+                result = await prisma.terceira_etapa.findFirstOrThrow({
+                    where: {
+                        usuario_id: data.usuario_id
+                    },
+                    orderBy: {
+                        pergunta: data.order,
+                    }
+                });
+                break;
+        }
+        return result;
+    } catch (error) {
+        console.error('Erro ao buscar na primeira etapa:', error);
+        throw error;
+    }
+}
