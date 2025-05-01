@@ -13,7 +13,6 @@ interface ApiResponse {
     forecast: any;
 }
 
-
 const dataB = [
     { name: "Ganho", value: 50, color: "red", label: "+R$1.000" },
     { name: "Perda", value: 50, color: "green", label: "R$1000" },
@@ -166,7 +165,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                                 Alternativa A
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Perda com certeza</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 text-center">Sem perda ou Ganho</h2>
                         <div className="flex justify-center items-center pt-9.5">
                             <PieChart width={180} height={180}>
                                 <Pie
@@ -244,22 +243,22 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                                                     <>
                                                         <text
                                                             x={cx}
-                                                            y={(cy ?? 0) - 30}
-                                                            textAnchor="middle"
-                                                            dominantBaseline="middle"
-                                                        >
-                                                            <tspan className="fill-white text-sm font-bold">
-                                                                {value}
-                                                            </tspan>
-                                                        </text>
-                                                        <text
-                                                            x={cx}
                                                             y={(cy ?? 0) + 30}
                                                             textAnchor="middle"
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
                                                                 +1000
+                                                            </tspan>
+                                                        </text>
+                                                        <text
+                                                            x={cx}
+                                                            y={(cy ?? 0) - 30}
+                                                            textAnchor="middle"
+                                                            dominantBaseline="middle"
+                                                        >
+                                                            <tspan className="fill-white text-sm font-bold">
+                                                                {value}
                                                             </tspan>
                                                         </text>
                                                     </>
