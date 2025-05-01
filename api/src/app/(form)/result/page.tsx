@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useState } from 'react';
+import { SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     Card,
     CardContent,
@@ -7,8 +7,6 @@ import {
     CardHeader,
     CardTitle
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScenariosService } from '../../../../services/scenariosService';
 import MontanhaRussa from '@/components/rollercoaster/page';
@@ -16,7 +14,6 @@ import MontanhaRussa from '@/components/rollercoaster/page';
 export default function ResultadoFinal() {
     const [perfilData, setPerfilData] = useState(null);
     const [carregando, setCarregando] = useState(true);
-    const [userId, setUserId] = useState<string | null>(null); // Estado para o userId
 
     const profileService = useMemo(() => new ScenariosService(), []);
 
@@ -34,7 +31,7 @@ export default function ResultadoFinal() {
             setTimeout(() => {
                 profileService
                     .calcResult(storedUserId)
-                    .then((response: { data: any }) => {
+                    .then((response: { data: SetStateAction<null> }) => {
                         setPerfilData(response.data);
                     })
                     .catch((error: { message: string }) => {
@@ -62,7 +59,7 @@ export default function ResultadoFinal() {
 
         // Carregar dados na inicialização
         carregarDadosAleatorios();
-    }, []);
+    }, [profileService]);
 
     return (
         <div className="container mx-auto px-4 py-8">

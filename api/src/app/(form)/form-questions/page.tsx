@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { redirect, useRouter } from "next/navigation";  // Importando 'useRouter' de 'next/navigation' para componentes cliente
+import { useRouter } from "next/navigation";  // Importando 'useRouter' de 'next/navigation' para componentes cliente
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import isValidDate from "@/lib/dataValidator";
@@ -78,7 +78,7 @@ export default function QuizPage() {
         .split("; ")
         .find((row) => row.startsWith("userId="))
         ?.split("=")[1];
-        
+
         const respostasComUsuario = {
             resposta: respostas[question!.id],
             pergunta_id: question!.id,
@@ -89,14 +89,14 @@ export default function QuizPage() {
             console.log(error.message);
         });
         if (index === 17) {
-            redirect("/result");
+            router.push("/result");
             return; // Evita que continue a execução
         }
 
         // antes de incrementar o index, checa se precisa redirecionar
         if (index === 7) {
             document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
-            redirect("/finance-questions?userId=" + userId);
+            router.push("/finance-questions");
             return; // Evita que continue a execução
         }
 

@@ -1,25 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '../ui/button';
 
 // Componente principal da Montanha Russa
-const MontanhaRussa = ({ perfilData }) => {
+interface PerfilData {
+    profile: {
+        valor: number;
+        usuario: {
+            nome: string;
+        };
+        perfil: string;
+        descricao: string;
+    };
+}
+
+const MontanhaRussa: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     // Estado para controlar a posição do carrinho (0-1)
     const [posicao, setPosicao] = useState(0.5);
     // Referência para o objeto de animação
-    const animacaoRef = useRef(null);
+    const animacaoRef = useRef<number | null>(null);
     // Estado para armazenar o valor alvo
     const [valorAlvo, setValorAlvo] = useState(1);
     // Estado para controlar se a animação está em execução
     const [animando, setAnimando] = useState(false);
     // Estado para armazenar as posições anteriores para criar um rastro
-    const [posicoes, setPosicoes] = useState([]);
+    const [posicoes, setPosicoes] = useState<number[]>([]);
 
     // Função para converter o valor do perfil (0-2) para posição na curva (0-1)
-    const valorParaPosicao = (valor) => {
+    const valorParaPosicao = (valor: number) => {
         // Garantir que o valor é um número e está dentro do intervalo esperado
         const safeValor = Number(valor);
 
@@ -41,23 +51,36 @@ const MontanhaRussa = ({ perfilData }) => {
             return 0.5 + Math.min((safeValor - 1) * 0.5, 0.45);
         }
     };
+    // Iniciar a animação baseada no valor
+    const iniciarAnimacao = useCallback((valor: number) => {
+        // Cancelar qualquer animação existente
+        if (animacaoRef.current) {
+            cancelAnimationFrame(animacaoRef.current);
+        }
+
+        setAnimando(true);
+
+        // Converter o valor para uma posição na curva
+        const posicaoAlvo = valorParaPosicao(valor);
+
+        // Iniciar a animação com a posição atual e a posição alvo
+        const tempoInicial = performance.now();
+        const duracaoAnimacao = 2000; // 2 segundos
+
+        animarCarrinho(tempoInicial, duracaoAnimacao, posicao, posicaoAlvo);
+    }, [posicao]);
 
     // Efeito para iniciar a animação quando os dados mudarem
     useEffect(() => {
         if (perfilData) {
-            console.log('Dados do perfil recebidos:', perfilData);
             const novoValorAlvo = perfilData.profile.valor;
-            console.log(perfilData.profile.valor)
 
-            // Verificar se o valor é válido
             if (typeof novoValorAlvo === 'number') {
                 setValorAlvo(novoValorAlvo);
                 iniciarAnimacao(novoValorAlvo);
-            } else {
-                console.error('Valor inválido:', novoValorAlvo);
             }
         }
-    }, [perfilData]);
+    }, [perfilData, iniciarAnimacao]);
 
     // Monitorar mudanças de estado para depuração
     useEffect(() => {
@@ -90,7 +113,7 @@ const MontanhaRussa = ({ perfilData }) => {
     }, [posicao, animando]);
 
     // Função que realiza a animação do carrinho
-    const animarCarrinho = (tempoInicial, duracaoAnimacao, posicaoInicial, posicaoAlvo) => {
+    const animarCarrinho = (tempoInicial: number, duracaoAnimacao: number, posicaoInicial: number, posicaoAlvo: number) => {
         console.log('Iniciando animação:', {
             posicaoInicial,
             posicaoAlvo,
@@ -98,13 +121,13 @@ const MontanhaRussa = ({ perfilData }) => {
         });
 
         // Função para calcular a posição atual baseada no tempo
-        const calcularPosicao = (agora) => {
+        const calcularPosicao = (agora: number) => {
             const tempoPassado = agora - tempoInicial;
             // Garantir cálculo preciso do progresso
             const progresso = Math.min(tempoPassado / duracaoAnimacao, 1);
 
             // Função de easing para um movimento mais realista
-            const easeInOutCubic = (t) =>
+            const easeInOutCubic = (t: number) =>
                 t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
             const progressoComEasing = easeInOutCubic(progresso);
@@ -118,7 +141,7 @@ const MontanhaRussa = ({ perfilData }) => {
         };
 
         // Função que executa cada quadro da animação
-        const animar = (agora) => {
+        const animar = (agora: number) => {
             // Calcular nova posição
             const novaPosicao = calcularPosicao(agora);
             setPosicao(novaPosicao);
@@ -141,40 +164,18 @@ const MontanhaRussa = ({ perfilData }) => {
         animacaoRef.current = requestAnimationFrame(animar);
     };
 
-    // Iniciar a animação baseada no valor
-    const iniciarAnimacao = (valor) => {
-        console.log('Iniciando animação com Valor:', valor);
-
-        // Cancelar qualquer animação existente
-        if (animacaoRef.current) {
-            cancelAnimationFrame(animacaoRef.current);
-        }
-
-        setAnimando(true);
-
-        // Converter o valor para uma posição na curva
-        const posicaoAlvo = valorParaPosicao(valor);
-        console.log('Posição Alvo:', posicaoAlvo);
-
-        // Iniciar a animação com a posição atual e a posição alvo
-        const tempoInicial = performance.now();
-        const duracaoAnimacao = 2000; // 2 segundos
-
-        animarCarrinho(tempoInicial, duracaoAnimacao, posicao, posicaoAlvo);
-    };
-
     // Funções para obter cores e variantes
-    const getValorColor = (valor) => {
+    const getValorColor = (valor: number) => {
         if (valor < 1) return "text-amber-500";
         if (valor === 1) return "text-green-500";
         return "text-blue-500";
     };
 
-    const getBadgeVariant = (valor) => {
-        if (valor < 1) return "outline";
-        if (valor === 1) return "secondary";
-        return "default";
-    };
+    // const getBadgeVariant = (valor: number) => {
+    //     if (valor < 1) return "outline";
+    //     if (valor === 1) return "secondary";
+    //     return "default";
+    // };
 
     // Se não tiver dados, não renderiza nada
     if (!perfilData) return null;
@@ -378,7 +379,7 @@ const MontanhaRussa = ({ perfilData }) => {
 };
 
 // Funções auxiliares posicaoNaCurva e calcularRotacao permanecem inalteradas
-function posicaoNaCurva(t) {
+function posicaoNaCurva(t: number) {
     // Pontos de controle para a curva de Bezier cúbica
     // Estes valores devem corresponder ao path definido em trilhaPath
     const p0 = { x: 30, y: 150 };
@@ -428,7 +429,7 @@ function posicaoNaCurva(t) {
     }
 }
 // Calcula a rotação aproximada do carrinho baseado na tangente da curva
-function calcularRotacao(t) {
+function calcularRotacao(t: number) {
     // Calculamos dois pontos próximos para estimar a tangente
     const delta = 0.01;
     const p1 = posicaoNaCurva(Math.max(0, t - delta));

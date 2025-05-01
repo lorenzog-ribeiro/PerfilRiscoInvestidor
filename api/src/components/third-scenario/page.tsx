@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Label } from "recharts";
 import { ScenariosService } from "../../../services/scenariosService";
@@ -9,7 +9,10 @@ interface SelectedInterface {
 }
 
 interface ApiResponse {
-    forecast: any;
+    forecast: {
+        mediana: number;
+        valor_fixo: number;
+    };
 }
 
 const dataB = [
@@ -24,12 +27,18 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     const [selected, setSelected] = useState<SelectedInterface | null>(null);
     const [loading, setLoading] = useState(false);
     const [totalQuestions] = useState(10);
+    const [userId, setUserId] = useState<string | undefined>(undefined); // State for user ID
+
     const scenariosService = useMemo(() => new ScenariosService(), []);
 
-    const userId = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("userId="))
-    ?.split("=")[1];
+    useEffect(() => {
+        const userIdFromCookie = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userId="))
+            ?.split("=")[1];
+
+        setUserId(userIdFromCookie);
+    }, []);
 
     // Ref para controlar se já fizemos a primeira chamada
     const initialLoadDone = useRef(false);
@@ -37,7 +46,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     const isLoadingRef = useRef(false);
 
     // Função para buscar dados para uma questão específica
-    const fetchQuestionData = (questionIndex: number) => {
+    const fetchQuestionData =  useCallback((questionIndex: number) => {
         if (!userId) return;
 
         setLoading(true);
@@ -45,7 +54,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
 
         scenariosService
             .getOnlyLossScenario(questionIndex, userId)
-            .then((response: { data: any }) => {
+            .then((response: { data: ApiResponse }) => {
                 setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
                 setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                 setLoading(false);
@@ -56,7 +65,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                 setLoading(false);
                 isLoadingRef.current = false;
             });
-    };
+    },[scenariosService,userId]);
 
     // Carrega os dados da primeira questão apenas uma vez na inicialização
     useEffect(() => {
@@ -64,7 +73,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
             initialLoadDone.current = true;
             fetchQuestionData(index);
         }
-    }, [fetchQuestionData, userId]);
+    }, [fetchQuestionData, index,userId]);
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {

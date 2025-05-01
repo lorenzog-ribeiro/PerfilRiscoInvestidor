@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Label } from "recharts";
 import { ScenariosService } from "../../../services/scenariosService";
-import { useSearchParams } from "next/navigation";
 
 interface SelectedInterface {
     optionSelected: string;
@@ -10,7 +9,10 @@ interface SelectedInterface {
 }
 
 interface ApiResponse {
-    forecast: any;
+    forecast: {
+        mediana: number;
+        valor_fixo: number;
+    };
 }
 
 const dataB = [
@@ -26,11 +28,16 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
     const [loading, setLoading] = useState(false);
     const [totalQuestions] = useState(7);
     const scenariosService = useMemo(() => new ScenariosService(), []);
+    const [userId, setUserId] = useState<string | undefined>(undefined); // State for user ID
 
-    const userId = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userId="))
-        ?.split("=")[1];
+    useEffect(() => {
+        const userIdFromCookie = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userId="))
+            ?.split("=")[1];
+
+        setUserId(userIdFromCookie);
+    }, []);;
 
 
     // Ref para controlar se já fizemos a primeira chamada
@@ -39,7 +46,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
     const isLoadingRef = useRef(false);
 
     // Função para buscar dados para uma questão específica
-    const fetchQuestionData = (questionIndex: number) => {
+    const fetchQuestionData =  useCallback((questionIndex: number) => {
         if (!userId) return;
 
         setLoading(true);
@@ -58,15 +65,15 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                 setLoading(false);
                 isLoadingRef.current = false;
             });
-    };
-
+        },[scenariosService,userId]);
+    
     // Carrega os dados da primeira questão apenas uma vez na inicialização
     useEffect(() => {
         if (userId && !initialLoadDone.current) {
             initialLoadDone.current = true;
             fetchQuestionData(index);
         }
-    }, [userId]);
+    }, [fetchQuestionData,userId, index]);
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {

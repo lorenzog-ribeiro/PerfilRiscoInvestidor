@@ -9,7 +9,10 @@ interface selectedInterface {
 }
 
 interface ApiResponse {
-    forecast: any;
+    forecast: {
+        mediana: number;
+        valor_fixo: number;
+    };
 }
 
 const dataB = [
@@ -24,40 +27,48 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
     const [selected, setSelected] = useState<selectedInterface | null>(null); // Inicialmente nenhuma opção selecionada
     const [loading, setLoading] = useState(false); // Estado para controlar a animação de carregamento
     const [totalQuestions] = useState(8); // Total de perguntas
-    const scenariosService = useMemo(() => new ScenariosService(), []);
+    const [storedUserId, setStoredUserId] = useState<string | undefined>(undefined); // State for user ID
 
-    const storedUserId = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("userId="))
-    ?.split("=")[1];
+    const scenariosService = useMemo(() => new ScenariosService(), []);
 
     // Usando useRef para manter a seleção atual
     const selectedRef = useRef<selectedInterface | null>(null);
 
-    // Função para obter e atualizar os valores após a chamada da API
-    const fetchData = () => {
-        setLoading(true);
-        scenariosService
-            .getwin(index, storedUserId)
-            .then((response: { data: any }) => {
-                setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
-                setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
-                setLoading(false);
-            })
-            .catch((error: { message: string }) => {
-                console.log("API Error:", error.message);
-                setLoading(false);
-            });
-    };
-
-
     useEffect(() => {
+        // This will run only in the browser
+        const userId = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userId="))
+            ?.split("=")[1];
+
+        setStoredUserId(userId);
+    }, []); // Empty dependency array means it will run only once when the component mounts
+
+    // Função para obter e atualizar os valores após a chamada da API
+    useEffect(() => {
+        if (storedUserId === undefined) return; // Avoid fetching data if userId is not set yet
+        const fetchData = () => {
+            setLoading(true);
+            scenariosService
+                .getwin(index, storedUserId)
+                .then((response: { data: ApiResponse }) => {
+                    setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
+                    setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
+                    setLoading(false);
+                })
+                .catch((error: { message: string }) => {
+                    console.log("API Error:", error.message);
+                    setLoading(false);
+                });
+        };
+        fetchData();
+
         setSelected(null);
         selectedRef.current = null;
-    }, [value, fixedValue]);
+    }, [index, storedUserId, scenariosService]);
 
     const getBarColor = () => {
-        if (index === totalQuestions! - 1) {
+        if (index === totalQuestions - 1) {
             return "from-green-500 to-green-400";
         }
         return "from-red-500 to-orange-400";
@@ -141,15 +152,13 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                 ></div>
             </div>
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${
-                    loading ? "opacity-50 pointer-events-none" : ""
-                }`}
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
+                    }`}
             >
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
-                    } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
@@ -194,9 +203,8 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: fixedValue ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
-                    } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
