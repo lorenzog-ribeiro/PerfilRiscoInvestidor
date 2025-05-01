@@ -18,11 +18,6 @@ const dataB = [
     { name: "Perda", value: 50, color: "green", label: "R$1000" },
 ];
 
-const userId = document.cookie
-.split("; ")
-.find((row) => row.startsWith("userId="))
-?.split("=")[1];
-
 export default function SecondScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
     const [value, setValue] = useState<number>(); // Mediana
@@ -31,7 +26,13 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
     const [loading, setLoading] = useState(false);
     const [totalQuestions] = useState(7);
     const scenariosService = useMemo(() => new ScenariosService(), []);
-    
+
+    const userId = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("userId="))
+        ?.split("=")[1];
+
+
     // Ref para controlar se já fizemos a primeira chamada
     const initialLoadDone = useRef(false);
     // Ref para monitorar o estado de carregamento
@@ -152,15 +153,13 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                 ></div>
             </div>
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m2 ${
-                    loading ? "opacity-50 pointer-events-none" : ""
-                }`}
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m2 ${loading ? "opacity-50 pointer-events-none" : ""
+                    }`}
             >
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
-                    } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
@@ -205,9 +204,8 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
-                    } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">

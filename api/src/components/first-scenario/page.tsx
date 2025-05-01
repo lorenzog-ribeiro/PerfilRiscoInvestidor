@@ -18,11 +18,6 @@ const dataB = [
     { name: "Perda", value: 50, color: "gray", label: "R$0" },
 ];
 
-const storedUserId = document.cookie
-.split("; ")
-.find((row) => row.startsWith("userId="))
-?.split("=")[1];
-
 export default function FirstScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
     const [value, setValue] = useState<number>(); // Mediana
@@ -31,6 +26,11 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
     const [loading, setLoading] = useState(false); // Estado para controlar a animação de carregamento
     const [totalQuestions] = useState(8); // Total de perguntas
     const scenariosService = useMemo(() => new ScenariosService(), []);
+
+    const storedUserId = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("userId="))
+    ?.split("=")[1];
 
     // Usando useRef para manter a seleção atual
     const selectedRef = useRef<selectedInterface | null>(null);

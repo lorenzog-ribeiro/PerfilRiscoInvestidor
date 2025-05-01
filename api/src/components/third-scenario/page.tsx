@@ -17,10 +17,6 @@ const dataB = [
     { name: "Sem Ganho", value: 50, color: "red", label: "+R$1.000" },
     { name: "Sem Perda", value: 50, color: "gray" },
 ];
-const userId = document.cookie
-.split("; ")
-.find((row) => row.startsWith("userId="))
-?.split("=")[1];
 
 export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
@@ -30,6 +26,11 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     const [loading, setLoading] = useState(false);
     const [totalQuestions] = useState(10);
     const scenariosService = useMemo(() => new ScenariosService(), []);
+
+    const userId = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("userId="))
+    ?.split("=")[1];
 
     // Ref para controlar se já fizemos a primeira chamada
     const initialLoadDone = useRef(false);
