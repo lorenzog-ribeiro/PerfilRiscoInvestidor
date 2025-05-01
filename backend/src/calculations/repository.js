@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveScenarioSelectedThirdStage = exports.saveScenarioSelectedSecondStage = exports.saveScenarioSelectedFirstStage = exports.searchValueThirdStage = exports.searchValueSecondStage = exports.searchValueFirstStage = void 0;
+exports.searchResultCalc = exports.saveScenarioSelectedThirdStage = exports.saveScenarioSelectedSecondStage = exports.saveScenarioSelectedFirstStage = exports.searchValueThirdStage = exports.searchValueSecondStage = exports.searchValueFirstStage = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const searchValueFirstStage = async (data) => {
@@ -111,3 +111,46 @@ const saveScenarioSelectedThirdStage = async (data) => {
     }
 };
 exports.saveScenarioSelectedThirdStage = saveScenarioSelectedThirdStage;
+const searchResultCalc = async (data) => {
+    try {
+        let result;
+        switch (data.stage) {
+            case 1:
+                result = await prisma.primeira_etapa.findFirstOrThrow({
+                    where: {
+                        usuario_id: data.usuario_id
+                    },
+                    orderBy: {
+                        pergunta: data.order,
+                    }
+                });
+                break;
+            case 2:
+                result = await prisma.segunda_etapa.findFirstOrThrow({
+                    where: {
+                        usuario_id: data.usuario_id
+                    },
+                    orderBy: {
+                        pergunta: data.order,
+                    }
+                });
+                break;
+            case 3:
+                result = await prisma.terceira_etapa.findFirstOrThrow({
+                    where: {
+                        usuario_id: data.usuario_id
+                    },
+                    orderBy: {
+                        pergunta: data.order,
+                    }
+                });
+                break;
+        }
+        return result;
+    }
+    catch (error) {
+        console.error('Erro ao buscar na primeira etapa:', error);
+        throw error;
+    }
+};
+exports.searchResultCalc = searchResultCalc;

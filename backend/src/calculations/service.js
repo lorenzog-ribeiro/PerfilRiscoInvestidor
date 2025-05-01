@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.result = exports.saveThirdStage = exports.getThirdStageValues = exports.saveSecondStage = exports.getSecondStageValues = exports.saveFirstStage = exports.getFirstStageValues = void 0;
 const repository_1 = require("./repository");
+const repository_2 = require("../user/repository");
 const getFirstStageValues = async (data) => {
     switch (data.scenario) {
         case 0:
@@ -176,15 +177,42 @@ const saveThirdStage = async (data) => {
 };
 exports.saveThirdStage = saveThirdStage;
 const result = async (data) => {
-    const firstFirstStage = await (0, repository_1.searchValueFirstStage)({ usuario_id: data.usuario_id, pergunta: 0 });
-    const lastFirstStage = await (0, repository_1.searchValueFirstStage)({ usuario_id: data.usuario_id, pergunta: 6 });
-    const firstThirdStage = await (0, repository_1.searchValueFirstStage)({ usuario_id: data.usuario_id, pergunta: 0 });
-    const lastThirdStage = await (0, repository_1.searchValueFirstStage)({ usuario_id: data.usuario_id, pergunta: 5 });
+    console.log(data);
+    const firstFirstStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'asc', stage: 1 });
+    const lastFirstStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'desc', stage: 1 });
+    const firstThirdStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'asc', stage: 3 });
+    const lastThirdStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'desc', stage: 3 });
     const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) /
         ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
-    console.log(result);
+    return getProfile({ indice: result, usuario: await (0, repository_2.getbyId)(data) });
 };
 exports.result = result;
+function getProfile(data) {
+    if (data.indice < 1) {
+        return {
+            usuario: data.usuario,
+            valor: data.indice,
+            perfil: "Tolerante à perda",
+            descricao: "Você valoriza segurança e prefere evitar riscos.",
+        };
+    }
+    else if (data.indice = 1) {
+        return {
+            usuario: data.usuario,
+            valor: data.indice,
+            perfil: "Neutro à perda",
+            descricao: "Você aceita algum risco em troca de retorno moderado.",
+        };
+    }
+    else {
+        return {
+            usuario: data.usuario,
+            valor: data.indice,
+            perfil: "Avesso à perda",
+            descricao: "Você busca maiores retornos mesmo com maior risco.",
+        };
+    }
+}
 function base(Safe, Risk, type) {
     switch (type) {
         case 1:
