@@ -10,6 +10,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScenariosService } from '../../../../services/scenariosService';
 import MontanhaRussa from '@/components/rollercoaster/page';
+import TesteA from '@/components/equilibrium/page';
 
 export default function ResultadoFinal() {
     const [perfilData, setPerfilData] = useState(null);
@@ -82,7 +83,7 @@ export default function ResultadoFinal() {
 
             {!carregando && perfilData && (
                 <div className="max-w-4xl mx-auto">
-                    <MontanhaRussa perfilData={perfilData} />
+                    <TesteA perfilData={perfilData} />
 
                     <div className="mt-8 flex justify-center">
                         {/* <Button
