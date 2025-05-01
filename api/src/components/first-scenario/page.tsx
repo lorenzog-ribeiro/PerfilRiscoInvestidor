@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Label } from "recharts";
 import { ScenariosService } from "../../../services/scenariosService";
-import { useSearchParams } from "next/navigation";
 
 interface selectedInterface {
     optionSelected: string;
