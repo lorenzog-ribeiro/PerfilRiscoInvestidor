@@ -153,7 +153,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                 }`}
             >
                 <Card
-                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
+                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
                     className={`cursor-pointer border-2 transition-all duration-300 ${
                         selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
                     } ${loading ? "animate-pulse" : ""}`}
@@ -185,7 +185,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                         dominantBaseline="middle"
                                                     >
                                                         <tspan className="fill-white text-sm font-bold">
-                                                            {fixedValue}
+                                                            {value}
                                                         </tspan>
                                                     </text>
                                                 );
@@ -200,7 +200,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                 </Card>
 
                 <Card
-                    onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
+                    onClick={() => sideSelected({ optionSelected: "B", valueSelected: fixedValue ?? 0 })}
                     className={`cursor-pointer border-2 transition-all duration-300 ${
                         selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
                     } ${loading ? "animate-pulse" : ""}`}
@@ -247,7 +247,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                {value}
+                                                                {fixedValue}
                                                             </tspan>
                                                         </text>
                                                         <text
