@@ -48,6 +48,7 @@ model respostas_usuarios {
   pergunta_id   String?    @db.Uuid
   resposta      String
   respondido_em DateTime?  @default(now()) @db.Timestamp(6)
+  tentativa     Int?
   perguntas     perguntas? @relation(fields: [pergunta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   usuarios      usuarios?  @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
