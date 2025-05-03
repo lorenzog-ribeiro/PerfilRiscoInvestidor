@@ -5,22 +5,29 @@ import {
     saveScenarioSelectedSecondStage,
     saveScenarioSelectedThirdStage,
     searchValueThirdStage,
-    searchResultCalc
+    searchResultCalc,
+    searchLastAttempt
 } from "./repository";
 import { getbyId } from '../user/repository';
 
+// Função para obter a última tentativa de um usuário em uma determinada fase
+const getLastAttempt = async (userId: string, stage: number, scenario: number) => {
+    const lastAttempt = await searchLastAttempt(userId, stage, scenario);
+    return lastAttempt || 1;
+}
+
+// Função para buscar os valores da primeira fase
 export const getFirstStageValues = async (data: any) => {
+    const tentativa = await getLastAttempt(data.userId, 1, data.scenario);
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueFirstStage({
                 usuario_id: data.userId,
-                pergunta: data.scenario
+                pergunta: data.scenario,
+                tentativa
             });
             if (scenario) {
-                return await searchValueFirstStage({
-                    usuario_id: data.userId,
-                    pergunta: data.scenario
-                });
+                return scenario;
             }
 
             const Safe = 1000;
@@ -33,19 +40,22 @@ export const getFirstStageValues = async (data: any) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Safe,
+                tentativa
             });
-
             break;
         default:
             return await searchValueFirstStage({
                 usuario_id: data.userId,
-                pergunta: data.scenario - 1
+                pergunta: data.scenario - 1,
+                tentativa
             });
             break;
     }
 }
 
+// Função para salvar os dados da primeira fase
 export const saveFirstStage = async (data: any) => {
+    const tentativa = await getLastAttempt(data.userId, 1, data.scenario);
     const Safe = 1000;
     const Risk = 0;
     let aggregate: any;
@@ -60,7 +70,8 @@ export const saveFirstStage = async (data: any) => {
             aggregate = data.valueSelected - (baseValue / (2 ** data.scenario));
             break;
     }
-    console.log(baseValue, aggregate, data.valueSelected)
+
+    console.log(baseValue, aggregate, data.valueSelected);
 
     return await saveScenarioSelectedFirstStage({
         valor_selecionado: data.valueSelected,
@@ -68,22 +79,24 @@ export const saveFirstStage = async (data: any) => {
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Safe
+        valor_fixo: Safe,
+        tentativa
     });
 }
 
+// Função para buscar os valores da segunda fase
 export const getSecondStageValues = async (data: any) => {
+    const tentativa = await getLastAttempt(data.userId, 2, data.scenario);
+
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueSecondStage({
                 usuario_id: data.userId,
-                pergunta: data.scenario
+                pergunta: data.scenario,
+                tentativa
             });
             if (scenario) {
-                return await searchValueSecondStage({
-                    usuario_id: data.userId,
-                    pergunta: data.scenario
-                });
+                return scenario;
             }
 
             const Safe = 0;
@@ -96,18 +109,22 @@ export const getSecondStageValues = async (data: any) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: -Risk,
+                tentativa
             });
             break;
         default:
             return await searchValueSecondStage({
                 usuario_id: data.userId,
-                pergunta: data.scenario - 1
+                pergunta: data.scenario - 1,
+                tentativa
             });
             break;
     }
 }
 
+// Função para salvar os dados da segunda fase
 export const saveSecondStage = async (data: any) => {
+    const tentativa = await getLastAttempt(data.userId, 2, data.scenario);
     const Safe = 0;
     const Risk = 1000;
     let aggregate: any;
@@ -122,28 +139,31 @@ export const saveSecondStage = async (data: any) => {
             aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
             break;
     }
+
     return await saveScenarioSelectedSecondStage({
         valor_selecionado: data.valueSelected,
         mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: -Risk
+        valor_fixo: -Risk,
+        tentativa
     });
 }
 
+// Função para buscar os valores da terceira fase
 export const getThirdStageValues = async (data: any) => {
+    const tentativa = await getLastAttempt(data.userId, 3, data.scenario);
+
     switch (data.scenario) {
         case 0:
             const scenario = await searchValueThirdStage({
                 usuario_id: data.userId,
-                pergunta: data.scenario
+                pergunta: data.scenario,
+                tentativa
             });
             if (scenario) {
-                return await searchValueThirdStage({
-                    usuario_id: data.userId,
-                    pergunta: data.scenario
-                });
+                return scenario;
             }
 
             const Safe = 0;
@@ -151,27 +171,30 @@ export const getThirdStageValues = async (data: any) => {
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await saveScenarioSelectedThirdStage({
                 valor_selecionado: 0,
-                mediana: Number(baseValue!.toFixed(0)), // Updated to use toFixed(0)
+                mediana: Number(baseValue!.toFixed(0)),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Number(Risk?.valor_selecionado),
+                tentativa
             });
             break;
         default:
             return await searchValueThirdStage({
                 usuario_id: data.userId,
-                pergunta: data.scenario - 1
+                pergunta: data.scenario - 1,
+                tentativa
             });
             break;
     }
 }
 
+// Função para salvar os dados da terceira fase
 export const saveThirdStage = async (data: any) => {
+    const tentativa = await getLastAttempt(data.userId, 3, data.scenario);
     const Safe = 0;
     const Risk = await getSecondForThird(data);
     let aggregate: any;
-
 
     const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
     switch (data.optionSelected) {
@@ -183,13 +206,15 @@ export const saveThirdStage = async (data: any) => {
             aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
             break;
     }
-    return saveScenarioSelectedThirdStage({
+
+    return await saveScenarioSelectedThirdStage({
         valor_selecionado: data.valueSelected,
         mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Risk?.valor_selecionado
+        valor_fixo: Risk?.valor_selecionado,
+        tentativa
     });
 }
 
@@ -205,27 +230,27 @@ export const result = async (data: any) => {
     const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) /
         ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
 
-    return getProfile({ indice: result, usuario: await getbyId(data)});
+    return getProfile({ indice: result, usuario: await getbyId(data) });
 }
 
 function getProfile(data: any) {
     if (data.indice < 1) {
         return {
-            usuario:data.usuario,
+            usuario: data.usuario,
             valor: data.indice,
             perfil: "Tolerante à perda",
             descricao: "Você valoriza segurança e prefere evitar riscos.",
         };
     } else if (data.indice = 1) {
         return {
-            usuario:data.usuario,
+            usuario: data.usuario,
             valor: data.indice,
             perfil: "Neutro à perda",
             descricao: "Você aceita algum risco em troca de retorno moderado.",
         };
     } else {
         return {
-            usuario:data.usuario,
+            usuario: data.usuario,
             valor: data.indice,
             perfil: "Avesso à perda",
             descricao: "Você busca maiores retornos mesmo com maior risco.",
