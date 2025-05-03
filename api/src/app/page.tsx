@@ -15,7 +15,7 @@ export default function Home() {
                     <b>Participe da nossa pesquisa e dê o primeiro passo para descobrir!</b>
                 </p>
                 <Button className="mb-4 bg-orange-400 hover:bg-orange-300" asChild>
-                    <Link href="/terms">Iniciar Quiz</Link>
+                    <Link href="/pre-form">Iniciar Quiz</Link>
                 </Button>
                 <hr />
                 <div className="flex flex-col items-center justify-center">

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserService } from "../../../../services/UserService";
 import { useRouter } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function UserPage() {
     const [nome, setNome] = useState("");
@@ -14,6 +15,7 @@ export default function UserPage() {
     const [emailError, setEmailError] = useState("");  // Novo estado para exibir erros de email
     const userService = useMemo(() => new UserService(), []);
     const router = useRouter();
+    const [aceito, setAceito] = useState(false);
 
     // Função para definir um cookie
     const setCookie = (name: string, value: string, days: number) => {
@@ -52,7 +54,7 @@ export default function UserPage() {
             .createUser(userData)
             .then((response: { data: SetStateAction<string> }) => {
                 const userId = response.data as string;
-                
+
                 // Armazenar o userId no cookie por 7 dias
                 setCookie("userId", userId, 7);
 
@@ -70,7 +72,7 @@ export default function UserPage() {
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
             <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6">
-                <Label className="font-medium text-base text-gray-800">Preencha algumas informações</Label>
+                <h1 className="text-xl font-bold color text-orange-500">Qual é o seu perfil de investidor? </h1>
 
                 {/* Exibe a mensagem de erro, se houver */}
                 {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -91,7 +93,31 @@ export default function UserPage() {
                 />
                 {/* Exibe mensagem de erro caso o e-mail seja inválido */}
                 {emailError && <div className="text-red-500 text-sm">{emailError}</div>}
-
+                <div>
+                    <p className="text-sm text-left">
+                        Para participar da pesquisa, leia atentamente o Termo de Consentimento Livre e Esclarecido e, no
+                        final da página, marque a caixa.
+                        <br />
+                        <u>
+                            <a target="blank" href="/TCLE.pdf">
+                                Clique aqui para ler!
+                            </a>
+                        </u>
+                    </p>
+                </div>
+                <div className="flex gap-2 itens-left">
+                    <Checkbox
+                        className="border-black-800 border-1"
+                        id="aceite"
+                        checked={aceito}
+                        onCheckedChange={(checked) => {
+                            setAceito(checked === true);
+                        }}
+                    />
+                    <Label htmlFor="aceite" className="text-sm">
+                        Eu li e concordo com os termos do TCLE.
+                    </Label>
+                </div>
                 <Button
                     className="bg-orange-500 hover:bg-orange-600 text-white"
                     onClick={handleCreateUser}

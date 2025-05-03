@@ -38,6 +38,7 @@ model respostas {
   pergunta_id String?    @db.Uuid
   texto       String
   peso        Int?
+  tentativa   Int?
   perguntas   perguntas? @relation(fields: [pergunta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -60,7 +61,6 @@ model usuarios {
   respostas_usuarios respostas_usuarios[]
   segunda_etapa      segunda_etapa[]
   terceira_etapa     terceira_etapa[]
-  perfil_risco       perfil_risco[]
 }
 
 model primeira_etapa {
@@ -71,6 +71,7 @@ model primeira_etapa {
   usuario_id        String?   @db.Uuid
   pergunta          Int?
   valor_fixo        Int?
+  tentativa         Int?
   usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_primeira_etapa_usuario")
 }
 
@@ -82,6 +83,7 @@ model segunda_etapa {
   usuario_id        String?   @db.Uuid
   pergunta          Int?
   valor_fixo        Int?
+  tentativa         Int?
   usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_segunda_etapa_usuario")
 }
 
@@ -92,14 +94,14 @@ model terceira_etapa {
   lado_selecionado  String?   @db.Char(1)
   usuario_id        String?   @db.Uuid
   pergunta          Int?
-  valorFixo         Int?
+  valor_fixo        Int?
+  tentativa         Int?
   usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_terceira_etapa_usuario")
 }
 
 model perfil_risco {
-  id         Int       @id @default(autoincrement())
-  usuario_id String?   @db.Uuid
-  resultado  Int
-  perfil     String
-  usuarios   usuarios? @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         Int     @id
+  usuario_id String? @db.Uuid
+  resultado  Int?
+  perfil     String?
 }

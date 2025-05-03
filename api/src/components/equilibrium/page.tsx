@@ -229,22 +229,17 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
 
                             <circle cx="150" cy="150" r="5" fill="#ef4444" />
 
-                            <line x1="150" y1="150" x2="130" y2="200" stroke="#ef4444" stroke-width="2" />
+                            <line x1="150" y1="150" x2="170" y2="190" stroke="#ef4444" stroke-width="2" />
 
                             <text x="110" y="210" font-size="10" fill="#ef4444" font-weight="bold">-37.65%</text>
-                            <text x="120" y="225" font-size="9" fill="#94a3b8">YTD</text>
 
                             <circle cx="200" cy="125" r="5" fill="#94a3b8" />
-                            <line x1="200" y1="125" x2="210" y2="140" stroke="#94a3b8" stroke-width="2" />
+                            <line x1="200" y1="125" x2="240" y2="200" stroke="#94a3b8" stroke-width="2" />
 
                             <circle cx="250" cy="100" r="5" fill="#22c55e" />
-                            <line x1="250" y1="100" x2="260" y2="120" stroke="#22c55e" stroke-width="2" />
+                            <line x1="250" y1="100" x2="270" y2="140" stroke="#22c55e" stroke-width="2" />
 
                             <text x="255" y="85" font-size="10" fill="#22c55e" font-weight="bold">+12.60%</text>
-                            <text x="255" y="70" font-size="9" fill="#94a3b8">S&P 500</text>
-
-                            <text x="50" y="230" font-size="12" fill="#94a3b8">$0</text>
-                            <text x="350" y="230" font-size="12" fill="#94a3b8" text-anchor="end">$50K</text>
 
                             <text x="10" y="30" font-size="10" fill="#64748b">RETORNO</text>
                             <text x="370" y="230" font-size="10" fill="#64748b">RISCO</text>

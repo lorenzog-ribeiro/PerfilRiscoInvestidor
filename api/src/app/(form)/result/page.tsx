@@ -38,22 +38,6 @@ export default function ResultadoFinal() {
                     .catch((error: { message: string }) => {
                         console.log(error.message);
                     });
-                //Seleciona um perfil aleatório
-                // const tipos = Object.keys(dadosMockados);
-                // const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
-
-                // // Atualiza timestamp para fingir dados reais
-                // const dadoSelecionado = {
-                //     ...dadosMockados[tipoAleatorio],
-                //     timestamp: new Date().toISOString()
-                // };
-
-                // // Se o valor é exatamente 1, adicione um pequeno desvio aleatório em alguns casos
-                // if (dadoSelecionado.valor === 1 && Math.random() > 0.7) {
-                //     dadoSelecionado.valor = 1 + (Math.random() * 0.05 - 0.025);
-                // }
-
-                // setPerfilData(dadoSelecionado);
                 setCarregando(false);
             }, 1500); // Simula carregamento por 1.5 segundos
         };
@@ -84,32 +68,6 @@ export default function ResultadoFinal() {
             {!carregando && perfilData && (
                 <div className="max-w-4xl mx-auto">
                     <TesteA perfilData={perfilData} />
-
-                    <div className="mt-8 flex justify-center">
-                        {/* <Button
-                            onClick={() => {
-                                setCarregando(true);
-                                // Simulando tempo de carregamento
-                                setTimeout(() => {
-                                    // Seleciona um perfil aleatório
-                                    const tipos = Object.keys(dadosMockados);
-                                    const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
-
-                                    // Atualiza timestamp para fingir dados reais
-                                    const dadoSelecionado = {
-                                        ...dadosMockados[tipoAleatorio],
-                                        timestamp: new Date().toISOString()
-                                    };
-
-                                    setPerfilData(dadoSelecionado);
-                                    setCarregando(false);
-                                }, 1500);
-                            }}
-                            className="px-6"
-                        >
-                            Gerar Nova Análise
-                        </Button> */}
-                    </div>
                 </div>
             )}
         </div>
