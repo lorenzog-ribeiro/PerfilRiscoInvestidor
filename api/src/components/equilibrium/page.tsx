@@ -231,7 +231,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
 
                             <line x1="120" y1="165" x2="140" y2="200" stroke="#ef4444" stroke-width="2" />
 
-                            <text x="110" y="210" font-size="10" fill="#ef4444" font-weight="bold">-37.65%</text>
+                            <text x="120" y="230" font-size="10" fill="#ef4444" font-weight="bold" transform="rotate(-30 110 210)">-37.65%</text>
 
                             <circle cx="200" cy="125" r="5" fill="#94a3b8" />
                             <line x1="200" y1="125" x2="240" y2="200" stroke="#94a3b8" stroke-width="2" />
@@ -239,7 +239,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                             <circle cx="280" cy="85" r="5" fill="#22c55e" />
                             <line x1="280" y1="85" x2="305" y2="130" stroke="#22c55e" stroke-width="2" />
 
-                            <text x="255" y="85" font-size="10" fill="#22c55e" font-weight="bold">+12.60%</text>
+                            <text x="300" y="250" font-size="10" fill="#22c55e" font-weight="bold" transform="rotate(-30 110 210)">+12.60%</text>
 
                             <text x="10" y="30" font-size="10" fill="#64748b">RETORNO</text>
                             <text x="370" y="230" font-size="10" fill="#64748b">RISCO</text>
