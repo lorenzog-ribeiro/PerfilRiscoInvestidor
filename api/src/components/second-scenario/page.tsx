@@ -164,7 +164,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                     }`}
             >
                 <Card
-                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
+                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
                     className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
                         } ${loading ? "animate-pulse" : ""}`}
                 >

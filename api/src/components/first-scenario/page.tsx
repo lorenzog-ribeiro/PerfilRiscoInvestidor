@@ -97,7 +97,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
             setIndex(1);
         }
 
-        const valueToSend = currentSelected.optionSelected === "A" ? value : fixedValue;
+        const valueToSend = value;
 
         if (currentSelected.optionSelected === "A" || currentSelected.optionSelected === "B") {
             scenariosService
