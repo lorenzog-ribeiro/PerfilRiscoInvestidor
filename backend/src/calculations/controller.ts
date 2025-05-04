@@ -102,5 +102,5 @@ export const calcResult = async (req: Request, res: Response) => {
     }
     catch (error: any) {
         res.status(500).json({ error: "Erro no cálculo" });
-    }
-}
+    } 
+} 

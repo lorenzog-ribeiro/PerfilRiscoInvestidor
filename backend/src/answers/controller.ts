@@ -10,4 +10,4 @@ export function saveAnswers(req: Request, res: Response) {
         console.error("Erro ao buscar informações:", error);
         res.status(500).json({ error: "Erro ao buscar informações", details: error.message });
     }
-}
+} 

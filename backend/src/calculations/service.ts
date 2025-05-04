@@ -276,5 +276,5 @@ async function getSecondForThird(data: any) {
     return await searchValueSecondStage({
         usuario_id: data.userId,
         pergunta: 5
-    });
+    }); 
 }

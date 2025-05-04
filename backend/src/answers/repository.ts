@@ -28,4 +28,4 @@ export const searchLastAttempt = async (usuario_id: string, stage: number) => {
     });
 
     return lastAttempt && lastAttempt.tentativa !== null ? lastAttempt.tentativa + 1 : 1; // Caso não haja tentativas, começa com a tentativa 1
-}
+} 

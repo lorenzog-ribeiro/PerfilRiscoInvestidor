@@ -15,4 +15,4 @@ routerScenario.get("/getonlyloss", getOnlyLossScenario);
 
 routerScenario.get("/result", calcResult);
 
-export default routerScenario;
+export default routerScenario; 
