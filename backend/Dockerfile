@@ -1,31 +1,43 @@
+# Estágio de build
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copia os arquivos de package para instalar dependências
+COPY package*.json ./
+RUN npm ci
+
+# Copia o código-fonte
+COPY . .
+
+# Gera os artefatos do Prisma
+COPY prisma ./prisma
+RUN npx prisma generate
+
+# Compila o código (ajuste conforme sua aplicação)
+RUN npm run build
+
+# Estágio de runtime
 FROM node:18-alpine AS runtime
 
 WORKDIR /app
 
-# Adiciona permissões ao diretório de trabalho para o usuário 'node'
-RUN chown -R node:node /app
-
-# Copia apenas os arquivos necessários
-COPY package*.json ./
-
-# Instala as dependências de produção
+# Copia apenas o necessário do estágio de build
+COPY --from=builder /app/package*.json ./
 RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/prisma ./prisma
 
-# Copia o restante dos arquivos para o diretório /app
-COPY . .
-
-# Copia o diretório do Prisma e gera os tipos necessários
-COPY prisma ./prisma
-RUN npx prisma db pull
-RUN npx prisma generate
-
-# Configura a porta onde o Node.js irá rodar
+# Configurações de ambiente
 ENV PORT=3333
+ENV NODE_ENV=production
 
 EXPOSE 3333
 
-# Altera o usuário para 'node' para rodar com menos privilégios
+# Configura permissões e usuário
+RUN chown -R node:node /app
 USER node
 
-# Inicia o servidor Node.js
+# Inicia a aplicação
 CMD ["npm", "start"]
