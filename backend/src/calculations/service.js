@@ -3,18 +3,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.result = exports.saveThirdStage = exports.getThirdStageValues = exports.saveSecondStage = exports.getSecondStageValues = exports.saveFirstStage = exports.getFirstStageValues = void 0;
 const repository_1 = require("./repository");
 const repository_2 = require("../user/repository");
+// Função para obter a última tentativa de um usuário em uma determinada fase
+const getLastAttempt = async (userId, stage, scenario) => {
+    const lastAttempt = await (0, repository_1.searchLastAttempt)(userId, stage, scenario);
+    return lastAttempt || 1;
+};
+// Função para buscar os valores da primeira fase
 const getFirstStageValues = async (data) => {
+    const tentativa = await getLastAttempt(data.userId, 1, data.scenario);
     switch (data.scenario) {
         case 0:
             const scenario = await (0, repository_1.searchValueFirstStage)({
                 usuario_id: data.userId,
-                pergunta: data.scenario
+                pergunta: data.scenario,
+                tentativa
             });
             if (scenario) {
-                return await (0, repository_1.searchValueFirstStage)({
-                    usuario_id: data.userId,
-                    pergunta: data.scenario
-                });
+                return scenario;
             }
             const Safe = 1000;
             const Risk = 0;
@@ -26,18 +31,22 @@ const getFirstStageValues = async (data) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Safe,
+                tentativa
             });
             break;
         default:
             return await (0, repository_1.searchValueFirstStage)({
                 usuario_id: data.userId,
-                pergunta: data.scenario - 1
+                pergunta: data.scenario - 1,
+                tentativa
             });
             break;
     }
 };
 exports.getFirstStageValues = getFirstStageValues;
+// Função para salvar os dados da primeira fase
 const saveFirstStage = async (data) => {
+    const tentativa = await getLastAttempt(data.userId, 1, data.scenario);
     const Safe = 1000;
     const Risk = 0;
     let aggregate;
@@ -57,22 +66,23 @@ const saveFirstStage = async (data) => {
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Safe
+        valor_fixo: Safe,
+        tentativa
     });
 };
 exports.saveFirstStage = saveFirstStage;
+// Função para buscar os valores da segunda fase
 const getSecondStageValues = async (data) => {
+    const tentativa = await getLastAttempt(data.userId, 2, data.scenario);
     switch (data.scenario) {
         case 0:
             const scenario = await (0, repository_1.searchValueSecondStage)({
                 usuario_id: data.userId,
-                pergunta: data.scenario
+                pergunta: data.scenario,
+                tentativa
             });
             if (scenario) {
-                return await (0, repository_1.searchValueSecondStage)({
-                    usuario_id: data.userId,
-                    pergunta: data.scenario
-                });
+                return scenario;
             }
             const Safe = 0;
             const Risk = 1000;
@@ -84,18 +94,22 @@ const getSecondStageValues = async (data) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: -Risk,
+                tentativa
             });
             break;
         default:
             return await (0, repository_1.searchValueSecondStage)({
                 usuario_id: data.userId,
-                pergunta: data.scenario - 1
+                pergunta: data.scenario - 1,
+                tentativa
             });
             break;
     }
 };
 exports.getSecondStageValues = getSecondStageValues;
+// Função para salvar os dados da segunda fase
 const saveSecondStage = async (data) => {
+    const tentativa = await getLastAttempt(data.userId, 2, data.scenario);
     const Safe = 0;
     const Risk = 1000;
     let aggregate;
@@ -114,45 +128,50 @@ const saveSecondStage = async (data) => {
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: -Risk
+        valor_fixo: -Risk,
+        tentativa
     });
 };
 exports.saveSecondStage = saveSecondStage;
+// Função para buscar os valores da terceira fase
 const getThirdStageValues = async (data) => {
+    const tentativa = await getLastAttempt(data.userId, 3, data.scenario);
     switch (data.scenario) {
         case 0:
             const scenario = await (0, repository_1.searchValueThirdStage)({
                 usuario_id: data.userId,
-                pergunta: data.scenario
+                pergunta: data.scenario,
+                tentativa
             });
             if (scenario) {
-                return await (0, repository_1.searchValueThirdStage)({
-                    usuario_id: data.userId,
-                    pergunta: data.scenario
-                });
+                return scenario;
             }
             const Safe = 0;
             const Risk = await getSecondForThird(data);
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await (0, repository_1.saveScenarioSelectedThirdStage)({
                 valor_selecionado: 0,
-                mediana: Number(baseValue.toFixed(0)), // Updated to use toFixed(0)
+                mediana: Number(baseValue.toFixed(0)),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Number(Risk?.valor_selecionado),
+                tentativa
             });
             break;
         default:
             return await (0, repository_1.searchValueThirdStage)({
                 usuario_id: data.userId,
-                pergunta: data.scenario - 1
+                pergunta: data.scenario - 1,
+                tentativa
             });
             break;
     }
 };
 exports.getThirdStageValues = getThirdStageValues;
+// Função para salvar os dados da terceira fase
 const saveThirdStage = async (data) => {
+    const tentativa = await getLastAttempt(data.userId, 3, data.scenario);
     const Safe = 0;
     const Risk = await getSecondForThird(data);
     let aggregate;
@@ -166,13 +185,14 @@ const saveThirdStage = async (data) => {
             aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
             break;
     }
-    return (0, repository_1.saveScenarioSelectedThirdStage)({
+    return await (0, repository_1.saveScenarioSelectedThirdStage)({
         valor_selecionado: data.valueSelected,
         mediana: aggregate.toFixed(0),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Risk?.valor_selecionado
+        valor_fixo: Risk?.valor_selecionado,
+        tentativa
     });
 };
 exports.saveThirdStage = saveThirdStage;
