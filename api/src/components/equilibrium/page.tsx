@@ -227,17 +227,17 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
 
                             <line x1="50" y1="200" x2="350" y2="50" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,4" />
 
-                            <circle cx="150" cy="150" r="5" fill="#ef4444" />
+                            <circle cx="120" cy="165" r="5" fill="#ef4444" />
 
-                            <line x1="150" y1="150" x2="170" y2="190" stroke="#ef4444" stroke-width="2" />
+                            <line x1="120" y1="165" x2="140" y2="200" stroke="#ef4444" stroke-width="2" />
 
                             <text x="110" y="210" font-size="10" fill="#ef4444" font-weight="bold">-37.65%</text>
 
                             <circle cx="200" cy="125" r="5" fill="#94a3b8" />
                             <line x1="200" y1="125" x2="240" y2="200" stroke="#94a3b8" stroke-width="2" />
 
-                            <circle cx="250" cy="100" r="5" fill="#22c55e" />
-                            <line x1="250" y1="100" x2="270" y2="140" stroke="#22c55e" stroke-width="2" />
+                            <circle cx="280" cy="85" r="5" fill="#22c55e" />
+                            <line x1="280" y1="85" x2="305" y2="130" stroke="#22c55e" stroke-width="2" />
 
                             <text x="255" y="85" font-size="10" fill="#22c55e" font-weight="bold">+12.60%</text>
 
