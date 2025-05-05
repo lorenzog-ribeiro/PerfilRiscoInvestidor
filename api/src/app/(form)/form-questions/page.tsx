@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, SetStateAction } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";  // Importando 'useRouter' de 'next/navigation' para componentes cliente
+import { useRouter } from "next/navigation"; 
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import isValidDate from "@/lib/dataValidator";
@@ -21,8 +21,19 @@ export interface Question {
     }[];
 }
 
-export default function QuizPage() {
-    const router = useRouter(); // Agora 'useRouter' pode ser usado, pois o componente é cliente
+const getCookieValue = (cookieName: string): string | undefined => {
+    const cookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith(`${cookieName}=`));
+    return cookie ? cookie.split("=")[1] : undefined;
+};
+
+const getProgress = (index: number, quantity: number | undefined) => {
+    return quantity ? ((index + 1) / quantity) * 100 : 0;
+};
+
+const QuizPage = () => {
+    const router = useRouter(); 
     const [index, setIndex] = useState(1);
     const [question, setQuestion] = useState<Question | null>(null);
     const [quantity, setQuantity] = useState<number>();
@@ -31,32 +42,23 @@ export default function QuizPage() {
     const answerService = useMemo(() => new AnswerService(), []);
 
     useEffect(() => {
-        // Acessando cookies para obter o índice da última questão
-        const lastIndex = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("lastQuestionIndex="))
-            ?.split("=")[1];
+        const lastIndex = getCookieValue("lastQuestionIndex");
         if (lastIndex) {
             setIndex(Number(lastIndex));
         }
 
-        questionService
-            .getCountQuestion()
-            .then((response: { data: SetStateAction<number | undefined> }) => {
-                setQuantity(response.data);
-            })
-            .catch((error: { message: string }) => {
+        const fetchData = async () => {
+            try {
+                const questionCount = await questionService.getCountQuestion();
+                setQuantity(questionCount.data);
+                const questionData = await questionService.getUnique(index);
+                setQuestion(questionData.data);
+            } catch (error: any) {
                 console.log(error.message);
-            });
+            }
+        };
 
-        questionService
-            .getUnique(index)
-            .then((response: { data: SetStateAction<Question | null> }) => {
-                setQuestion(response.data);
-            })
-            .catch((error: { message: string }) => {
-                console.log(error.message);
-            });
+        fetchData();
     }, [index, questionService]);
 
     const handleChange = (questionId: string, value: string) => {
@@ -74,10 +76,7 @@ export default function QuizPage() {
             return;
         }
 
-        const storedUserId = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userId="))
-        ?.split("=")[1];
+        const storedUserId = getCookieValue("userId");
 
         const respostasComUsuario = {
             resposta: respostas[question!.id],
@@ -85,35 +84,30 @@ export default function QuizPage() {
             usuario_id: storedUserId,
         };
 
-        answerService.save(respostasComUsuario).catch((error: { message: string }) => {
+        try {
+            await answerService.save(respostasComUsuario);
+        } catch (error: any) {
             console.log(error.message);
-        });
-        if (index === 17) {
-            router.push("/result");
-            return; // Evita que continue a execução
         }
 
-        // antes de incrementar o index, checa se precisa redirecionar
+        if (index === 17) {
+            router.push("/result");
+            return;
+        }
+
         if (index === 7) {
             document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
             router.push("/finance-questions");
-            return; // Evita que continue a execução
+            return;
         }
 
-        //  Incrementa normalmente
         const newIndex = Math.min(index + 1, quantity! - 1);
         document.cookie = `lastQuestionIndex=${newIndex}; path=/; max-age=3600;`;
         setIndex(newIndex);
     };
 
-    const progresso = quantity ? ((index + 1) / quantity) * 100 : 0;
-
-    const getBarColor = () => {
-        if (index === quantity! - 1) {
-            return "from-green-500 to-green-400";
-        }
-        return "from-red-500 to-orange-400";
-    };
+    const progresso = getProgress(index, quantity);
+    const getBarColor = () => (index === quantity! - 1 ? "from-green-500 to-green-400" : "from-red-500 to-orange-400");
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
@@ -126,14 +120,12 @@ export default function QuizPage() {
                         ></div>
                     </div>
 
-                    {/* Pergunta */}
                     <DynamicQuestion
                         question={question}
                         value={respostas[question.id]}
                         onChange={(value) => handleChange(question.id, value)}
                     />
 
-                    {/* Navegação */}
                     <div className="flex justify-between pt-4">
                         <Button onClick={handleNext} className="bg-orange-500 hover:bg-orange-600 text-white">
                             {index === quantity! - 1 ? "Finalizar" : "Continuar"}
@@ -145,4 +137,6 @@ export default function QuizPage() {
             )}
         </div>
     );
-}
+};
+
+export default QuizPage;
