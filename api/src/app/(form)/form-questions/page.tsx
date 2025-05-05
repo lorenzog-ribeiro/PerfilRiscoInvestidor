@@ -1,142 +1,152 @@
-"use client"; // Marca o componente como cliente
+"use client";
 
-import { useState, useEffect, useMemo, SetStateAction } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { AnswerService } from "../../../../services/AnswerService";
 import DynamicQuestion from "../../../components/dynamic-form/page";
 import isValidDate from "@/lib/dataValidator";
 import { QuestionService } from "../../../../services/QuestionsService";
 
 export interface Question {
+  id: string;
+  texto: string;
+  tipo: string;
+  ordem: string;
+  respostas: {
     id: string;
     texto: string;
-    tipo: string;
-    ordem: string;
-    respostas: {
-        id: string;
-        texto: string;
-        indexOf: number;
-    }[];
+    indexOf: number;
+  }[];
 }
 
 const getCookieValue = (cookieName: string): string | undefined => {
-    const cookie = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith(`${cookieName}=`));
-    return cookie ? cookie.split("=")[1] : undefined;
+  if (typeof document === "undefined") return undefined;
+  const cookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${cookieName}=`));
+  return cookie ? cookie.split("=")[1] : undefined;
 };
 
 const getProgress = (index: number, quantity: number | undefined) => {
-    return quantity ? ((index + 1) / quantity) * 100 : 0;
+  return quantity ? ((index + 1) / quantity) * 100 : 0;
 };
 
 const QuizPage = () => {
-    const router = useRouter(); 
-    const [index, setIndex] = useState(1);
-    const [question, setQuestion] = useState<Question | null>(null);
-    const [quantity, setQuantity] = useState<number>();
-    const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
-    const questionService = useMemo(() => new QuestionService(), []);
-    const answerService = useMemo(() => new AnswerService(), []);
+  const router = useRouter();
+  const [quantity, setQuantity] = useState<number>();
+  const [question, setQuestion] = useState<Question | null>(null);
+  const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
 
-    useEffect(() => {
-        const lastIndex = getCookieValue("lastQuestionIndex");
-        if (lastIndex) {
-            setIndex(Number(lastIndex));
-        }
+  const initialIndex =
+    typeof window !== "undefined"
+      ? Number(getCookieValue("lastQuestionIndex")) || 1
+      : 1;
 
-        const fetchData = async () => {
-            try {
-                const questionCount = await questionService.getCountQuestion();
-                setQuantity(questionCount.data);
-                const questionData = await questionService.getUnique(index);
-                setQuestion(questionData.data);
-            } catch (error: any) {
-                console.log(error.message);
-            }
-        };
+  const [index, setIndex] = useState<number>(initialIndex);
 
-        fetchData();
-    }, [index, questionService]);
+  const questionService = useMemo(() => new QuestionService(), []);
+  const answerService = useMemo(() => new AnswerService(), []);
 
-    const handleChange = (questionId: string, value: string) => {
-        setRespostas((prev) => ({ ...prev, [questionId]: value }));
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const questionCount = await questionService.getCountQuestion();
+        setQuantity(questionCount.data);
+
+        const questionData = await questionService.getUnique(index);
+        setQuestion(questionData.data);
+      } catch (error: any) {
+        console.error("Erro ao buscar pergunta:", error.message);
+      }
     };
 
-    const handleNext = async () => {
-        if (!respostas[question!.id]) {
-            toast.warning("Responda a pergunta antes de continuar");
-            return;
-        }
+    fetchData();
+  }, [index, questionService]);
 
-        if (question?.tipo === "data" && !isValidDate(respostas[question.id])) {
-            toast.error("Digite uma data válida no formato dd/mm/aaaa.");
-            return;
-        }
+  const handleChange = (questionId: string, value: string) => {
+    setRespostas((prev) => ({ ...prev, [questionId]: value }));
+  };
 
-        const storedUserId = getCookieValue("userId");
+  const handleNext = async () => {
+    if (!respostas[question!.id]) {
+      toast.warning("Responda a pergunta antes de continuar");
+      return;
+    }
 
-        const respostasComUsuario = {
-            resposta: respostas[question!.id],
-            pergunta_id: question!.id,
-            usuario_id: storedUserId,
-        };
+    if (question?.tipo === "data" && !isValidDate(respostas[question.id])) {
+      toast.error("Digite uma data válida no formato dd/mm/aaaa.");
+      return;
+    }
 
-        try {
-            await answerService.save(respostasComUsuario);
-        } catch (error: any) {
-            console.log(error.message);
-        }
+    const storedUserId = getCookieValue("userId");
 
-        if (index === 17) {
-            router.push("/result");
-            return;
-        }
-
-        if (index === 7) {
-            document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
-            router.push("/finance-questions");
-            return;
-        }
-
-        const newIndex = Math.min(index + 1, quantity! - 1);
-        document.cookie = `lastQuestionIndex=${newIndex}; path=/; max-age=3600;`;
-        setIndex(newIndex);
+    const respostaPayload = {
+      resposta: respostas[question!.id],
+      pergunta_id: question!.id,
+      usuario_id: storedUserId,
     };
 
-    const progresso = getProgress(index, quantity);
-    const getBarColor = () => (index === quantity! - 1 ? "from-green-500 to-green-400" : "from-red-500 to-orange-400");
+    try {
+      await answerService.save(respostaPayload);
+    } catch (error: any) {
+      console.error("Erro ao salvar resposta:", error.message);
+    }
 
-    return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
-            {question ? (
-                <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6">
-                    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                            className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500`}
-                            style={{ width: `${progresso}%` }}
-                        ></div>
-                    </div>
+    if (index === 17) {
+      router.push("/result");
+      return;
+    }
 
-                    <DynamicQuestion
-                        question={question}
-                        value={respostas[question.id]}
-                        onChange={(value) => handleChange(question.id, value)}
-                    />
+    if (index === 7) {
+      document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
+      router.push("/finance-questions");
+      return;
+    }
 
-                    <div className="flex justify-between pt-4">
-                        <Button onClick={handleNext} className="bg-orange-500 hover:bg-orange-600 text-white">
-                            {index === quantity! - 1 ? "Finalizar" : "Continuar"}
-                        </Button>
-                    </div>
-                </div>
-            ) : (
-                <p>Carregando...</p>
-            )}
+    const newIndex = quantity ? Math.min(index + 1, quantity - 1) : index + 1;
+    document.cookie = `lastQuestionIndex=${newIndex}; path=/; max-age=3600;`;
+    setIndex(newIndex);
+  };
+
+  const progresso = getProgress(index, quantity);
+  const getBarColor = () =>
+    index === quantity! - 1
+      ? "from-green-500 to-green-400"
+      : "from-red-500 to-orange-400";
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
+      {question ? (
+        <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6">
+          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500`}
+              style={{ width: `${progresso}%` }}
+            ></div>
+          </div>
+
+          <DynamicQuestion
+            question={question}
+            value={respostas[question.id]}
+            onChange={(value) => handleChange(question.id, value)}
+          />
+
+          <div className="flex justify-between pt-4">
+            <Button
+              onClick={handleNext}
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+            >
+              {index === quantity! - 1 ? "Finalizar" : "Continuar"}
+            </Button>
+          </div>
         </div>
-    );
+      ) : (
+        <p>Carregando...</p>
+      )}
+    </div>
+  );
 };
 
 export default QuizPage;
