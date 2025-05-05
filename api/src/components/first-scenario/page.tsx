@@ -139,77 +139,32 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
     // Calcular o progresso baseado na pergunta atual, excluindo a pergunta 0
     const adjustedIndex = index === 0 ? 0 : index - 1;
-    const progressQuestions = totalQuestions - 1;
-    const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
+    // const progressQuestions = totalQuestions - 1;
+    // const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
 
     return (
         <div>
             {/* Barra de progresso */}
-            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
+            {/* <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
                 <div
                     className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
                     style={{ width: `${progress}%` }}
                 ></div>
-            </div>
+            </div> */}
             <div
                 className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
                     }`}
             >
                 <Card
-                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
-                        } ${loading ? "animate-pulse" : ""}`}
-                >
-                    <CardContent className="p-2 space-y-2">
-                        <div className="flex items-center justify-center">
-                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa A
-                            </span>
-                        </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Ganho com certeza</h2>
-                        <div className="flex justify-center items-center pt-9.5">
-                            <PieChart width={180} height={180}>
-                                <Pie
-                                    data={[{ name: "Ganho", value: 100, color: "#228b22", label: "teste" }]}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    stroke="none"
-                                    strokeWidth={0}
-                                >
-                                    <Label
-                                        content={({ viewBox }) => {
-                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                                return (
-                                                    <text
-                                                        x={viewBox.cx}
-                                                        y={viewBox.cy}
-                                                        textAnchor="middle"
-                                                        dominantBaseline="middle"
-                                                    >
-                                                        <tspan className="fill-white text-sm font-bold text-white">
-                                                            +{value}
-                                                        </tspan>
-                                                    </text>
-                                                );
-                                            }
-                                        }}
-                                    />
-                                    <Cell key={`cell-1`} fill="#228b22" />
-                                </Pie>
-                            </PieChart>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card
-                    onClick={() => sideSelected({ optionSelected: "B", valueSelected: fixedValue ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
-                        } ${loading ? "animate-pulse" : ""}`}
-                >
+                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
+                    className={`cursor-pointer border-2 transition-all 
+                        duration-300 ${selected?.optionSelected === "A" ?
+                            "border-yellow-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}>
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa B
+                                Alternativa A
                             </span>
                         </div>
                         <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
@@ -266,6 +221,52 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                             }
                                         }}
                                     />
+                                </Pie>
+                            </PieChart>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card
+                    onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-blue-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}
+                >
+                    <CardContent className="p-2 space-y-2">
+                        <div className="flex items-center justify-center">
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                Alternativa B
+                            </span>
+                        </div>
+                        <h2 className="text-lg font-semibold text-gray-800 text-center">Ganho com certeza</h2>
+                        <div className="flex justify-center items-center pt-9.5">
+                            <PieChart width={180} height={180}>
+                                <Pie
+                                    data={[{ name: "Ganho", value: 100, color: "#228b22", label: "teste" }]}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    stroke="none"
+                                    strokeWidth={0}
+                                >
+                                    <Label
+                                        content={({ viewBox }) => {
+                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                                return (
+                                                    <text
+                                                        x={viewBox.cx}
+                                                        y={viewBox.cy}
+                                                        textAnchor="middle"
+                                                        dominantBaseline="middle"
+                                                    >
+                                                        <tspan className="fill-white text-sm font-bold text-white">
+                                                            +{value}
+                                                        </tspan>
+                                                    </text>
+                                                );
+                                            }
+                                        }}
+                                    />
+                                    <Cell key={`cell-1`} fill="#228b22" />
                                 </Pie>
                             </PieChart>
                         </div>
