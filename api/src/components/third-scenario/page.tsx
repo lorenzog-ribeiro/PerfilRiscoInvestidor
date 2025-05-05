@@ -46,7 +46,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     const isLoadingRef = useRef(false);
 
     // Função para buscar dados para uma questão específica
-    const fetchQuestionData =  useCallback((questionIndex: number) => {
+    const fetchQuestionData = useCallback((questionIndex: number) => {
         if (!userId) return;
 
         setLoading(true);
@@ -65,7 +65,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                 setLoading(false);
                 isLoadingRef.current = false;
             });
-    },[scenariosService,userId]);
+    }, [scenariosService, userId]);
 
     // Carrega os dados da primeira questão apenas uma vez na inicialização
     useEffect(() => {
@@ -73,7 +73,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
             initialLoadDone.current = true;
             fetchQuestionData(index);
         }
-    }, [fetchQuestionData, index,userId]);
+    }, [fetchQuestionData, index, userId]);
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {
@@ -159,67 +159,18 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                 ></div>
             </div>
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2${
-                    loading ? "opacity-50 pointer-events-none" : ""
-                }`}
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2${loading ? "opacity-50 pointer-events-none" : ""
+                    }`}
             >
                 <Card
-                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
-                    } ${loading ? "animate-pulse" : ""}`}
-                >
-                    <CardContent className="p-2 space-y-2">
-                        <div className="flex items-center justify-center">
-                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa A
-                            </span>
-                        </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Perda com certeza</h2>
-                        <div className="flex justify-center items-center pt-9.5">
-                            <PieChart width={180} height={180}>
-                                <Pie
-                                    data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    stroke="none"
-                                    strokeWidth={0}
-                                >
-                                    <Label
-                                        content={({ viewBox }) => {
-                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                                return (
-                                                    <text
-                                                        x={viewBox.cx}
-                                                        y={viewBox.cy}
-                                                        textAnchor="middle"
-                                                        dominantBaseline="middle"
-                                                    >
-                                                        <tspan className="fill-white text-sm font-bold">
-                                                            {value}
-                                                        </tspan>
-                                                    </text>
-                                                );
-                                            }
-                                        }}
-                                    />
-                                    <Cell key={`cell-1`} fill="red" />
-                                </Pie>
-                            </PieChart>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card
-                    onClick={() => sideSelected({ optionSelected: "B", valueSelected: fixedValue ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
-                    } ${loading ? "animate-pulse" : ""}`}
+                    onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-yellow-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa B
+                                Alternativa A
                             </span>
                         </div>
                         <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
@@ -281,6 +232,53 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                         </div>
                     </CardContent>
                 </Card>
+
+                <Card
+                    onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-blue-500" : "border-transparent"
+                        } ${loading ? "animate-pulse" : ""}`}
+                >
+                    <CardContent className="p-2 space-y-2">
+                        <div className="flex items-center justify-center">
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                                Alternativa B
+                            </span>
+                        </div>
+                        <h2 className="text-lg font-semibold text-gray-800 text-center">Perda com certeza</h2>
+                        <div className="flex justify-center items-center pt-9.5">
+                            <PieChart width={180} height={180}>
+                                <Pie
+                                    data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    stroke="none"
+                                    strokeWidth={0}
+                                >
+                                    <Label
+                                        content={({ viewBox }) => {
+                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                                return (
+                                                    <text
+                                                        x={viewBox.cx}
+                                                        y={viewBox.cy}
+                                                        textAnchor="middle"
+                                                        dominantBaseline="middle"
+                                                    >
+                                                        <tspan className="fill-white text-sm font-bold">
+                                                            {value}
+                                                        </tspan>
+                                                    </text>
+                                                );
+                                            }
+                                        }}
+                                    />
+                                    <Cell key={`cell-1`} fill="red" />
+                                </Pie>
+                            </PieChart>
+                        </div>
+                    </CardContent>
+                </Card>
+
             </div>
 
             {/* Indicador de carregamento quando estiver mudando de pergunta */}
