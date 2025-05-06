@@ -137,10 +137,10 @@ export const saveSecondStage = async (data: any) => {
 
     switch (data.optionSelected) {
         case ("B"):
-            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
+            aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
             break;
         case ("A"):
-            aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
+            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
             break;
     }
 
@@ -280,5 +280,5 @@ async function getSecondForThird(data: any) {
     return await searchValueSecondStage({
         usuario_id: data.userId,
         pergunta: 5
-    }); 
+    });
 }
