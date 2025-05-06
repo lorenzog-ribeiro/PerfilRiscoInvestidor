@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '../ui/button';
-import { useRouter } from 'next/router';
+import Link from "next/link";
 
 
 interface PerfilData {
@@ -21,18 +20,16 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     const [valor, setValor] = useState<number>(perfilData.profile.valor); // Valor aleatório entre 0 e 2
     const [posicao, setPosicao] = useState<{ cx: number; cy: number }>({ cx: 200, cy: 125 });
     const [linhaFinal, setLinhaFinal] = useState<{ x: number; y: number }>({ x: 220, y: 160 });
-    const router = useRouter();
 
     function removeCookies() {
         const cookies = document.cookie.split(";");
-      
+
         for (const cookie of cookies) {
-          const eqPos = cookie.indexOf("=");
-          const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
-          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+            const eqPos = cookie.indexOf("=");
+            const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
         }
-        router.push('/');
-      }      
+    }
 
     useEffect(() => {
         // Função para calcular a posição da bolinha (roldana) ao longo da linha azul
@@ -148,7 +145,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
 
                 <div className="flex justify-center pt-4">
                     <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={removeCookies}>
-                        Refazer a Análise
+                        <Link href="/">Refazer a Análise</Link>
                     </Button>
                 </div>
             </CardContent>
