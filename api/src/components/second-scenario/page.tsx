@@ -37,8 +37,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
             ?.split("=")[1];
 
         setUserId(userIdFromCookie);
-    }, []);;
-
+    }, []);
 
     // Ref para controlar se já fizemos a primeira chamada
     const initialLoadDone = useRef(false);
@@ -46,34 +45,37 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
     const isLoadingRef = useRef(false);
 
     // Função para buscar dados para uma questão específica
-    const fetchQuestionData =  useCallback((questionIndex: number) => {
-        if (!userId) return;
+    const fetchQuestionData = useCallback(
+        (questionIndex: number) => {
+            if (!userId) return;
 
-        setLoading(true);
-        isLoadingRef.current = true;
+            setLoading(true);
+            isLoadingRef.current = true;
 
-        scenariosService
-            .getloss(questionIndex, userId)
-            .then((response: { data: ApiResponse }) => {
-                setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
-                setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
-                setLoading(false);
-                isLoadingRef.current = false;
-            })
-            .catch((error: { message: string }) => {
-                console.log("API Error:", error.message);
-                setLoading(false);
-                isLoadingRef.current = false;
-            });
-        },[scenariosService,userId]);
-    
+            scenariosService
+                .getloss(questionIndex, userId)
+                .then((response: { data: ApiResponse }) => {
+                    setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
+                    setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
+                    setLoading(false);
+                    isLoadingRef.current = false;
+                })
+                .catch((error: { message: string }) => {
+                    console.log("API Error:", error.message);
+                    setLoading(false);
+                    isLoadingRef.current = false;
+                });
+        },
+        [scenariosService, userId]
+    );
+
     // Carrega os dados da primeira questão apenas uma vez na inicialização
     useEffect(() => {
         if (userId && !initialLoadDone.current) {
             initialLoadDone.current = true;
             fetchQuestionData(index);
         }
-    }, [fetchQuestionData,userId, index]);
+    }, [fetchQuestionData, userId, index]);
 
     // Reseta a seleção quando os valores são atualizados
     useEffect(() => {
@@ -159,23 +161,22 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                     style={{ width: `${progress}%` }}
                 ></div>
             </div> */}
-            <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m2 ${loading ? "opacity-50 pointer-events-none" : ""
-                    }`}
-            >
+            <div className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-blue-500" : "border-transparent"
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"
                         } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa A
+                                Investimento A
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Sem perda ou Ganho</h2>
-                        <div className="flex justify-center items-center pt-9.5">
+                        <div className="text-xs text-center text-gray-600 p-5.5">
+                            <div>Sem ganho ou perda com certeza</div>
+                        </div>
+                        <div className="flex justify-center items-center ">
                             <PieChart width={180} height={180}>
                                 <Pie
                                     data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]}
@@ -194,8 +195,19 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                                                         textAnchor="middle"
                                                         dominantBaseline="middle"
                                                     >
-                                                        <tspan className="fill-white text-sm font-bold ">
-                                                            Sem Ganho ou Perda
+                                                        <tspan
+                                                            x={viewBox.cx}
+                                                            dy="-0.6em"
+                                                            className="fill-white text-sm font-bold"
+                                                        >
+                                                            Sem Ganho
+                                                        </tspan>
+                                                        <tspan
+                                                            x={viewBox.cx}
+                                                            dy="1.2em"
+                                                            className="fill-white text-sm font-bold"
+                                                        >
+                                                            ou Perda
                                                         </tspan>
                                                     </text>
                                                 );
@@ -211,29 +223,28 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-yellow-500" : "border-transparent"
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
                         } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa B
+                                Investimento B
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
-                        <div className="text-xs text-center text-gray-600">
+                        <div className="text-xs text-center text-gray-600 p-5.5">
                             <div>
-                                <b>50% chance de perder</b>
+                                <b>50%</b> chance de perda
                             </div>
                             <div>
-                                <b>50% chance de não perder</b>
+                                <b>50%</b> chance de ganho
                             </div>
                         </div>
                         <div className="flex justify-center items-center">
                             <PieChart width={180} height={180}>
                                 <Pie
-                                    stroke="none"
-                                    strokeWidth={0}
+                                    stroke="white"
+                                    strokeWidth={3}
                                     data={dataB}
                                     dataKey="value"
                                     nameKey="name"

@@ -158,29 +158,28 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
                     className={`cursor-pointer border-2 transition-all 
-                        duration-300 ${selected?.optionSelected === "A" ?
-                            "border-yellow-500" : "border-transparent"
-                        } ${loading ? "animate-pulse" : ""}`}>
+                        duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"} ${loading ? "animate-pulse" : ""
+                        }`}
+                >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa A
+                                Investimento A
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
-                        <div className="text-xs text-center text-gray-600">
+                        <div className="text-xs text-center text-gray-600 p-5.5">
                             <div>
-                                <b>50% chance de ganhar</b>
+                                <b>50%</b> chance de ganhar
                             </div>
                             <div>
-                                <b>50% chance de não ter ganho</b>
+                                <b>50%</b> chance de não ter ganho
                             </div>
                         </div>
-                        <div className="flex justify-center items-center">
+                        <div className="flex justify-center items-center pt-2">
                             <PieChart width={180} height={180}>
                                 <Pie
-                                    stroke="none"
-                                    strokeWidth={0}
+                                    stroke="white"
+                                    strokeWidth={3}
                                     data={dataB}
                                     dataKey="value"
                                     nameKey="name"
@@ -229,16 +228,20 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-blue-500" : "border-transparent"
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
                         } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa B
+                                Investimento B
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Ganho com certeza</h2>
+                        <div className="text-xs text-center text-gray-600 p-5.5">
+                            <div>
+                                <b>100%</b> certeza de ganho
+                            </div>
+                        </div>
                         <div className="flex justify-center items-center pt-9.5">
                             <PieChart width={180} height={180}>
                                 <Pie

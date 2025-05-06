@@ -46,26 +46,29 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     const isLoadingRef = useRef(false);
 
     // Função para buscar dados para uma questão específica
-    const fetchQuestionData = useCallback((questionIndex: number) => {
-        if (!userId) return;
+    const fetchQuestionData = useCallback(
+        (questionIndex: number) => {
+            if (!userId) return;
 
-        setLoading(true);
-        isLoadingRef.current = true;
+            setLoading(true);
+            isLoadingRef.current = true;
 
-        scenariosService
-            .getOnlyLossScenario(questionIndex, userId)
-            .then((response: { data: ApiResponse }) => {
-                setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
-                setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
-                setLoading(false);
-                isLoadingRef.current = false;
-            })
-            .catch((error: { message: string }) => {
-                console.log("API Error:", error.message);
-                setLoading(false);
-                isLoadingRef.current = false;
-            });
-    }, [scenariosService, userId]);
+            scenariosService
+                .getOnlyLossScenario(questionIndex, userId)
+                .then((response: { data: ApiResponse }) => {
+                    setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
+                    setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
+                    setLoading(false);
+                    isLoadingRef.current = false;
+                })
+                .catch((error: { message: string }) => {
+                    console.log("API Error:", error.message);
+                    setLoading(false);
+                    isLoadingRef.current = false;
+                });
+        },
+        [scenariosService, userId]
+    );
 
     // Carrega os dados da primeira questão apenas uma vez na inicialização
     useEffect(() => {
@@ -152,31 +155,28 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     return (
         <div>
             {/* Barra de progresso */}
-            <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
+            {/* <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
                 <div
                     className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
                     style={{ width: `${progress}%` }}
                 ></div>
-            </div>
-            <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2${loading ? "opacity-50 pointer-events-none" : ""
-                    }`}
-            >
+            </div> */}
+            <div className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-yellow-500" : "border-transparent"
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"
                         } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa A
+                                Investimento A
                             </span>
                         </div>
                         <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
                         <div className="text-xs text-center text-gray-600">
                             <div>
-                                <b>50% chance de perder</b>
+                                <b>50% chance de perda</b>
                             </div>
                             <div>
                                 <b>50% chance de não perder</b>
@@ -235,16 +235,16 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-blue-500" : "border-transparent"
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
                         } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
                             <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                                Alternativa B
+                                Investimento B
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Perda com certeza</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 text-center">100% certeza de perda</h2>
                         <div className="flex justify-center items-center pt-9.5">
                             <PieChart width={180} height={180}>
                                 <Pie
@@ -264,9 +264,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                         textAnchor="middle"
                                                         dominantBaseline="middle"
                                                     >
-                                                        <tspan className="fill-white text-sm font-bold">
-                                                            {value}
-                                                        </tspan>
+                                                        <tspan className="fill-white text-sm font-bold">{value}</tspan>
                                                     </text>
                                                 );
                                             }
@@ -278,7 +276,6 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                         </div>
                     </CardContent>
                 </Card>
-
             </div>
 
             {/* Indicador de carregamento quando estiver mudando de pergunta */}
