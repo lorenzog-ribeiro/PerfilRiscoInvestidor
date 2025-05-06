@@ -202,7 +202,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                +{fixedValue}
+                                                                + R${fixedValue}
                                                             </tspan>
                                                         </text>
                                                         <text
@@ -262,7 +262,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                                         dominantBaseline="middle"
                                                     >
                                                         <tspan className="fill-white text-sm font-bold text-white">
-                                                            +{value}
+                                                            + R${value}
                                                         </tspan>
                                                     </text>
                                                 );

@@ -267,7 +267,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                +1000
+                                                                + R$1000
                                                             </tspan>
                                                         </text>
                                                         <text
@@ -277,7 +277,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                {value}
+                                                                R$ {value}
                                                             </tspan>
                                                         </text>
                                                     </>

@@ -209,7 +209,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                {fixedValue}
+                                                                R${fixedValue}
                                                             </tspan>
                                                         </text>
                                                         <text
@@ -264,7 +264,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                         textAnchor="middle"
                                                         dominantBaseline="middle"
                                                     >
-                                                        <tspan className="fill-white text-sm font-bold">{value}</tspan>
+                                                        <tspan className="fill-white text-sm font-bold">R${value}</tspan>
                                                     </text>
                                                 );
                                             }
