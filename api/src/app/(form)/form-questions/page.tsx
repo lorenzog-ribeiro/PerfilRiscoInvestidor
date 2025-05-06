@@ -112,7 +112,7 @@ const QuizPage = () => {
 
   const progresso = getProgress(index, quantity);
   const getBarColor = () =>
-    index === quantity! - 1
+    index === quantity
       ? "from-green-500 to-green-400"
       : "from-red-500 to-orange-400";
 
