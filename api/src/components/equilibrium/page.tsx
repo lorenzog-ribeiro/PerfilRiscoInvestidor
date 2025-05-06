@@ -120,7 +120,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                 <Tabs defaultValue="resumo" className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="resumo">Resumo</TabsTrigger>
-                        <TabsTrigger value="detalhes">Detalhes</TabsTrigger>
+                        {/* <TabsTrigger value="detalhes">Detalhes</TabsTrigger> */}
                     </TabsList>
 
                     <TabsContent value="resumo" className="space-y-4 pt-4">
@@ -135,7 +135,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="detalhes" className="space-y-4 pt-4">
+                    {/* <TabsContent value="detalhes" className="space-y-4 pt-4">
                         <div className="space-y-1 mt-2">
                             <div className="flex justify-between">
                                 <h4 className="text-sm font-medium">Teste</h4>
@@ -143,7 +143,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                             </div>
                             <Progress value={valor * 50} className="h-2" />
                         </div>
-                    </TabsContent>
+                    </TabsContent> */}
                 </Tabs>
 
                 <div className="flex justify-center pt-4">
