@@ -32,7 +32,7 @@ export default function UserPage() {
             return false;
         }
         if(aceito === false){
-            setError("Por favor, é necessário aceitar os termos.");
+            setError("Os termos devem ser aceitos para continuar.");
             return false;
         }
         // Validação simples de e-mail
