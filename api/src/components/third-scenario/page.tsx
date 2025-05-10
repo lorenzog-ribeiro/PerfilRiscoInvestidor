@@ -176,10 +176,10 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                         <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
                         <div className="text-xs text-center text-gray-600">
                             <div>
-                                <b>50% chance de perda</b>
+                                <b>50% chance de não perder</b>
                             </div>
                             <div>
-                                <b>50% chance de não perder</b>
+                                <b>50% chance de perda</b>
                             </div>
                         </div>
                         <div className="flex justify-center items-center">
@@ -204,22 +204,22 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                     <>
                                                         <text
                                                             x={cx}
-                                                            y={(cy ?? 0) - 30}
-                                                            textAnchor="middle"
-                                                            dominantBaseline="middle"
-                                                        >
-                                                            <tspan className="fill-white text-sm font-bold">
-                                                                R${fixedValue}
-                                                            </tspan>
-                                                        </text>
-                                                        <text
-                                                            x={cx}
                                                             y={(cy ?? 0) + 30}
                                                             textAnchor="middle"
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
                                                                 Sem Perda
+                                                            </tspan>
+                                                        </text>
+                                                        <text
+                                                            x={cx}
+                                                            y={(cy ?? 0) - 30}
+                                                            textAnchor="middle"
+                                                            dominantBaseline="middle"
+                                                        >
+                                                            <tspan className="fill-white text-sm font-bold">
+                                                                R${fixedValue}
                                                             </tspan>
                                                         </text>
                                                     </>
