@@ -13,7 +13,7 @@ import { getbyId } from '../user/repository';
 // Função para obter a última tentativa de um usuário em uma determinada fase
 const getLastAttempt = async (userId: string, stage: number, scenario: number) => {
     const lastAttempt = await searchLastAttempt(userId, stage, scenario);
-    return lastAttempt || 1;
+    return lastAttempt;
 }
 
 function roundToNearest10(value: number) {
@@ -222,15 +222,14 @@ export const saveThirdStage = async (data: any) => {
 
 
 export const result = async (data: any) => {
-    console.log(data);
     const firstFirstStage = await searchResultCalc({ usuario_id: data, order: 'asc', stage: 1 });
     const lastFirstStage = await searchResultCalc({ usuario_id: data, order: 'desc', stage: 1 });
 
     const firstThirdStage = await searchResultCalc({ usuario_id: data, order: 'asc', stage: 3 });
     const lastThirdStage = await searchResultCalc({ usuario_id: data, order: 'desc', stage: 3 });
 
-    const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) /
-        ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
+    const result = ((Number(firstThirdStage?.mediana)) / (Number(lastThirdStage?.mediana))) /
+        ((Number(firstFirstStage?.mediana)) / (Number(lastFirstStage?.mediana)));
 
     return getProfile({ indice: result, usuario: await getbyId(data) });
 }
