@@ -110,6 +110,7 @@ export default function UserPage() {
                         className="border-black-800 border-1"
                         id="aceite"
                         checked={aceito}
+                        required
                         onCheckedChange={(checked) => {
                             setAceito(checked === true);
                         }}
