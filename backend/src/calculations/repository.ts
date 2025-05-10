@@ -175,6 +175,7 @@ export const searchLastAttempt = async (usuario_id: string, stage: number, pergu
                     pergunta: pergunta
                 },
                 orderBy: {
+                    id: 'desc',
                     tentativa: 'desc',
                 },
                 take: 1,
@@ -187,6 +188,7 @@ export const searchLastAttempt = async (usuario_id: string, stage: number, pergu
                     pergunta: pergunta
                 },
                 orderBy: {
+                    id: 'desc',
                     tentativa: 'desc',
                 },
                 take: 1,
@@ -199,6 +201,7 @@ export const searchLastAttempt = async (usuario_id: string, stage: number, pergu
                     pergunta: pergunta
                 },
                 orderBy: {
+                    id: 'desc',
                     tentativa: 'desc',
                 },
                 take: 1,
@@ -208,4 +211,3 @@ export const searchLastAttempt = async (usuario_id: string, stage: number, pergu
 
     return lastAttempt && lastAttempt.tentativa !== null ? lastAttempt.tentativa + 1 : 1; // Caso não haja tentativas, começa com a tentativa 1
 }
- 
