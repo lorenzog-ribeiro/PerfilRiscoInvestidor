@@ -31,7 +31,10 @@ export default function UserPage() {
             setError("Por favor, preencha todos os campos.");
             return false;
         }
-
+        if(aceito === false){
+            setError("Por favor, é necessário aceitar os termos.");
+            return false;
+        }
         // Validação simples de e-mail
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
