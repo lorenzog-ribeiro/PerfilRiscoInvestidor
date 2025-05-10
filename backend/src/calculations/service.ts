@@ -75,8 +75,6 @@ export const saveFirstStage = async (data: any) => {
             break;
     }
 
-    console.log(baseValue, aggregate, data.valueSelected);
-
     return await saveScenarioSelectedFirstStage({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
