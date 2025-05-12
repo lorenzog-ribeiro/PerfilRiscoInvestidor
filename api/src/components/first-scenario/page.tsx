@@ -12,6 +12,7 @@ interface ApiResponse {
     forecast: {
         mediana: number;
         valor_fixo: number;
+        continue: boolean;
     };
 }
 
@@ -109,11 +110,11 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                 })
                 .then(() => {
                     // Simulando um tempo de carregamento para dar sensação de mudança
-                    setTimeout(() => {
+                    setTimeout((response: { data: ApiResponse }) => {
                         // Calcula o próximo índice após resposta
                         const nextIndex = index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
-                        if (nextIndex === totalQuestions - 1) {
-                            onAnswered(); // Chama a função de callback quando chegar na última pergunta
+                        if (nextIndex === totalQuestions - 1 || response.data.forecast.continue == false ) {
+                            onAnswered();
                         }
                         // Depois busca os dados para o novo índice
                         scenariosService
