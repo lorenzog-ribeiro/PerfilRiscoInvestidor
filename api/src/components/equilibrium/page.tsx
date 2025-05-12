@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '../ui/button';
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "../ui/button";
 import Link from "next/link";
-
 
 interface PerfilData {
     profile: {
@@ -38,7 +37,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
             const P1 = { x: 350, y: 50 }; // Ponto final da linha azul (ESTAÇÃO B)
 
             // Calculando a posição t (de 0 a 1) baseado no valor, que define onde a bolinha vai estar
-            let t = Math.max(0, Math.min(1, (valor / 2))); // Normaliza o valor para estar entre 0 e 1
+            let t = Math.max(0, Math.min(1, valor / 2)); // Normaliza o valor para estar entre 0 e 1
 
             // Interpolação linear para calcular a posição da bolinha
             const cx = P0.x + t * (P1.x - P0.x);
@@ -55,7 +54,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
         // Delta x = 20, Delta y = 35 para manter o mesmo ângulo
         setLinhaFinal({
             x: novaPosicao.cx + 20,
-            y: novaPosicao.cy + 35
+            y: novaPosicao.cy + 35,
         });
     }, [valor]);
 
@@ -77,7 +76,15 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                         <rect x="0" y="0" width="400" height="250" fill="#f8fafc" rx="8" />
 
                         {/* Linha azul fixa (linha de base) */}
-                        <line x1="50" y1="200" x2="350" y2="50" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,4" />
+                        <line
+                            x1="50"
+                            y1="200"
+                            x2="350"
+                            y2="50"
+                            stroke="#94a3b8"
+                            stroke-width="2"
+                            stroke-dasharray="6,4"
+                        />
 
                         {/* Bolinha vermelha (ESTAÇÃO A) */}
                         <circle cx="120" cy="165" r="5" fill="#ef4444" />
@@ -95,13 +102,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                         />
 
                         {/* Bolinha cinza (Roldana do teleférico) */}
-                        <circle
-                            cx={posicao.cx}
-                            cy={posicao.cy}
-                            r="5"
-                            fill="#94a3b8"
-                        />
-
+                        <circle cx={posicao.cx} cy={posicao.cy} r="5" fill="#94a3b8" />
 
                         {/* Bolinha verde (ESTAÇÃO B) */}
                         <circle cx="280" cy="85" r="5" fill="#22c55e" />
@@ -109,8 +110,12 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                         {/* <text x="300" y="150" font-size="10" fill="#22c55e" font-weight="bold" transform="rotate(-30 250 130)">+12.60%</text> */}
 
                         {/* Rótulos */}
-                        <text x="10" y="30" font-size="10" fill="#64748b">RETORNO</text>
-                        <text x="360" y="230" font-size="10" fill="#64748b">RISCO</text>
+                        <text x="10" y="30" font-size="10" fill="#64748b">
+                            RETORNO
+                        </text>
+                        <text x="360" y="230" font-size="10" fill="#64748b">
+                            RISCO
+                        </text>
                     </svg>
                 </div>
 
@@ -131,16 +136,6 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                             <p>{perfilData.profile.descricao}</p>
                         </div>
                     </TabsContent>
-
-                    {/* <TabsContent value="detalhes" className="space-y-4 pt-4">
-                        <div className="space-y-1 mt-2">
-                            <div className="flex justify-between">
-                                <h4 className="text-sm font-medium">Teste</h4>
-                                <span>{valor.toFixed(2)}</span>
-                            </div>
-                            <Progress value={valor * 50} className="h-2" />
-                        </div>
-                    </TabsContent> */}
                 </Tabs>
 
                 <div className="flex justify-center pt-4">
