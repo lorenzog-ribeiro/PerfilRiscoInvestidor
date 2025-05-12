@@ -17,7 +17,8 @@ const getLastAttempt = async (userId: string, stage: number, scenario: number) =
 }
 
 function roundToNearest10(value: number) {
-    return Math.round(value / 10) * 10;
+    const precisionValue = parseFloat(value.toFixed(2));  // Ajusta para 2 casas decimais
+    return Math.round(precisionValue / 10) * 10;
 }
 
 // Função para buscar os valores da primeira fase
