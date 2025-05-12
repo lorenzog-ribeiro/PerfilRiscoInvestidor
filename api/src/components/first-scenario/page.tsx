@@ -12,8 +12,8 @@ interface ApiResponse {
     forecast: {
         mediana: number;
         valor_fixo: number;
-        continue: boolean;
-    };
+    },
+    continue: boolean;
 }
 
 const dataB = [
@@ -108,12 +108,12 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                     valueSelected: valueToSend,
                     userId: storedUserId,
                 })
-                .then(() => {
+                .then((winresponse: { data: ApiResponse }) => {
                     // Simulando um tempo de carregamento para dar sensação de mudança
-                    setTimeout((response: { data: ApiResponse }) => {
+                    setTimeout(() => {
                         // Calcula o próximo índice após resposta
                         const nextIndex = index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
-                        if (nextIndex === totalQuestions - 1 || response.data.forecast.continue == false ) {
+                        if (nextIndex === totalQuestions - 1 || winresponse.data.continue == false ) {
                             onAnswered();
                         }
                         // Depois busca os dados para o novo índice
