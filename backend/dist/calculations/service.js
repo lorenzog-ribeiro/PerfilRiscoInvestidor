@@ -6,8 +6,12 @@ const repository_2 = require("../user/repository");
 // Função para obter a última tentativa de um usuário em uma determinada fase
 const getLastAttempt = async (userId, stage, scenario) => {
     const lastAttempt = await (0, repository_1.searchLastAttempt)(userId, stage, scenario);
-    return lastAttempt || 1;
+    return lastAttempt;
 };
+function roundToNearest10(value) {
+    const precisionValue = parseFloat(value.toFixed(2)); // Ajusta para 2 casas decimais
+    return Math.round(precisionValue / 10) * 10;
+}
 // Função para buscar os valores da primeira fase
 const getFirstStageValues = async (data) => {
     const tentativa = await getLastAttempt(data.userId, 1, data.scenario);
@@ -26,7 +30,7 @@ const getFirstStageValues = async (data) => {
             const baseValue = base(Safe, Risk, 1);
             return await (0, repository_1.saveScenarioSelectedFirstStage)({
                 valor_selecionado: 0,
-                mediana: baseValue?.toFixed(0),
+                mediana: roundToNearest10(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -59,16 +63,22 @@ const saveFirstStage = async (data) => {
             aggregate = data.valueSelected - (baseValue / (2 ** data.scenario));
             break;
     }
-    console.log(baseValue, aggregate, data.valueSelected);
-    return await (0, repository_1.saveScenarioSelectedFirstStage)({
+    // Verificar a diferença mínima
+    const Scenario = await (0, repository_1.saveScenarioSelectedFirstStage)({
         valor_selecionado: data.valueSelected,
-        mediana: aggregate.toFixed(0),
+        mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: Safe,
         tentativa
     });
+    const difference = Math.abs(aggregate - Safe);
+    const minimumDifference = 10;
+    if (difference < minimumDifference) {
+        return { Scenario, continue: false };
+    }
+    return { Scenario, continue: true };
 };
 exports.saveFirstStage = saveFirstStage;
 // Função para buscar os valores da segunda fase
@@ -89,7 +99,7 @@ const getSecondStageValues = async (data) => {
             const baseValue = base(Safe, Risk, 2);
             return await (0, repository_1.saveScenarioSelectedSecondStage)({
                 valor_selecionado: 0,
-                mediana: baseValue?.toFixed(0),
+                mediana: roundToNearest10(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -116,21 +126,27 @@ const saveSecondStage = async (data) => {
     const baseValue = base(Safe, Risk, 2) ?? 0;
     switch (data.optionSelected) {
         case ("B"):
-            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
-            break;
-        case ("A"):
             aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
             break;
+        case ("A"):
+            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
+            break;
     }
-    return await (0, repository_1.saveScenarioSelectedSecondStage)({
+    const Scenario = await (0, repository_1.saveScenarioSelectedSecondStage)({
         valor_selecionado: data.valueSelected,
-        mediana: aggregate.toFixed(0),
+        mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: -Risk,
         tentativa
     });
+    const difference = Math.abs(aggregate - Risk);
+    const minimumDifference = 10;
+    if (difference < minimumDifference) {
+        return { Scenario, continue: false };
+    }
+    return { Scenario, continue: true };
 };
 exports.saveSecondStage = saveSecondStage;
 // Função para buscar os valores da terceira fase
@@ -151,7 +167,7 @@ const getThirdStageValues = async (data) => {
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await (0, repository_1.saveScenarioSelectedThirdStage)({
                 valor_selecionado: 0,
-                mediana: Number(baseValue.toFixed(0)),
+                mediana: roundToNearest10(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -185,25 +201,30 @@ const saveThirdStage = async (data) => {
             aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
             break;
     }
-    return await (0, repository_1.saveScenarioSelectedThirdStage)({
+    const Scenario = await (0, repository_1.saveScenarioSelectedThirdStage)({
         valor_selecionado: data.valueSelected,
-        mediana: aggregate.toFixed(0),
+        mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: Risk?.valor_selecionado,
         tentativa
     });
+    const difference = Math.abs(aggregate - (Risk?.valor_selecionado ?? 0));
+    const minimumDifference = 10;
+    if (difference < minimumDifference) {
+        return { Scenario, continue: false };
+    }
+    return { Scenario, continue: true };
 };
 exports.saveThirdStage = saveThirdStage;
 const result = async (data) => {
-    console.log(data);
     const firstFirstStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'asc', stage: 1 });
     const lastFirstStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'desc', stage: 1 });
     const firstThirdStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'asc', stage: 3 });
     const lastThirdStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'desc', stage: 3 });
-    const result = ((Number(firstFirstStage?.mediana) ?? 0) / (Number(lastFirstStage?.mediana) ?? 1)) /
-        ((Number(firstThirdStage?.mediana) ?? 0) / (Number(lastThirdStage?.mediana) ?? 1));
+    const result = ((Number(firstThirdStage?.mediana)) / (Number(lastThirdStage?.mediana))) /
+        ((Number(firstFirstStage?.mediana)) / (Number(lastFirstStage?.mediana)));
     return getProfile({ indice: result, usuario: await (0, repository_2.getbyId)(data) });
 };
 exports.result = result;

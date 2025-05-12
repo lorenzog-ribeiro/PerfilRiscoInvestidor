@@ -25,6 +25,7 @@ const winScenario = async (req, res) => {
     try {
         const { scenario, optionSelected, valueSelected, userId } = req.body;
         const forecast = await (0, service_1.saveFirstStage)({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
+        console.log(forecast);
         res.status(200).json({ forecast });
     }
     catch (error) {
