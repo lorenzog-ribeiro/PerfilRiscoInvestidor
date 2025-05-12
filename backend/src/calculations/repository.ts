@@ -167,47 +167,48 @@ export const searchResultCalc = async (data: any) => {
 
 export const searchLastAttempt = async (usuario_id: string, stage: number, pergunta: number) => {
     let lastAttempt = null;
-    switch (stage) {
-        case 1:
-            lastAttempt = await prisma.primeira_etapa.findFirst({
-                where: {
-                    usuario_id: usuario_id,
-                    pergunta: pergunta
-                },
-                orderBy: {
-                    id: 'desc',
-                    tentativa: 'desc',
-                },
-                take: 1,
-            });
-            break;
-        case 2:
-            lastAttempt = await prisma.segunda_etapa.findFirst({
-                where: {
-                    usuario_id: usuario_id,
-                    pergunta: pergunta
-                },
-                orderBy: {
-                    id: 'desc',
-                    tentativa: 'desc',
-                },
-                take: 1,
-            });
-            break;
-        case 3:
-            lastAttempt = await prisma.terceira_etapa.findFirst({
-                where: {
-                    usuario_id: usuario_id,
-                    pergunta: pergunta
-                },
-                orderBy: {
-                    id: 'desc',
-                    tentativa: 'desc',
-                },
-                take: 1,
-            });
-            break;
-    }
+    try {
+        switch (stage) {
+            case 1:
+                lastAttempt = await prisma.primeira_etapa.findFirst({
+                    where: {
+                        usuario_id: usuario_id,
+                        pergunta: pergunta
+                    },
+                    orderBy: {
+                        tentativa: 'desc',
+                    },
+                    take: 1,
+                });
+                break;
+            case 2:
+                lastAttempt = await prisma.segunda_etapa.findFirst({
+                    where: {
+                        usuario_id: usuario_id,
+                        pergunta: pergunta
+                    },
+                    orderBy: {
+                        tentativa: 'desc',
+                    },
+                    take: 1,
+                });
+                break;
+            case 3:
+                lastAttempt = await prisma.terceira_etapa.findFirst({
+                    where: {
+                        usuario_id: usuario_id,
+                        pergunta: pergunta
+                    },
+                    orderBy: {
+                        tentativa: 'desc',
+                    },
+                    take: 1,
+                });
+                break;
+        }
+        return lastAttempt && lastAttempt.tentativa !== null ? lastAttempt.tentativa + 1 : 1;
 
-    return lastAttempt && lastAttempt.tentativa !== null ? lastAttempt.tentativa + 1 : 1; // Caso não haja tentativas, começa com a tentativa 1
+    } catch {
+        return 1;
+    }
 }
