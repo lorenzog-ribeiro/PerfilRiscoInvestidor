@@ -28,6 +28,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     const [loading, setLoading] = useState(false);
     const [totalQuestions] = useState(10);
     const [userId, setUserId] = useState<string | undefined>(undefined); // State for user ID
+    const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
 
     const scenariosService = useMemo(() => new ScenariosService(), []);
 
@@ -60,6 +61,9 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                     setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                     setLoading(false);
                     isLoadingRef.current = false;
+                    if (Math.abs(response.data.forecast.mediana - response.data.forecast.valor_fixo) < 10 || response.data.forecast.mediana < 10) {
+                        onAnswered(); // pular próximas perguntas
+                    }
                 })
                 .catch((error: { message: string }) => {
                     console.log("API Error:", error.message);
@@ -95,6 +99,17 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
         if (loading || isLoadingRef.current) return;
         setSelected(data);
 
+        setSelectionHistory((prev) => {
+            const updated = [...prev, data.optionSelected].slice(-4); // guarda até os últimos 4
+            // Verifica os padrões
+            const lastFour = updated.join("");
+            if (lastFour === "ABAA" || lastFour === "BABB") {
+                console.log(updated)
+                onAnswered();
+                return updated;
+            }
+            return updated;
+        })
         // Avançar para a próxima pergunta após um breve delay
         setTimeout(() => handleNext(data), 500);
     };

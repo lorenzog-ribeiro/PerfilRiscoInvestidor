@@ -29,6 +29,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
     const [totalQuestions] = useState(7);
     const scenariosService = useMemo(() => new ScenariosService(), []);
     const [userId, setUserId] = useState<string | undefined>(undefined); // State for user ID
+    const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
 
     useEffect(() => {
         const userIdFromCookie = document.cookie
@@ -59,6 +60,9 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                     setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                     setLoading(false);
                     isLoadingRef.current = false;
+                    if (Math.abs(response.data.forecast.mediana - response.data.forecast.valor_fixo) < 10 || response.data.forecast.mediana < 10) {
+                        onAnswered(); // pular próximas perguntas
+                    }
                 })
                 .catch((error: { message: string }) => {
                     console.log("API Error:", error.message);
@@ -94,9 +98,21 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
         if (loading || isLoadingRef.current) return;
         setSelected(data);
 
+        setSelectionHistory((prev) => {
+            const updated = [...prev, data.optionSelected].slice(-4); // guarda até os últimos 4
+            // Verifica os padrões
+            const lastFour = updated.join("");
+            if (lastFour === "ABAA" || lastFour === "BABB") {
+                console.log(updated)
+                onAnswered();
+                return updated;
+            }
+            return updated;
+        })
         // Avançar para a próxima pergunta após um breve delay
         setTimeout(() => handleNext(data), 500);
     };
+
 
     const handleNext = (currentSelected: SelectedInterface) => {
         if (!currentSelected || !userId || loading || isLoadingRef.current) return;
@@ -162,15 +178,13 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                 ></div>
             </div> */}
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${
-                    loading ? "opacity-50 pointer-events-none" : ""
-                }`}
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
+                    }`}
             >
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"
-                    } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"
+                        } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
@@ -228,9 +242,8 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${
-                        selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
-                    } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
+                        } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
