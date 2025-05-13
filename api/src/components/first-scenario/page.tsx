@@ -12,8 +12,7 @@ interface ApiResponse {
     forecast: {
         mediana: number;
         valor_fixo: number;
-    },
-    continue: boolean;
+    }
 }
 
 const dataB = [
@@ -29,6 +28,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
     const [loading, setLoading] = useState(false); // Estado para controlar a animação de carregamento
     const [totalQuestions] = useState(8); // Total de perguntas
     const [storedUserId, setStoredUserId] = useState<string | undefined>(undefined); // State for user ID
+    const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
 
     const scenariosService = useMemo(() => new ScenariosService(), []);
 
@@ -47,42 +47,53 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
     // Função para obter e atualizar os valores após a chamada da API
     useEffect(() => {
-        if (storedUserId === undefined) return; // Avoid fetching data if userId is not set yet
+        if (storedUserId === undefined) return;
+
         const fetchData = () => {
             setLoading(true);
             scenariosService
                 .getwin(index, storedUserId)
                 .then((response: { data: ApiResponse }) => {
-                    setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
-                    setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
+                    const { mediana, valor_fixo } = response.data.forecast;
+                    setValue(mediana);
+                    setFixedValue(valor_fixo);
                     setLoading(false);
+
+                    // Verifica a diferença
+                    if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
+                        onAnswered(); // pular próximas perguntas
+                    }
                 })
                 .catch((error: { message: string }) => {
                     console.log("API Error:", error.message);
                     setLoading(false);
                 });
         };
+
         fetchData();
 
         setSelected(null);
         selectedRef.current = null;
     }, [index, storedUserId, scenariosService]);
 
-    const getBarColor = () => {
-        if (index === totalQuestions - 1) {
-            return "from-green-500 to-green-400";
-        }
-        return "from-red-500 to-orange-400";
-    };
-
     const sideSelected = (data: selectedInterface) => {
-        // Não processar cliques enquanto estiver carregando
         if (loading) return;
 
         selectedRef.current = data;
         setSelected(data);
 
-        // Avançar automaticamente para a próxima pergunta (substituindo o comportamento do botão)
+        setSelectionHistory((prev) => {
+            const updated = [...prev, data.optionSelected].slice(-4); // guarda até os últimos 4
+            // Verifica os padrões
+            const lastFour = updated.join("");
+            if (lastFour === "ABAA" || lastFour === "BABB") {
+                console.log(updated)
+                onAnswered();
+                return updated;
+            }
+            return updated;
+        });
+
         setTimeout(() => handleNext(data), 500);
     };
 
@@ -113,7 +124,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                     setTimeout(() => {
                         // Calcula o próximo índice após resposta
                         const nextIndex = index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
-                        if (nextIndex === totalQuestions - 1 || winresponse.data.continue == false ) {
+                        if (nextIndex === totalQuestions - 1) {
                             onAnswered();
                         }
                         // Depois busca os dados para o novo índice
