@@ -60,9 +60,9 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                     setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
                     setLoading(false);
                     isLoadingRef.current = false;
-                    if (Math.abs(response.data.forecast.mediana - response.data.forecast.valor_fixo) < 10 || response.data.forecast.mediana < 10) {
-                        onAnswered(); // pular próximas perguntas
-                    }
+                    // if (Math.abs(response.data.forecast.mediana - response.data.forecast.valor_fixo) < 10 || response.data.forecast.mediana < 10) {
+                    //     onAnswered(); // pular próximas perguntas
+                    // }
                 })
                 .catch((error: { message: string }) => {
                     console.log("API Error:", error.message);
