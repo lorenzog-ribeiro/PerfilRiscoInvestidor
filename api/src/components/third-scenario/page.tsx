@@ -26,7 +26,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
     const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
     const [selected, setSelected] = useState<SelectedInterface | null>(null);
     const [loading, setLoading] = useState(false);
-    const [totalQuestions] = useState(10);
+    const [totalQuestions] = useState(7);
     const [userId, setUserId] = useState<string | undefined>(undefined); // State for user ID
     const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
 

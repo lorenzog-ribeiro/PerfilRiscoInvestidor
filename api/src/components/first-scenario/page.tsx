@@ -26,7 +26,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
     const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
     const [selected, setSelected] = useState<selectedInterface | null>(null); // Inicialmente nenhuma opção selecionada
     const [loading, setLoading] = useState(false); // Estado para controlar a animação de carregamento
-    const [totalQuestions] = useState(8); // Total de perguntas
+    const [totalQuestions] = useState(7); // Total de perguntas
     const [storedUserId, setStoredUserId] = useState<string | undefined>(undefined); // State for user ID
     const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
 
