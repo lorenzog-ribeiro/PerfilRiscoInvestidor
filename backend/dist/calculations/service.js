@@ -64,7 +64,7 @@ const saveFirstStage = async (data) => {
             break;
     }
     // Verificar a diferença mínima
-    const Scenario = await (0, repository_1.saveScenarioSelectedFirstStage)({
+    return await (0, repository_1.saveScenarioSelectedFirstStage)({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
@@ -73,12 +73,6 @@ const saveFirstStage = async (data) => {
         valor_fixo: Safe,
         tentativa
     });
-    const difference = Math.abs(aggregate - Safe);
-    const minimumDifference = 10;
-    if (difference < minimumDifference) {
-        return { Scenario, continue: false };
-    }
-    return { Scenario, continue: true };
 };
 exports.saveFirstStage = saveFirstStage;
 // Função para buscar os valores da segunda fase
@@ -132,7 +126,7 @@ const saveSecondStage = async (data) => {
             aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
             break;
     }
-    const Scenario = await (0, repository_1.saveScenarioSelectedSecondStage)({
+    return await (0, repository_1.saveScenarioSelectedSecondStage)({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
@@ -141,12 +135,6 @@ const saveSecondStage = async (data) => {
         valor_fixo: -Risk,
         tentativa
     });
-    const difference = Math.abs(aggregate - Risk);
-    const minimumDifference = 10;
-    if (difference < minimumDifference) {
-        return { Scenario, continue: false };
-    }
-    return { Scenario, continue: true };
 };
 exports.saveSecondStage = saveSecondStage;
 // Função para buscar os valores da terceira fase
@@ -201,7 +189,7 @@ const saveThirdStage = async (data) => {
             aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
             break;
     }
-    const Scenario = await (0, repository_1.saveScenarioSelectedThirdStage)({
+    return await (0, repository_1.saveScenarioSelectedThirdStage)({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
@@ -210,12 +198,6 @@ const saveThirdStage = async (data) => {
         valor_fixo: Risk?.valor_selecionado,
         tentativa
     });
-    const difference = Math.abs(aggregate - (Risk?.valor_selecionado ?? 0));
-    const minimumDifference = 10;
-    if (difference < minimumDifference) {
-        return { Scenario, continue: false };
-    }
-    return { Scenario, continue: true };
 };
 exports.saveThirdStage = saveThirdStage;
 const result = async (data) => {

@@ -10,7 +10,7 @@ const searchValueFirstStage = async (data) => {
             where: {
                 usuario_id: data.usuario_id,
                 pergunta: data.pergunta,
-                tentativa: data.tentativa // Considerando tanto a pergunta quanto a tentativa
+                tentativa: data.tentativa
             }
         });
         return result;
@@ -174,49 +174,33 @@ const searchResultCalc = async (data) => {
 };
 exports.searchResultCalc = searchResultCalc;
 const searchLastAttempt = async (usuario_id, stage, pergunta) => {
-    let lastAttempt = null;
     try {
-        switch (stage) {
-            case 1:
-                lastAttempt = await prisma.primeira_etapa.findFirst({
-                    where: {
-                        usuario_id: usuario_id,
-                        pergunta: pergunta
-                    },
-                    orderBy: {
-                        tentativa: 'desc',
-                    },
-                    take: 1,
-                });
-                break;
-            case 2:
-                lastAttempt = await prisma.segunda_etapa.findFirst({
-                    where: {
-                        usuario_id: usuario_id,
-                        pergunta: pergunta
-                    },
-                    orderBy: {
-                        tentativa: 'desc',
-                    },
-                    take: 1,
-                });
-                break;
-            case 3:
-                lastAttempt = await prisma.terceira_etapa.findFirst({
-                    where: {
-                        usuario_id: usuario_id,
-                        pergunta: pergunta
-                    },
-                    orderBy: {
-                        tentativa: 'desc',
-                    },
-                    take: 1,
-                });
-                break;
+        // Mapeamento com a tipagem correta para evitar erro de tipagem
+        const stageMapping = {
+            1: prisma.primeira_etapa,
+            2: prisma.segunda_etapa,
+            3: prisma.terceira_etapa,
+        };
+        // Garantir que o estágio é válido
+        const selectedStage = stageMapping[stage];
+        if (!selectedStage) {
+            console.warn(`Estágio inválido fornecido: ${stage}`);
+            return 1;
         }
+        const lastAttempt = await selectedStage.findFirst({
+            where: {
+                usuario_id: usuario_id,
+                pergunta: pergunta,
+            },
+            orderBy: {
+                tentativa: 'desc',
+            },
+            take: 1,
+        });
+        // Retorna tentativa + 1 ou 1 se não houver tentativa
         return lastAttempt && lastAttempt.tentativa !== null ? lastAttempt.tentativa + 1 : 1;
     }
-    catch {
+    catch (error) {
         return 1;
     }
 };
