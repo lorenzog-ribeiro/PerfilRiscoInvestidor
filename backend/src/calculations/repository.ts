@@ -5,11 +5,14 @@ const prisma = new PrismaClient();
 // Função para buscar os valores da primeira etapa, considerando a pergunta e a tentativa
 export const searchValueFirstStage = async (data: any) => {
     try {
-        const result = await prisma.primeira_etapa.findFirst({
+        const result = await prisma.segunda_etapa.findFirst({
             where: {
                 usuario_id: data.usuario_id,
                 pergunta: data.pergunta,
                 tentativa: data.tentativa
+            },
+            orderBy: {
+                tentativa: 'desc' 
             }
         });
         return result;
@@ -26,7 +29,10 @@ export const searchValueSecondStage = async (data: any) => {
             where: {
                 usuario_id: data.usuario_id,
                 pergunta: data.pergunta,
-                tentativa: data.tentativa // Considerando tanto a pergunta quanto a tentativa
+                tentativa: data.tentativa
+            },
+            orderBy: {
+                tentativa: 'desc' 
             }
         });
         return result;
@@ -39,11 +45,14 @@ export const searchValueSecondStage = async (data: any) => {
 // Função para buscar os valores da terceira etapa, considerando a pergunta e a tentativa
 export const searchValueThirdStage = async (data: any) => {
     try {
-        const result = await prisma.terceira_etapa.findFirst({
+        const result = await prisma.segunda_etapa.findFirst({
             where: {
                 usuario_id: data.usuario_id,
                 pergunta: data.pergunta,
-                tentativa: data.tentativa // Considerando tanto a pergunta quanto a tentativa
+                tentativa: data.tentativa
+            },
+            orderBy: {
+                tentativa: 'desc' 
             }
         });
         return result;
