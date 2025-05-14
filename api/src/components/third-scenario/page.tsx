@@ -189,7 +189,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                             </span>
                         </div>
                         <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
-                        <div className="text-xs text-center text-gray-600">
+                        <div className="text-xs text-center text-gray-600 p-2.5">
                             <div>
                                 <b>50% chance de não perder</b>
                             </div>
