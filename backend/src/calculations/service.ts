@@ -77,7 +77,7 @@ export const saveFirstStage = async (data: any) => {
     }
 
     // Verificar a diferença mínima
-    const Scenario = await saveScenarioSelectedFirstStage({
+    return await saveScenarioSelectedFirstStage({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
@@ -86,15 +86,6 @@ export const saveFirstStage = async (data: any) => {
         valor_fixo: Safe,
         tentativa
     });
-
-    const difference = Math.abs(aggregate - Safe);
-    const minimumDifference = 10;
-
-    if (difference < minimumDifference) {
-        return { Scenario, continue: false };
-    }
-
-    return { Scenario, continue: true };
 }
 
 
@@ -154,7 +145,7 @@ export const saveSecondStage = async (data: any) => {
             break;
     }
 
-    const Scenario = await saveScenarioSelectedSecondStage({
+    return await saveScenarioSelectedSecondStage({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
@@ -164,14 +155,6 @@ export const saveSecondStage = async (data: any) => {
         tentativa
     });
 
-    const difference = Math.abs(aggregate - Risk);
-    const minimumDifference = 10;
-
-    if (difference < minimumDifference) {
-        return { Scenario, continue: false };
-    }
-
-    return { Scenario, continue: true };
 }
 
 // Função para buscar os valores da terceira fase
@@ -230,7 +213,7 @@ export const saveThirdStage = async (data: any) => {
             break;
     }
 
-    const Scenario = await saveScenarioSelectedThirdStage({
+    return await saveScenarioSelectedThirdStage({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
         lado_selecionado: data.optionSelected,
@@ -239,15 +222,6 @@ export const saveThirdStage = async (data: any) => {
         valor_fixo: Risk?.valor_selecionado,
         tentativa
     });
-
-    const difference = Math.abs(aggregate - (Risk?.valor_selecionado ?? 0));
-    const minimumDifference = 10;
-
-    if (difference < minimumDifference) {
-        return { Scenario, continue: false };
-    }
-
-    return { Scenario, continue: true };
 }
 
 
