@@ -50,6 +50,7 @@ exports.getLossScenario = getLossScenario;
 const lossSCenario = async (req, res) => {
     try {
         const { scenario, optionSelected, valueSelected, userId } = req.body;
+        console.log(scenario, optionSelected, valueSelected, userId);
         const forecast = await (0, service_1.saveSecondStage)({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
         res.status(200).json({ forecast });
     }

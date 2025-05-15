@@ -55,6 +55,7 @@ export const getLossScenario = async (req: Request, res: Response) => {
 export const lossSCenario = async (req: Request, res: Response) => {
     try {
         const { scenario, optionSelected, valueSelected, userId } = req.body;
+        console.log(scenario, optionSelected, valueSelected, userId)
 
         const forecast = await saveSecondStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
 

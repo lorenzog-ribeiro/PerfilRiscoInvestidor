@@ -29,7 +29,7 @@ export const getFirstStageValues = async (data: any) => {
             const scenario = await searchValueFirstStage({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa
+                tentativa: tentativa
             });
             if (scenario) {
                 return scenario;
@@ -45,14 +45,14 @@ export const getFirstStageValues = async (data: any) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Safe,
-                tentativa
+                tentativa: tentativa
             });
             break;
         default:
             return await searchValueFirstStage({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa
+                tentativa: tentativa
             });
             break;
     }
@@ -84,7 +84,7 @@ export const saveFirstStage = async (data: any) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: Safe,
-        tentativa
+        tentativa: tentativa
     });
 }
 
@@ -98,7 +98,7 @@ export const getSecondStageValues = async (data: any) => {
             const scenario = await searchValueSecondStage({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa
+                tentativa: tentativa
             });
             if (scenario) {
                 return scenario;
@@ -114,14 +114,14 @@ export const getSecondStageValues = async (data: any) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: -Risk,
-                tentativa
+                tentativa: tentativa
             });
             break;
         default:
             return await searchValueSecondStage({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa
+                tentativa: tentativa
             });
             break;
     }
@@ -141,10 +141,9 @@ export const saveSecondStage = async (data: any) => {
             aggregate = data.valueSelected - (baseValue / (2 ** data.scenario));
             break;
         case ("B"):
-            aggregate = data.valueSelected + (baseValue / 2 ** data.scenario);
+            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
             break;
     }
-
     return await saveScenarioSelectedSecondStage({
         valor_selecionado: data.valueSelected,
         mediana: roundToNearest10(aggregate),
@@ -152,7 +151,7 @@ export const saveSecondStage = async (data: any) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: -Risk,
-        tentativa
+        tentativa: tentativa
     });
 
 }
@@ -182,14 +181,14 @@ export const getThirdStageValues = async (data: any) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Number(Risk?.valor_selecionado),
-                tentativa
+                tentativa: tentativa
             });
             break;
         default:
             return await searchValueThirdStage({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa
+                tentativa: tentativa
             });
             break;
     }
@@ -221,7 +220,7 @@ export const saveThirdStage = async (data: any) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: Risk?.valor_selecionado,
-        tentativa
+        tentativa: tentativa
     });
 }
 

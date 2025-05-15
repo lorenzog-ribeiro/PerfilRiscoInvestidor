@@ -20,7 +20,7 @@ const getFirstStageValues = async (data) => {
             const scenario = await (0, repository_1.searchValueFirstStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa
+                tentativa: tentativa
             });
             if (scenario) {
                 return scenario;
@@ -35,14 +35,14 @@ const getFirstStageValues = async (data) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Safe,
-                tentativa
+                tentativa: tentativa
             });
             break;
         default:
             return await (0, repository_1.searchValueFirstStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa
+                tentativa: tentativa
             });
             break;
     }
@@ -71,7 +71,7 @@ const saveFirstStage = async (data) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: Safe,
-        tentativa
+        tentativa: tentativa
     });
 };
 exports.saveFirstStage = saveFirstStage;
@@ -83,7 +83,7 @@ const getSecondStageValues = async (data) => {
             const scenario = await (0, repository_1.searchValueSecondStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa
+                tentativa: tentativa
             });
             if (scenario) {
                 return scenario;
@@ -98,14 +98,14 @@ const getSecondStageValues = async (data) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: -Risk,
-                tentativa
+                tentativa: tentativa
             });
             break;
         default:
             return await (0, repository_1.searchValueSecondStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa
+                tentativa: tentativa
             });
             break;
     }
@@ -123,7 +123,7 @@ const saveSecondStage = async (data) => {
             aggregate = data.valueSelected - (baseValue / (2 ** data.scenario));
             break;
         case ("B"):
-            aggregate = data.valueSelected + (baseValue / 2 ** data.scenario);
+            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
             break;
     }
     return await (0, repository_1.saveScenarioSelectedSecondStage)({
@@ -133,7 +133,7 @@ const saveSecondStage = async (data) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: -Risk,
-        tentativa
+        tentativa: tentativa
     });
 };
 exports.saveSecondStage = saveSecondStage;
@@ -160,14 +160,14 @@ const getThirdStageValues = async (data) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Number(Risk?.valor_selecionado),
-                tentativa
+                tentativa: tentativa
             });
             break;
         default:
             return await (0, repository_1.searchValueThirdStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa
+                tentativa: tentativa
             });
             break;
     }
@@ -197,7 +197,7 @@ const saveThirdStage = async (data) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: Risk?.valor_selecionado,
-        tentativa
+        tentativa: tentativa
     });
 };
 exports.saveThirdStage = saveThirdStage;
