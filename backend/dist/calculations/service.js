@@ -145,7 +145,7 @@ const getThirdStageValues = async (data) => {
             const scenario = await (0, repository_1.searchValueThirdStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa
+                tentativa: tentativa
             });
             if (scenario) {
                 return scenario;
@@ -251,8 +251,7 @@ function base(Safe, Risk, type) {
     }
 }
 async function getSecondForThird(data) {
-    return await (0, repository_1.searchValueSecondStage)({
+    return await (0, repository_1.searchLastValueSecondStage)({
         usuario_id: data.userId,
-        pergunta: 5
     });
 }

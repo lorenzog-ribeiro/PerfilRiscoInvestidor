@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchLastAttempt = exports.searchResultCalc = exports.saveScenarioSelectedThirdStage = exports.saveScenarioSelectedSecondStage = exports.saveScenarioSelectedFirstStage = exports.searchValueThirdStage = exports.searchValueSecondStage = exports.searchValueFirstStage = void 0;
+exports.searchLastValueSecondStage = exports.searchLastAttempt = exports.searchResultCalc = exports.saveScenarioSelectedThirdStage = exports.saveScenarioSelectedSecondStage = exports.saveScenarioSelectedFirstStage = exports.searchValueThirdStage = exports.searchValueSecondStage = exports.searchValueFirstStage = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 // Função para buscar os valores da primeira etapa, considerando a pergunta e a tentativa
@@ -205,3 +205,22 @@ const searchLastAttempt = async (usuario_id, stage, pergunta) => {
     }
 };
 exports.searchLastAttempt = searchLastAttempt;
+const searchLastValueSecondStage = async (data) => {
+    try {
+        const result = await prisma.segunda_etapa.findFirst({
+            where: {
+                usuario_id: data.usuario_id,
+            },
+            orderBy: [
+                { pergunta: 'desc' },
+                { tentativa: 'desc' }
+            ],
+        });
+        return result;
+    }
+    catch (error) {
+        console.error('Erro ao buscar na segunda etapa:', error);
+        throw error;
+    }
+};
+exports.searchLastValueSecondStage = searchLastValueSecondStage;
