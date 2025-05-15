@@ -121,7 +121,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
         isLoadingRef.current = true;
 
         // Determinar qual valor enviar
-        const valueToSend = currentSelected.optionSelected === "A" ? fixedValue : value;
+        const valueToSend = value;
 
         // Determinar o próximo índice considerando a regra especial para índice 0
         let currentIndex = index;
