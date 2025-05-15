@@ -208,8 +208,8 @@ export const saveThirdStage = async (data: any) => {
             aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
             break;
         case ("B"):
-            const adjustedBaseValue = baseValue! * -1;
-            aggregate = data.valueSelected + ((adjustedBaseValue ?? 0) / (2 ** data.scenario));
+            //const adjustedBaseValue = baseValue! * -1;
+            aggregate = data.valueSelected + ((baseValue ?? 0) / (2 ** data.scenario));
             break;
     }
 
