@@ -204,11 +204,12 @@ exports.saveThirdStage = saveThirdStage;
 const result = async (data) => {
     const firstFirstStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'asc', stage: 1 });
     const lastFirstStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'desc', stage: 1 });
+    const resultFirst = ((Number(firstFirstStage?.mediana)) / (Number(lastFirstStage?.mediana)));
     const firstThirdStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'asc', stage: 3 });
     const lastThirdStage = await (0, repository_1.searchResultCalc)({ usuario_id: data, order: 'desc', stage: 3 });
-    const result = ((Number(firstThirdStage?.mediana)) / (Number(lastThirdStage?.mediana))) /
-        ((Number(firstFirstStage?.mediana)) / (Number(lastFirstStage?.mediana)));
-    return getProfile({ indice: result, usuario: await (0, repository_2.getbyId)(data) });
+    const resultThird = ((Number(firstThirdStage?.mediana)) / (Number(lastThirdStage?.mediana)));
+    const result = resultThird / resultFirst;
+    return getProfile({ indice: { result, resultThird, resultFirst }, usuario: await (0, repository_2.getbyId)(data) });
 };
 exports.result = result;
 function getProfile(data) {
@@ -232,7 +233,7 @@ function getProfile(data) {
         return {
             usuario: data.usuario,
             valor: data.indice,
-            perfil: "Avesso à perda",
+            perfil: "Aversso à perda",
             descricao: "Você busca maiores retornos mesmo com maior risco.",
         };
     }
