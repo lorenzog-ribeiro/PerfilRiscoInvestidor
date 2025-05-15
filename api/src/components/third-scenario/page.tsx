@@ -188,7 +188,6 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                 Investimento A
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">Resultado incerto</h2>
                         <div className="text-xs text-center text-gray-600 p-2.5">
                             <div>
                                 <b>50% chance de não perder</b>
@@ -259,7 +258,6 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                 Investimento B
                             </span>
                         </div>
-                        <h2 className="text-lg font-semibold text-gray-800 text-center">100% certeza de perda</h2>
                         <div className="flex justify-center items-center pt-9.5">
                             <PieChart width={180} height={180}>
                                 <Pie

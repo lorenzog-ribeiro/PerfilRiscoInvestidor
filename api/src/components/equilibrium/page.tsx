@@ -37,7 +37,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
             const P1 = { x: 350, y: 50 }; // Ponto final da linha azul (ESTAÇÃO B)
 
             // Calculando a posição t (de 0 a 1) baseado no valor, que define onde a bolinha vai estar
-            let t = Math.max(0, Math.min(1, valor / 2)); // Normaliza o valor para estar entre 0 e 1
+            let t = Math.max(0, Math.min(2, valor / 1)); // Normaliza o valor para estar entre 0 e 1
 
             // Interpolação linear para calcular a posição da bolinha
             const cx = P0.x + t * (P1.x - P0.x);
