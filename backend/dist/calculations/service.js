@@ -119,11 +119,11 @@ const saveSecondStage = async (data) => {
     let aggregate;
     const baseValue = base(Safe, Risk, 2) ?? 0;
     switch (data.optionSelected) {
-        case ("B"):
-            aggregate = data.valueSelected - (baseValue / 2 ** data.scenario);
-            break;
         case ("A"):
-            aggregate = data.valueSelected + (baseValue / (2 ** data.scenario));
+            aggregate = data.valueSelected - (baseValue / (2 ** data.scenario));
+            break;
+        case ("B"):
+            aggregate = data.valueSelected + (baseValue / 2 ** data.scenario);
             break;
     }
     return await (0, repository_1.saveScenarioSelectedSecondStage)({
@@ -185,7 +185,8 @@ const saveThirdStage = async (data) => {
             aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
             break;
         case ("B"):
-            //const adjustedBaseValue = baseValue! * -1;
+            const adjustedBaseValue = baseValue * -1;
+            console.log(adjustedBaseValue, data.valueSelected);
             aggregate = data.valueSelected + ((baseValue ?? 0) / (2 ** data.scenario));
             break;
     }

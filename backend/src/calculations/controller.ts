@@ -30,8 +30,6 @@ export const winScenario = async (req: Request, res: Response) => {
 
         const forecast = await saveFirstStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
 
-        console.log(forecast)
-
         res.status(200).json({ forecast });
     }
     catch (error: any) {
