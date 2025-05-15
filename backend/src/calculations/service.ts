@@ -6,7 +6,8 @@ import {
     saveScenarioSelectedThirdStage,
     searchValueThirdStage,
     searchResultCalc,
-    searchLastAttempt
+    searchLastAttempt,
+    searchLastValueSecondStage
 } from "./repository";
 import { getbyId } from '../user/repository';
 
@@ -165,7 +166,7 @@ export const getThirdStageValues = async (data: any) => {
             const scenario = await searchValueThirdStage({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa
+                tentativa: tentativa
             });
             if (scenario) {
                 return scenario;
@@ -278,8 +279,7 @@ function base(Safe: number, Risk: number, type: number) {
 }
 
 async function getSecondForThird(data: any) {
-    return await searchValueSecondStage({
+    return await searchLastValueSecondStage({
         usuario_id: data.userId,
-        pergunta: 5
     });
 }

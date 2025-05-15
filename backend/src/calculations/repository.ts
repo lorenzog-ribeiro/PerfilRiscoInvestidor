@@ -172,7 +172,7 @@ export const searchLastAttempt = async (usuario_id: string, stage: number, pergu
             1: prisma.primeira_etapa,
             2: prisma.segunda_etapa,
             3: prisma.terceira_etapa,
-        }; 
+        };
 
         // Garantir que o estágio é válido
         const selectedStage = stageMapping[stage as keyof typeof stageMapping];
@@ -200,5 +200,23 @@ export const searchLastAttempt = async (usuario_id: string, stage: number, pergu
 
     } catch (error) {
         return 1;
+    }
+}
+
+export const searchLastValueSecondStage = async (data: any) => {
+    try {
+        const result = await prisma.segunda_etapa.findFirst({
+            where: {
+                usuario_id: data.usuario_id,
+            },
+            orderBy: [
+                { pergunta: 'desc' },
+                { tentativa: 'desc' }
+            ],
+        });
+        return result;
+    } catch (error) {
+        console.error('Erro ao buscar na segunda etapa:', error);
+        throw error;
     }
 }
