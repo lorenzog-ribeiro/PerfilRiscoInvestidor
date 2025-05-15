@@ -16,8 +16,8 @@ interface ApiResponse {
 }
 
 const dataB = [
-    { name: "Sem Ganho", value: 50, color: "red", label: "+R$1.000" },
     { name: "Sem Perda", value: 50, color: "gray" },
+    { name: "Sem Ganho", value: 50, color: "red", label: "+R$1.000" },
 ];
 
 export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }) {
@@ -188,7 +188,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                 Investimento A
                             </span>
                         </div>
-                        <div className="text-xs text-center text-gray-600 p-2.5">
+                        <div className="text-xs text-center text-gray-600">
                             <div>
                                 <b>50% chance de não perder</b>
                             </div>
@@ -223,7 +223,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                Sem Perda
+                                                               R${fixedValue}
                                                             </tspan>
                                                         </text>
                                                         <text
@@ -233,7 +233,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                                             dominantBaseline="middle"
                                                         >
                                                             <tspan className="fill-white text-sm font-bold">
-                                                                R${fixedValue}
+                                                                Sem Perda
                                                             </tspan>
                                                         </text>
                                                     </>
@@ -258,7 +258,12 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                                 Investimento B
                             </span>
                         </div>
-                        <div className="flex justify-center items-center pt-9.5">
+                        <div className="text-xs text-center text-gray-600 p-2.5">
+                            <div>
+                                <b>100% certeza de perda</b>
+                            </div>
+                        </div>
+                        <div className="flex justify-center items-center pt-.5">
                             <PieChart width={180} height={180}>
                                 <Pie
                                     data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]}
