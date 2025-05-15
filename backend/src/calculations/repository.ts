@@ -175,14 +175,16 @@ export const searchLastAttempt = async (usuario_id: string, stage: number, pergu
         }; 
 
         // Garantir que o estágio é válido
-        const selectedStage = stageMapping[stage];
+        const selectedStage = stageMapping[stage as keyof typeof stageMapping];
 
         if (!selectedStage) {
             console.warn(`Estágio inválido fornecido: ${stage}`);
             return 1;
         }
 
-        const lastAttempt = await selectedStage.findFirst({
+        const lastAttempt = await (selectedStage as {
+            findFirst: typeof prisma.primeira_etapa.findFirst
+        }).findFirst({
             where: {
                 usuario_id: usuario_id,
                 pergunta: pergunta,
