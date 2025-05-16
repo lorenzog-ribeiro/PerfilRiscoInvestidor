@@ -200,7 +200,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                             <PieChart width={180} height={180}>
                                 <Pie
                                     stroke="none"
-                                    strokeWidth={0}
+                                    strokeWidth={3}
                                     data={dataB}
                                     dataKey="value"
                                     nameKey="name"

@@ -235,33 +235,52 @@ export const result = async (data: any) => {
     const firstThirdStage = await searchResultCalc({ usuario_id: data, order: 'asc', stage: 3 });
     const lastThirdStage = await searchResultCalc({ usuario_id: data, order: 'desc', stage: 3 });
     const resultThird = ((Number(firstThirdStage?.mediana)) / (Number(lastThirdStage?.mediana)));
-    
+
     const result = resultThird / resultFirst;
 
-    return getProfile({ indice: {result,resultThird,resultFirst}, usuario: await getbyId(data) });
+    return getProfile({ indice: result, perda: resultThird, ganho: resultFirst, usuario: await getbyId(data) });
 }
 
 function getProfile(data: any) {
-    if (data.indice < 1) {
+    if (data.indice < 1.0) {
         return {
             usuario: data.usuario,
             valor: data.indice,
+            perda: data.perda,
+            ganho: data.ganho,
             perfil: "Tolerante à perda",
-            descricao: "Você valoriza segurança e prefere evitar riscos.",
+            curta: "Você tende a aceitar riscos com mais facilidade.",
+            descricao: "Para você, a possibilidade de ganhar é mais atrativa do que o medo de perder. Sua tomada de decisão é orientada por oportunidades, mesmo que exista alguma chance de prejuízo.",
         };
-    } else if (data.indice = 1) {
+    } else if (data.indice === 1.0) {
         return {
             usuario: data.usuario,
             valor: data.indice,
+            perda: data.perda,
+            ganho: data.ganho,
             perfil: "Neutro à perda",
-            descricao: "Você aceita algum risco em troca de retorno moderado.",
+            curta: "Você valoriza ganhos e perdas de forma equilibrada.",
+            descricao: "Ao tomar decisões, você considera igualmente o risco de perder e a chance de ganhar. Sua preferência indica um comportamento racional e ponderado frente ao risco.",
+        };
+    } else if (data.indice > 1.0 && data.indice <= 1.5) {
+        return {
+            usuario: data.usuario,
+            valor: data.indice,
+            perda: data.perda,
+            ganho: data.ganho,
+            perfil: "Averso à perda",
+            curta: "Você sente mais o impacto das perdas do que o prazer pelos ganhos.",
+            descricao: "Para aceitar correr um risco, é necessário que o ganho potencial seja maior que a possível perda. Isso demonstra cautela e preocupação em proteger seus recursos.",
         };
     } else {
         return {
             usuario: data.usuario,
             valor: data.indice,
-            perfil: "Aversso à perda",
-            descricao: "Você busca maiores retornos mesmo com maior risco.",
+            perda: data.perda,
+            ganho: data.ganho,
+            perfil: "Fortemente averso à perda",
+            curta: "Você evita perdas a qualquer custo.",
+            descricao: "Seu comportamento indica forte sensibilidade a prejuízos. Você só aceita correr riscos quando o retorno é muito alto em relação à possível perda. Essa postura reflete um perfil cauteloso e protetor.",
         };
     }
 }
