@@ -23,7 +23,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     const [valor, setValor] = useState<number>(perfilData.profile.valor); // Valor aleatório entre 0 e 2
     const [posicao, setPosicao] = useState<{ cx: number; cy: number }>({ cx: 200, cy: 125 });
     const [linhaFinal, setLinhaFinal] = useState<{ x: number; y: number }>({ x: 220, y: 160 });
-
+    const valorResult = perfilData.profile.valor * 1000;
     // Ajusta a rotação com base no valor
     // Se valor > 1, inclina para o lado verde (positivo); se < 1, para o lado vermelho (negativo).
     const rotacao = valor < 1 ? (1 - valor) * -15 : (valor - 1) * 15; // Lado negativo para valor < 1, positivo para > 1
@@ -63,16 +63,32 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                         <line x1="50" y1="180" x2="350" y2="180" stroke="#94a3b8" stroke-width="2" />
 
                         {/* Bolinha vermelha (lado negativo) */}
+                        <text x="120" y="130" fill="#000" textAnchor="middle" fontSize="12">
+                            <tspan x="120" dy="0">Você</tspan>
+                            <tspan x="120" dy="1.2em">aceitaria</tspan>
+                            <tspan x="120" dy="1.2em">perder</tspan>
+                        </text>
                         <circle cx="120" cy="230" r="5" fill="#ef4444" />
                         <line x1="120" y1="230" x2="120" y2="180" stroke="#ef4444" stroke-width="2" />
+                        <text x="120" y="245" fill="red" textAnchor="middle" fontSize="12">
+                            <tspan x="120" dy="0">R$ 1000</tspan>
+                        </text>
 
                         {/* Bolinha cinza (ponto de equilíbrio) */}
                         <circle cx="200" cy="180" r="5" fill="#94a3b8" />
                         <line x1="200" y1="0" x2="200" y2="180" stroke="#94a3b8" stroke-width="2" />
 
                         {/* Bolinha verde (lado positivo) */}
+                        <text x="280" y="130" fill="#000" textAnchor="middle" fontSize="12">
+                            <tspan x="280" dy="0">Se tivesse</tspan>
+                            <tspan x="280" dy="1.2em">chance de</tspan>
+                            <tspan x="280" dy="1.2em">ganhar</tspan>
+                        </text>
                         <circle cx="280" cy="230" r="5" fill="#22c55e" />
                         <line x1="280" y1="230" x2="280" y2="180" stroke="#22c55e" stroke-width="2" />
+                        <text x="280" y="245" fill="green" textAnchor="middle" fontSize="12">
+                            <tspan x="280" dy="0">R$ {valorResult}</tspan>
+                        </text>
                     </svg>
                 </div>
 
@@ -103,7 +119,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                     </Button>
                 </div>
             </CardContent>
-        </Card>
+        </Card >
     );
 };
 
