@@ -23,7 +23,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     const [valor, setValor] = useState<number>(perfilData.profile.valor); // Valor aleatório entre 0 e 2
     const [posicao, setPosicao] = useState<{ cx: number; cy: number }>({ cx: 200, cy: 125 });
     const [linhaFinal, setLinhaFinal] = useState<{ x: number; y: number }>({ x: 220, y: 160 });
-    const valorResult = perfilData.profile.valor * 1000;
+    let valorResult = (perfilData.profile.valor * 1000).toFixed(0);
     // Ajusta a rotação com base no valor
     // Se valor > 1, inclina para o lado verde (positivo); se < 1, para o lado vermelho (negativo).
     const rotacao = valor < 1 ? (1 - valor) * -15 : (valor - 1) * 15; // Lado negativo para valor < 1, positivo para > 1
