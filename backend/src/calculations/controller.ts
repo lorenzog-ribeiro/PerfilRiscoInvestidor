@@ -39,7 +39,7 @@ export const winScenario = async (req: Request, res: Response) => {
 export const getLossScenario = async (req: Request, res: Response) => {
 
     try {
-        const { scenario, userId } = req.query;
+        const { scenario, userId, attempt } = req.query;
 
         const forecast = await getSecondStageValues({
             scenario: parseInt(scenario as string || "0"),
@@ -53,10 +53,10 @@ export const getLossScenario = async (req: Request, res: Response) => {
 }
 export const lossSCenario = async (req: Request, res: Response) => {
     try {
-        const { scenario, optionSelected, valueSelected, userId } = req.body;
+        const { scenario, optionSelected, valueSelected, userId, attempt } = req.body;
         console.log(scenario, optionSelected, valueSelected, userId)
 
-        const forecast = await saveSecondStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
+        const forecast = await saveSecondStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId, attempt: Number(attempt) });
 
         res.status(200).json({ forecast });
     }
@@ -68,7 +68,7 @@ export const lossSCenario = async (req: Request, res: Response) => {
 export const getOnlyLossScenario = async (req: Request, res: Response) => {
 
     try {
-        const { scenario, userId } = req.query;
+        const { scenario, userId, attempt } = req.query;
 
         const forecast = await getThirdStageValues({
             scenario: parseInt(scenario as string || "0"),
@@ -82,9 +82,9 @@ export const getOnlyLossScenario = async (req: Request, res: Response) => {
 }
 export const onlyLossScenario = async (req: Request, res: Response) => {
     try {
-        const { scenario, optionSelected, valueSelected, userId } = req.body;
+        const { scenario, optionSelected, valueSelected, userId, attempt } = req.body;
 
-        const forecast = await saveThirdStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
+        const forecast = await saveThirdStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId, attempt: Number(attempt) });
 
         res.status(200).json({ forecast });
     }

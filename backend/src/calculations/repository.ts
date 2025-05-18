@@ -208,10 +208,10 @@ export const searchLastValueSecondStage = async (data: any) => {
         const result = await prisma.segunda_etapa.findFirst({
             where: {
                 usuario_id: data.usuario_id,
+                tentativa: data.tentativa
             },
             orderBy: [
                 { pergunta: 'desc' },
-                { tentativa: 'desc' }
             ],
         });
         return result;

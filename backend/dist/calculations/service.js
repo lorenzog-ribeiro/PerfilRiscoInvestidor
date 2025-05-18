@@ -4,9 +4,9 @@ exports.result = exports.saveThirdStage = exports.getThirdStageValues = exports.
 const repository_1 = require("./repository");
 const repository_2 = require("../user/repository");
 // Função para obter a última tentativa de um usuário em uma determinada fase
-// const getLastAttempt = async (userId: string, stage: number, scenario: number) => {
-//     const lastAttempt = await searchLastAttempt(userId, stage, scenario);
-//     return lastAttempt;
+// const getLastattempt = async (userId: string, stage: number, scenario: number) => {
+//     const lastattempt = await searchLastattempt(userId, stage, scenario);
+//     return lastattempt;
 // }
 function roundToNearest10(value) {
     const precisionValue = parseFloat(value.toFixed(2));
@@ -14,7 +14,7 @@ function roundToNearest10(value) {
 }
 // Função para buscar os valores da primeira fase
 const getFirstStageValues = async (data) => {
-    // const tentativa = await getLastAttempt(data.userId, 1, data.scenario);
+    // const tentativa = await getLastattempt(data.userId, 1, data.scenario);
     console.log(data);
     switch (data.scenario) {
         case 0:
@@ -82,7 +82,7 @@ const getSecondStageValues = async (data) => {
             const scenario = await (0, repository_1.searchValueSecondStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa: data.Attempt
+                tentativa: data.attempt
             });
             if (scenario) {
                 return scenario;
@@ -97,14 +97,14 @@ const getSecondStageValues = async (data) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: -Risk,
-                tentativa: data.Attempt
+                tentativa: data.attempt
             });
             break;
         default:
             return await (0, repository_1.searchValueSecondStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa: data.Attempt
+                tentativa: data.attempt
             });
             break;
     }
@@ -131,7 +131,7 @@ const saveSecondStage = async (data) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: -Risk,
-        tentativa: data.Attempt
+        tentativa: data.attempt
     });
 };
 exports.saveSecondStage = saveSecondStage;
@@ -142,7 +142,7 @@ const getThirdStageValues = async (data) => {
             const scenario = await (0, repository_1.searchValueThirdStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario,
-                tentativa: data.Attempt
+                tentativa: data.attempt
             });
             if (scenario) {
                 return scenario;
@@ -157,14 +157,14 @@ const getThirdStageValues = async (data) => {
                 usuario_id: data.userId,
                 pergunta: 0,
                 valor_fixo: Number(Risk?.valor_selecionado),
-                tentativa: data.Attempt
+                tentativa: data.attempt
             });
             break;
         default:
             return await (0, repository_1.searchValueThirdStage)({
                 usuario_id: data.userId,
                 pergunta: data.scenario - 1,
-                tentativa: data.Attempt
+                tentativa: data.attempt
             });
             break;
     }
@@ -193,7 +193,7 @@ const saveThirdStage = async (data) => {
         usuario_id: data.userId,
         pergunta: data.scenario,
         valor_fixo: Risk?.valor_selecionado,
-        tentativa: data.Attempt
+        tentativa: data.attempt
     });
 };
 exports.saveThirdStage = saveThirdStage;
@@ -270,5 +270,6 @@ function base(Safe, Risk, type) {
 async function getSecondForThird(data) {
     return await (0, repository_1.searchLastValueSecondStage)({
         usuario_id: data.userId,
+        tentativa: data.attempt
     });
 }
