@@ -81,11 +81,13 @@ const QuizPage = () => {
     }
 
     const storedUserId = getCookieValue("userId");
+    const storedUserAttempt = getCookieValue("userAttempt");
 
     const respostaPayload = {
       resposta: respostas[question!.id],
       pergunta_id: question!.id,
       usuario_id: storedUserId,
+      tentativa:storedUserAttempt,
     };
 
     try {

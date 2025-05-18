@@ -55,11 +55,11 @@ export default function UserPage() {
 
         userService
             .createUser(userData)
-            .then((response: { data: SetStateAction<string> }) => {
-                const userId = response.data as string;
-
+            .then((response: { data: { id: string; [key: string]: any } }) => {
+                const user = response.data;
                 // Armazenar o userId no cookie por 7 dias
-                setCookie("userId", userId, 7);
+                setCookie("userId", user.id, 1);
+                setCookie("userAttempt", user.tentativa, 1);
 
                 // Redirecionar para a página com o userId na URL
                 router.push(`/form-questions`);

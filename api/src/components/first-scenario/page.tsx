@@ -12,7 +12,7 @@ interface ApiResponse {
     forecast: {
         mediana: number;
         valor_fixo: number;
-    }
+    };
 }
 
 const dataB = [
@@ -22,59 +22,58 @@ const dataB = [
 
 export default function FirstScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
-    const [value, setValue] = useState<number>(); // Mediana
-    const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
-    const [selected, setSelected] = useState<selectedInterface | null>(null); // Inicialmente nenhuma opção selecionada
-    const [loading, setLoading] = useState(false); // Estado para controlar a animação de carregamento
-    const [totalQuestions] = useState(8); // Total de perguntas
-    const [storedUserId, setStoredUserId] = useState<string | undefined>(undefined); // State for user ID
+    const [value, setValue] = useState<number>();
+    const [fixedValue, setFixedValue] = useState<number>();
+    const [selected, setSelected] = useState<selectedInterface | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [totalQuestions] = useState(8);
+    const [storedUserId, setStoredUserId] = useState<string | undefined>(undefined);
+    const [storedUserAttempt, setStoredUserAttempt] = useState<string | undefined>(undefined);
     const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
 
     const scenariosService = useMemo(() => new ScenariosService(), []);
-
-    // Usando useRef para manter a seleção atual
     const selectedRef = useRef<selectedInterface | null>(null);
 
     useEffect(() => {
-        // This will run only in the browser
         const userId = document.cookie
             .split("; ")
             .find((row) => row.startsWith("userId="))
             ?.split("=")[1];
-
+        const userAttempt = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userAttempt="))
+            ?.split("=")[1];
         setStoredUserId(userId);
-    }, []); // Empty dependency array means it will run only once when the component mounts
+        setStoredUserAttempt(userAttempt);
+    }, []);
 
-    // Função para obter e atualizar os valores após a chamada da API
-    useEffect(() => {
+    const fetchData = (scenarioIndex = index) => {
         if (storedUserId === undefined) return;
 
-        const fetchData = () => {
-            setLoading(true);
-            scenariosService
-                .getwin(index, storedUserId)
-                .then((response: { data: ApiResponse }) => {
-                    const { mediana, valor_fixo } = response.data.forecast;
-                    setValue(mediana);
-                    setFixedValue(valor_fixo);
-                    setLoading(false);
+        setLoading(true);
+        scenariosService
+            .getwin(scenarioIndex, storedUserId, storedUserAttempt)
+            .then((response: { data: ApiResponse }) => {
+                const { mediana, valor_fixo } = response.data.forecast;
+                setValue(mediana);
+                setFixedValue(valor_fixo);
+                setLoading(false);
 
-                    // Verifica a diferença
-                    if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
-                        onAnswered(); // pular próximas perguntas
-                    }
-                })
-                .catch((error: { message: string }) => {
-                    console.log("API Error:", error.message);
-                    setLoading(false);
-                });
-        };
+                if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
+                    onAnswered();
+                }
+            })
+            .catch((error: { message: string }) => {
+                console.log("API Error:", error.message);
+                setLoading(false);
+            });
+    };
 
+    useEffect(() => {
         fetchData();
-
         setSelected(null);
         selectedRef.current = null;
-    }, [index, storedUserId, scenariosService]);
+    }, [index, storedUserId, storedUserAttempt, scenariosService]);
 
     const sideSelected = (data: selectedInterface) => {
         if (loading) return;
@@ -83,11 +82,10 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
         setSelected(data);
 
         setSelectionHistory((prev) => {
-            const updated = [...prev, data.optionSelected].slice(-4); // guarda até os últimos 4
-            // Verifica os padrões
+            const updated = [...prev, data.optionSelected].slice(-4);
             const lastFour = updated.join("");
             if (lastFour === "ABAA" || lastFour === "BABB") {
-                console.log(updated)
+                console.log(updated);
                 onAnswered();
                 return updated;
             }
@@ -99,79 +97,45 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
     const handleNext = (currentSelected: selectedInterface) => {
         if (!currentSelected) return;
-
         setLoading(true);
 
-        // Regra específica para o índice 0
-        let newIndex = index;
-        if (index === 0) {
-            newIndex = 1;
-            setIndex(1);
-        }
+        const currentIndex = index === 0 ? 1 : index;
+        const valueToSend = value ?? 0;
 
-        const valueToSend = value;
-
-        if (currentSelected.optionSelected === "A" || currentSelected.optionSelected === "B") {
-            scenariosService
-                .win({
-                    scenario: newIndex, // Usando newIndex em vez de index
-                    optionSelected: currentSelected.optionSelected,
-                    valueSelected: valueToSend,
-                    userId: storedUserId,
-                })
-                .then((winresponse: { data: ApiResponse }) => {
-                    // Simulando um tempo de carregamento para dar sensação de mudança
-                    setTimeout(() => {
-                        // Calcula o próximo índice após resposta
-                        const nextIndex = index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
-                        if (nextIndex === totalQuestions - 1) {
-                            onAnswered();
-                        }
-                        // Depois busca os dados para o novo índice
-                        scenariosService
-                            .getwin(nextIndex, storedUserId)
-                            .then((nextResponse: { data: ApiResponse }) => {
-                                setValue(nextResponse.data.forecast.mediana); // Atualizando o valor da mediana
-                                setFixedValue(nextResponse.data.forecast.valor_fixo); // Atualizando o valor fixo
-                                setIndex(nextIndex);
-                                setLoading(false);
-                            })
-                            .catch((error: { message: string }) => {
-                                console.log("API Error fetching next question:", error.message);
-                                setLoading(false);
-                            });
-                    }, 800);
-                })
-                .catch((error: { message: string }) => {
-                    console.log(error.message);
-                    setLoading(false);
-                });
-        }
+        scenariosService
+            .win({
+                scenario: currentIndex,
+                optionSelected: currentSelected.optionSelected,
+                valueSelected: valueToSend,
+                userId: storedUserId,
+                attempt: storedUserAttempt,
+            })
+            .then(() => {
+                setTimeout(() => {
+                    const nextIndex = Math.min(currentIndex + 1, totalQuestions - 1);
+                    if (nextIndex === totalQuestions - 1) {
+                        onAnswered();
+                    }
+                    setIndex(nextIndex); // ✅ Isso faz o componente avançar corretamente
+                }, 800);
+            })
+            .catch((error) => {
+                console.log(error.message);
+                setLoading(false);
+            });
     };
-
-    // Calcular o progresso baseado na pergunta atual, excluindo a pergunta 0
-    const adjustedIndex = index === 0 ? 0 : index - 1;
-    // const progressQuestions = totalQuestions - 1;
-    // const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
 
     return (
         <div>
-            {/* Barra de progresso */}
-            {/* <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
-                <div
-                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div> */}
             <div
                 className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
                     }`}
             >
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all 
-                        duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"} ${loading ? "animate-pulse" : ""
-                        }`}
+                    className={`cursor-pointer border-2 transition-all duration-300 
+                        ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"} 
+                        ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
@@ -207,22 +171,12 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                                 const { cx, cy } = viewBox;
                                                 return (
                                                     <>
-                                                        <text
-                                                            x={cx}
-                                                            y={(cy ?? 0) - 30}
-                                                            textAnchor="middle"
-                                                            dominantBaseline="middle"
-                                                        >
+                                                        <text x={cx} y={cy as number - 30} textAnchor="middle">
                                                             <tspan className="fill-white text-sm font-bold">
                                                                 + R${fixedValue}
                                                             </tspan>
                                                         </text>
-                                                        <text
-                                                            x={cx}
-                                                            y={(cy ?? 0) + 30}
-                                                            textAnchor="middle"
-                                                            dominantBaseline="middle"
-                                                        >
+                                                        <text x={cx} y={cy as number  + 30} textAnchor="middle">
                                                             <tspan className="fill-white text-sm font-bold">
                                                                 Sem Ganho
                                                             </tspan>
@@ -240,8 +194,9 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
-                        } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 
+                        ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"} 
+                        ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
@@ -267,13 +222,8 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                         content={({ viewBox }) => {
                                             if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                                                 return (
-                                                    <text
-                                                        x={viewBox.cx}
-                                                        y={viewBox.cy}
-                                                        textAnchor="middle"
-                                                        dominantBaseline="middle"
-                                                    >
-                                                        <tspan className="fill-white text-sm font-bold text-white">
+                                                    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
+                                                        <tspan className="fill-white text-sm font-bold">
                                                             + R${value}
                                                         </tspan>
                                                     </text>
@@ -289,7 +239,6 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                 </Card>
             </div>
 
-            {/* Indicador de carregamento quando estiver mudando de pergunta */}
             {loading && <div className="text-center mt-4 text-sm text-gray-600">Carregando próxima pergunta...</div>}
         </div>
     );

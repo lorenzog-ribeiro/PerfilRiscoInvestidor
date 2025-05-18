@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Label } from "recharts";
 import { ScenariosService } from "../../../services/scenariosService";
 
-interface SelectedInterface {
+interface selectedInterface {
     optionSelected: string;
     valueSelected: number;
 }
@@ -22,165 +22,119 @@ const dataB = [
 
 export default function SecondScenario({ onAnswered }: { onAnswered: () => void }) {
     const [index, setIndex] = useState(0);
-    const [value, setValue] = useState<number>(); // Mediana
-    const [fixedValue, setFixedValue] = useState<number>(); // Valor Fixo
-    const [selected, setSelected] = useState<SelectedInterface | null>(null);
+    const [value, setValue] = useState<number>();
+    const [fixedValue, setFixedValue] = useState<number>();
+    const [selected, setSelected] = useState<selectedInterface | null>(null);
     const [loading, setLoading] = useState(false);
     const [totalQuestions] = useState(7);
-    const scenariosService = useMemo(() => new ScenariosService(), []);
-    const [userId, setUserId] = useState<string | undefined>(undefined); // State for user ID
+    const [storedUserId, setStoredUserId] = useState<string | undefined>(undefined);
+    const [storedUserAttempt, setStoredUserAttempt] = useState<string | undefined>(undefined);
     const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
 
+    const scenariosService = useMemo(() => new ScenariosService(), []);
+    const selectedRef = useRef<selectedInterface | null>(null);
+
     useEffect(() => {
-        const userIdFromCookie = document.cookie
+        const userId = document.cookie
             .split("; ")
             .find((row) => row.startsWith("userId="))
             ?.split("=")[1];
-
-        setUserId(userIdFromCookie);
+        const userAttempt = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userAttempt="))
+            ?.split("=")[1];
+        setStoredUserId(userId);
+        setStoredUserAttempt(userAttempt);
     }, []);
+    const fetchData = (scenarioIndex = index) => {
+        if (storedUserId === undefined) return;
 
-    // Ref para controlar se já fizemos a primeira chamada
-    const initialLoadDone = useRef(false);
-    // Ref para monitorar o estado de carregamento
-    const isLoadingRef = useRef(false);
+        setLoading(true);
+        scenariosService
+            .getloss(scenarioIndex, storedUserId, storedUserAttempt)
+            .then((response: { data: ApiResponse }) => {
+                const { mediana, valor_fixo } = response.data.forecast;
+                setValue(mediana);
+                setFixedValue(valor_fixo);
+                setLoading(false);
 
-    // Função para buscar dados para uma questão específica
-    const fetchQuestionData = useCallback(
-        (questionIndex: number) => {
-            if (!userId) return;
+                if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
+                    onAnswered();
+                }
+            })
+            .catch((error: { message: string }) => {
+                console.log("API Error:", error.message);
+                setLoading(false);
+            });
+    };
 
-            setLoading(true);
-            isLoadingRef.current = true;
-
-            scenariosService
-                .getloss(questionIndex, userId)
-                .then((response: { data: ApiResponse }) => {
-                    setValue(response.data.forecast.mediana); // Atualizando o valor da mediana
-                    setFixedValue(response.data.forecast.valor_fixo); // Atualizando o valor fixo
-                    setLoading(false);
-                    isLoadingRef.current = false;
-                    // if (Math.abs(response.data.forecast.mediana - response.data.forecast.valor_fixo) < 10 || response.data.forecast.mediana < 10) {
-                    //     onAnswered(); // pular próximas perguntas
-                    // }
-                })
-                .catch((error: { message: string }) => {
-                    console.log("API Error:", error.message);
-                    setLoading(false);
-                    isLoadingRef.current = false;
-                });
-        },
-        [scenariosService, userId]
-    );
-
-    // Carrega os dados da primeira questão apenas uma vez na inicialização
     useEffect(() => {
-        if (userId && !initialLoadDone.current) {
-            initialLoadDone.current = true;
-            fetchQuestionData(index);
-        }
-    }, [fetchQuestionData, userId, index]);
+        fetchData();
+        setSelected(null);
+        selectedRef.current = null;
+    }, [index, storedUserId, storedUserAttempt, scenariosService]);
 
-    // Reseta a seleção quando os valores são atualizados
     useEffect(() => {
         setSelected(null);
     }, [value, fixedValue]);
 
-    const getBarColor = () => {
-        if (index === totalQuestions - 1) {
-            return "from-green-500 to-green-400";
-        }
-        return "from-red-500 to-orange-400";
-    };
+    const sideSelected = (data: selectedInterface) => {
+        if (loading) return;
 
-    const sideSelected = (data: SelectedInterface) => {
-        // Não processar cliques se estiver carregando
-        if (loading || isLoadingRef.current) return;
+        selectedRef.current = data;
         setSelected(data);
 
         setSelectionHistory((prev) => {
-            const updated = [...prev, data.optionSelected].slice(-4); // guarda até os últimos 4
-            // Verifica os padrões
+            const updated = [...prev, data.optionSelected].slice(-4);
             const lastFour = updated.join("");
             if (lastFour === "ABAA" || lastFour === "BABB") {
-                console.log(updated)
+                console.log(updated);
                 onAnswered();
                 return updated;
             }
             return updated;
-        })
-        // Avançar para a próxima pergunta após um breve delay
+        });
+
         setTimeout(() => handleNext(data), 500);
     };
 
-
-    const handleNext = (currentSelected: SelectedInterface) => {
-        if (!currentSelected || !userId || loading || isLoadingRef.current) return;
-
+    const handleNext = (currentSelected: selectedInterface) => {
+        if (!currentSelected) return;
         setLoading(true);
-        isLoadingRef.current = true;
 
-        // Determinar qual valor enviar
-        const valueToSend = value;
+        const currentIndex = index === 0 ? 1 : index;
+        const valueToSend = value ?? 0;
 
-        // Determinar o próximo índice considerando a regra especial para índice 0
-        let currentIndex = index;
-        let nextIndex: number;
-
-        if (index === 0) {
-            // Regra específica para o índice 0
-            currentIndex = 1;
-            nextIndex = 2;
-        } else {
-            // Regra normal para os outros índices
-            nextIndex = Math.min(index + 1, totalQuestions);
-        }
-
-        // Enviar a resposta atual
         scenariosService
             .loss({
                 scenario: currentIndex,
                 optionSelected: currentSelected.optionSelected,
                 valueSelected: valueToSend,
-                userId: userId,
+                userId: storedUserId,
+                attempt: storedUserAttempt,
             })
             .then(() => {
-                // Atualizar o índice após enviar a resposta atual
-                if (nextIndex === totalQuestions - 1) {
-                    onAnswered(); // Chama a função de callback quando chegar na última pergunta
-                }
-                setIndex(nextIndex);
-
-                // Buscar dados para a próxima pergunta após um curto delay
                 setTimeout(() => {
-                    fetchQuestionData(nextIndex);
+                    const nextIndex = Math.min(currentIndex + 1, totalQuestions - 1);
+                    if (nextIndex === totalQuestions - 1) {
+                        onAnswered();
+                    }
+                    setIndex(nextIndex);
                 }, 800);
             })
-            .catch((error: { message: string }) => {
-                console.log("Submit error:", error.message);
+            .catch((error) => {
+                console.log(error.message);
                 setLoading(false);
-                isLoadingRef.current = false;
             });
     };
-
-    // Calcular o progresso baseado na pergunta atual
-    const adjustedIndex = index === 0 ? 0 : index - 1;
-    const progressQuestions = totalQuestions - 1;
-    const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
-
+    
     return (
         <div>
-            {/* Barra de progresso */}
-            {/* <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
-                <div
-                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div> */}
+            {/* Cards */}
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
-                    }`}
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""}`}
             >
+                {/* Card A */}
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: value ?? 0 })}
                     className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"
@@ -195,51 +149,31 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                         <div className="text-xs text-center text-gray-600 p-5.5">
                             <div>Sem ganho ou perda com certeza</div>
                         </div>
-                        <div className="flex justify-center items-center ">
+                        <div className="flex justify-center items-center">
                             <PieChart width={180} height={180}>
-                                <Pie
-                                    data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    stroke="none"
-                                    strokeWidth={0}
-                                >
+                                <Pie data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]} dataKey="value">
                                     <Label
                                         content={({ viewBox }) => {
-                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                                return (
-                                                    <text
-                                                        x={viewBox.cx}
-                                                        y={viewBox.cy}
-                                                        textAnchor="middle"
-                                                        dominantBaseline="middle"
-                                                    >
-                                                        <tspan
-                                                            x={viewBox.cx}
-                                                            dy="-0.6em"
-                                                            className="fill-white text-sm font-bold"
-                                                        >
-                                                            Sem Ganho
-                                                        </tspan>
-                                                        <tspan
-                                                            x={viewBox.cx}
-                                                            dy="1.2em"
-                                                            className="fill-white text-sm font-bold"
-                                                        >
-                                                            ou Perda
-                                                        </tspan>
-                                                    </text>
-                                                );
-                                            }
+                                            if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) return null;
+                                            return (
+                                                <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" >
+                                                    <tspan x={viewBox.cx} dy="-0.6em" className="fill-white text-sm font-bold">
+                                                        Sem Ganho
+                                                    </tspan>
+                                                    <tspan x={viewBox.cx} dy="1.2em" className="fill-white text-sm font-bold">
+                                                        ou Perda
+                                                    </tspan>
+                                                </text>
+                                            );
                                         }}
                                     />
-                                    <Cell key={`cell-1`} fill="gray" />
                                 </Pie>
                             </PieChart>
                         </div>
                     </CardContent>
                 </Card>
 
+                {/* Card B */}
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
                     className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
@@ -261,48 +195,24 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                         </div>
                         <div className="flex justify-center items-center">
                             <PieChart width={180} height={180}>
-                                <Pie
-                                    stroke="white"
-                                    strokeWidth={3}
-                                    data={dataB}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    cx="50%"
-                                    cy="50%"
-                                >
-                                    {dataB.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Pie stroke="white" strokeWidth={3} data={dataB} dataKey="value">
+                                    {dataB.map((entry, idx) => (
+                                        <Cell key={`cell-${idx}`} fill={entry.color} />
                                     ))}
                                     <Label
                                         content={({ viewBox }) => {
-                                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                                const { cx, cy } = viewBox;
-                                                return (
-                                                    <>
-                                                        <text
-                                                            x={cx}
-                                                            y={(cy ?? 0) - 30}
-                                                            textAnchor="middle"
-                                                            dominantBaseline="middle"
-                                                        >
-                                                            <tspan className="fill-white text-sm font-bold">
-                                                                R$ + 1000
-                                                            </tspan>
-                                                        </text>
-
-                                                        <text
-                                                            x={cx}
-                                                            y={(cy ?? 0) + 30}
-                                                            textAnchor="middle"
-                                                            dominantBaseline="middle"
-                                                        >
-                                                            <tspan className="fill-white text-sm font-bold">
-                                                                R$ {value}
-                                                            </tspan>
-                                                        </text>
-                                                    </>
-                                                );
-                                            }
+                                            if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) return null;
+                                            const { cx, cy } = viewBox;
+                                            return (
+                                                <>
+                                                    <text x={cx} y={(cy ?? 0) - 30} textAnchor="middle" dominantBaseline="middle">
+                                                        <tspan className="fill-white text-sm font-bold">R$ + 1000</tspan>
+                                                    </text>
+                                                    <text x={cx} y={(cy ?? 0) + 30} textAnchor="middle" dominantBaseline="middle">
+                                                        <tspan className="fill-white text-sm font-bold">R$ {value}</tspan>
+                                                    </text>
+                                                </>
+                                            );
                                         }}
                                     />
                                 </Pie>
@@ -311,7 +221,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                     </CardContent>
                 </Card>
             </div>
-            {/* Indicador de carregamento quando estiver mudando de pergunta */}
+
             {loading && <div className="text-center mt-4 text-sm text-gray-600">Carregando próxima pergunta...</div>}
         </div>
     );
