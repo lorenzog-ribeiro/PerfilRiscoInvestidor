@@ -6,17 +6,16 @@ import { getFirstStageValues, getSecondStageValues, getThirdStageValues, saveFir
 export const getWinScenario = async (req: Request, res: Response) => {
 
     try {
-        const { scenario, userId } = req.query;
+        const { scenario, userId, attempt } = req.query;
 
-        if(!scenario || !userId)
-        {
-            res.status(500).json({ error:  req.query });
-
+        if (!scenario || !userId || !attempt) {
+            res.status(500).json({ error: req.query });
         }
 
         const forecast = await getFirstStageValues({
             scenario: parseInt(scenario as string || "0"),
-            userId
+            userId: userId,
+            attempt: Number(attempt)
         });
         res.status(200).json({ forecast });
     }
@@ -26,9 +25,9 @@ export const getWinScenario = async (req: Request, res: Response) => {
 }
 export const winScenario = async (req: Request, res: Response) => {
     try {
-        const { scenario, optionSelected, valueSelected, userId } = req.body;
+        const { scenario, optionSelected, valueSelected, userId, attempt } = req.body;
 
-        const forecast = await saveFirstStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
+        const forecast = await saveFirstStage({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId, attempt: Number(attempt) });
 
         res.status(200).json({ forecast });
     }
@@ -103,5 +102,5 @@ export const calcResult = async (req: Request, res: Response) => {
     }
     catch (error: any) {
         res.status(500).json({ error: "Erro no cálculo" });
-    } 
+    }
 } 

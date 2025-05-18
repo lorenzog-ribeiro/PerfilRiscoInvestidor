@@ -12,7 +12,6 @@ export const getUnique = async (data: string) => {
 };
 
 export const getbyId = async (data: string) => {
-    console.log(data)
     return prisma.usuarios.findFirst({
         where: {
             id: data
@@ -23,5 +22,16 @@ export const getbyId = async (data: string) => {
 export const createUserProfile = async (data: UserModel) => {
     return prisma.usuarios.create({
         data: data
+    });
+}
+
+export const updateAttempt = async (data: UserModel) => {
+    return prisma.usuarios.update({
+        where: {
+            id: data.id
+        },
+        data: {
+            tentativa: data.tentativa,
+        }
     });
 }

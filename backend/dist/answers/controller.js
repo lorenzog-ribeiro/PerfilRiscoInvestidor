@@ -4,8 +4,13 @@ exports.saveAnswers = saveAnswers;
 const service_1 = require("./service");
 function saveAnswers(req, res) {
     try {
-        const { resposta, pergunta_id, usuario_id } = req.body;
-        const savedResponse = (0, service_1.save)({ resposta, pergunta_id, usuario_id });
+        const { resposta, pergunta_id, usuario_id, tentativa } = req.body;
+        const savedResponse = (0, service_1.save)({
+            resposta,
+            pergunta_id,
+            usuario_id,
+            tentativa: Number(tentativa)
+        });
         res.status(200).json();
     }
     catch (error) {

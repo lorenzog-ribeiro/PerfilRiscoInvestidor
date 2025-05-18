@@ -26,7 +26,7 @@ export const searchValueSecondStage = async (data: any) => {
             where: {
                 usuario_id: data.usuario_id,
                 pergunta: data.pergunta,
-                tentativa: data.tentativa // Considerando tanto a pergunta quanto a tentativa
+                tentativa: data.tentativa
             }
         });
         return result;

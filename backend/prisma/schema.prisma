@@ -58,6 +58,7 @@ model usuarios {
   email              String?              @unique
   nome               String?
   criado_em          DateTime?            @default(now()) @db.Timestamp(6)
+  tentativa          Int?
   primeira_etapa     primeira_etapa[]
   respostas_usuarios respostas_usuarios[]
   segunda_etapa      segunda_etapa[]

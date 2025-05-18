@@ -6,13 +6,14 @@ const service_1 = require("./service");
 //1
 const getWinScenario = async (req, res) => {
     try {
-        const { scenario, userId } = req.query;
-        if (!scenario || !userId) {
+        const { scenario, userId, attempt } = req.query;
+        if (!scenario || !userId || !attempt) {
             res.status(500).json({ error: req.query });
         }
         const forecast = await (0, service_1.getFirstStageValues)({
             scenario: parseInt(scenario || "0"),
-            userId
+            userId: userId,
+            attempt: Number(attempt)
         });
         res.status(200).json({ forecast });
     }
@@ -23,8 +24,8 @@ const getWinScenario = async (req, res) => {
 exports.getWinScenario = getWinScenario;
 const winScenario = async (req, res) => {
     try {
-        const { scenario, optionSelected, valueSelected, userId } = req.body;
-        const forecast = await (0, service_1.saveFirstStage)({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId });
+        const { scenario, optionSelected, valueSelected, userId, attempt } = req.body;
+        const forecast = await (0, service_1.saveFirstStage)({ scenario, optionSelected, valueSelected: parseFloat(valueSelected), userId, attempt: Number(attempt) });
         res.status(200).json({ forecast });
     }
     catch (error) {

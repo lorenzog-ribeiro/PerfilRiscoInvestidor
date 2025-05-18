@@ -3,8 +3,13 @@ import { save } from "./service";
 
 export function saveAnswers(req: Request, res: Response) {
     try {
-        const { resposta, pergunta_id, usuario_id } = req.body;
-        const savedResponse = save({ resposta, pergunta_id, usuario_id });
+        const { resposta, pergunta_id, usuario_id, tentativa } = req.body;
+        const savedResponse = save({ 
+            resposta, 
+            pergunta_id, 
+            usuario_id, 
+            tentativa: Number(tentativa) 
+        });
         res.status(200).json();
     } catch (error: any) {
         console.error("Erro ao buscar informações:", error);
