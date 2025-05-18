@@ -12,7 +12,7 @@ interface ApiResponse {
     forecast: {
         mediana: number;
         valor_fixo: number;
-    }
+    };
 }
 
 const dataB = [
@@ -87,7 +87,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
             // Verifica os padrões
             const lastFour = updated.join("");
             if (lastFour === "ABAA" || lastFour === "BABB") {
-                console.log(updated)
+                console.log(updated);
                 onAnswered();
                 return updated;
             }
@@ -149,29 +149,19 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
         }
     };
 
-    // Calcular o progresso baseado na pergunta atual, excluindo a pergunta 0
-    const adjustedIndex = index === 0 ? 0 : index - 1;
-    // const progressQuestions = totalQuestions - 1;
-    // const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
-
     return (
         <div>
-            {/* Barra de progresso */}
-            {/* <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
-                <div
-                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div> */}
             <div
-                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
-                    }`}
+                className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${
+                    loading ? "opacity-50 pointer-events-none" : ""
+                }`}
             >
                 <Card
                     onClick={() => sideSelected({ optionSelected: "A", valueSelected: fixedValue ?? 0 })}
                     className={`cursor-pointer border-2 transition-all 
-                        duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"} ${loading ? "animate-pulse" : ""
-                        }`}
+                        duration-300 ${selected?.optionSelected === "A" ? "border-green-500" : "border-blue-300"} ${
+                        loading ? "animate-pulse" : ""
+                    }`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">
@@ -240,8 +230,9 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
 
                 <Card
                     onClick={() => sideSelected({ optionSelected: "B", valueSelected: value ?? 0 })}
-                    className={`cursor-pointer border-2 transition-all duration-300 ${selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
-                        } ${loading ? "animate-pulse" : ""}`}
+                    className={`cursor-pointer border-2 transition-all duration-300 ${
+                        selected?.optionSelected === "B" ? "border-green-500" : "border-blue-300"
+                    } ${loading ? "animate-pulse" : ""}`}
                 >
                     <CardContent className="p-2 space-y-2">
                         <div className="flex items-center justify-center">

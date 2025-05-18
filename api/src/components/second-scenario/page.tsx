@@ -163,20 +163,8 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
             });
     };
 
-    // Calcular o progresso baseado na pergunta atual
-    const adjustedIndex = index === 0 ? 0 : index - 1;
-    const progressQuestions = totalQuestions - 1;
-    const progress = ((adjustedIndex + 1) / progressQuestions) * 100;
-
     return (
         <div>
-            {/* Barra de progresso */}
-            {/* <div className="w-80 h-2 bg-gray-200 rounded-full overflow-hidden mt-4 mb-4 ml-5">
-                <div
-                    className={`h-full bg-gradient-to-r ${getBarColor()} transition-all duration-500 `}
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div> */}
             <div
                 className={`grid grid-cols-2 md:grid-cols-2 gap-2 m-2 ${loading ? "opacity-50 pointer-events-none" : ""
                     }`}
