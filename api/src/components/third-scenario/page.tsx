@@ -58,9 +58,9 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                 setFixedValue(valor_fixo);
                 setLoading(false);
 
-                if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
-                    onAnswered();
-                }
+                // if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
+                //     onAnswered();
+                // }
             })
             .catch((error: { message: string }) => {
                 console.log("API Error:", error.message);
