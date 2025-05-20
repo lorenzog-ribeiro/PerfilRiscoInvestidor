@@ -116,7 +116,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                     if (nextIndex === totalQuestions - 1) {
                         onAnswered();
                     }
-                    setIndex(nextIndex); // ✅ Isso faz o componente avançar corretamente
+                    setIndex(nextIndex);
                 }, 800);
             })
             .catch((error) => {
