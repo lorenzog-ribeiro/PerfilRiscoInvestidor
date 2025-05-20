@@ -176,7 +176,7 @@ const saveThirdStage = async (data) => {
     const Safe = 0;
     const Risk = await getSecondForThird(data);
     let aggregate;
-    const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
+    const baseValue = base(Safe, Number(Risk?.mediana), 3);
     switch (data.optionSelected) {
         case ("A"):
             aggregate = data.valueSelected - ((baseValue ?? 0) / (2 ** data.scenario));
@@ -191,7 +191,7 @@ const saveThirdStage = async (data) => {
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
-        valor_fixo: Risk?.valor_selecionado,
+        valor_fixo: Risk?.mediana,
         tentativa: data.attempt
     });
 };
