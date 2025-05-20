@@ -151,7 +151,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                         </div>
                         <div className="flex justify-center items-center">
                             <PieChart width={180} height={180}>
-                                <Pie data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]} dataKey="value">
+                                <Pie data={[{ name: "Sem Ganho ou Perda", value: 100, color: "gray" }]} dataKey="value" strokeWidth={0}>
                                     <Label
                                         content={({ viewBox }) => {
                                             if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) return null;
