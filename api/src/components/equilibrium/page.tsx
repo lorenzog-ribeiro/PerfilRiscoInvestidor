@@ -27,8 +27,8 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     // Ajusta a rotação com base no valor
     // Se valor > 1, inclina para o lado verde (positivo); se < 1, para o lado vermelho (negativo).
     const rotacao = valor < 1
-        ? Math.max((1 - valor) * -15, -20)
-        : Math.min((valor - 1) * 15, 20);
+        ? Math.max((1 - valor) * 15, 20)
+        : Math.min((valor - 1) * -15, -20);
 
     function removeCookies() {
         const cookies = document.cookie.split(";");
