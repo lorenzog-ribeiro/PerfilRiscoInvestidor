@@ -38,6 +38,7 @@ const QuizPage = () => {
   const [quantity, setQuantity] = useState<number>();
   const [question, setQuestion] = useState<Question | null>(null);
   const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
+  router.push("/finance-questions");
 
   const initialIndex =
     typeof window !== "undefined"
@@ -101,7 +102,7 @@ const QuizPage = () => {
       return;
     }
 
-    if (index === 1) {
+    if (index === 7) {
       document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
       router.push("/finance-questions");
       return;
