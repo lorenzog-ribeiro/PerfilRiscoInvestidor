@@ -56,41 +56,83 @@ export const searchValueThirdStage = async (data: any) => {
 // Função para salvar os dados na primeira etapa, considerando a pergunta e a tentativa
 export const saveScenarioSelectedFirstStage = async (data: any) => {
     try {
-        const result = await prisma.primeira_etapa.create({
-            data: {
+        const existing = await prisma.primeira_etapa.findFirst({
+            where: {
                 usuario_id: data.usuario_id,
-                valor_selecionado: data.valor_selecionado,
-                lado_selecionado: data.lado_selecionado,
-                mediana: data.mediana,
-                pergunta: data.pergunta,
-                valor_fixo: data.valor_fixo,
-                tentativa: data.tentativa // Adicionando a tentativa ao salvar
+                tentativa: data.tentativa,
+                pergunta: data.pergunta
             }
         });
-        return result;
+
+        if (existing) {
+            const updated = await prisma.primeira_etapa.update({
+                where: { id: existing.id },
+                data: {
+                    valor_selecionado: data.valor_selecionado,
+                    lado_selecionado: data.lado_selecionado,
+                    mediana: data.mediana,
+                    valor_fixo: data.valor_fixo
+                }
+            });
+            return updated;
+        } else {
+            const created = await prisma.primeira_etapa.create({
+                data: {
+                    usuario_id: data.usuario_id,
+                    tentativa: data.tentativa,
+                    pergunta: data.pergunta,
+                    valor_selecionado: data.valor_selecionado,
+                    lado_selecionado: data.lado_selecionado,
+                    mediana: data.mediana,
+                    valor_fixo: data.valor_fixo
+                }
+            });
+            return created;
+        }
     } catch (error) {
-        console.error('Erro ao salvar o cenário da primeira etapa:', error);
+        console.error('Erro ao salvar ou atualizar o cenário da primeira etapa:', error);
         throw error;
     }
-}
+};
 
 // Função para salvar os dados na segunda etapa, considerando a pergunta e a tentativa
 export const saveScenarioSelectedSecondStage = async (data: any) => {
     try {
-        const result = await prisma.segunda_etapa.create({
-            data: {
+        const existing = await prisma.segunda_etapa.findFirst({
+            where: {
                 usuario_id: data.usuario_id,
-                valor_selecionado: data.valor_selecionado,
-                lado_selecionado: data.lado_selecionado,
-                mediana: data.mediana,
-                pergunta: data.pergunta,
-                valor_fixo: data.valor_fixo,
-                tentativa: data.tentativa // Adicionando a tentativa ao salvar
+                tentativa: data.tentativa,
+                pergunta: data.pergunta
             }
         });
-        return result;
+
+        if (existing) {
+            const updated = await prisma.segunda_etapa.update({
+                where: { id: existing.id },
+                data: {
+                    valor_selecionado: data.valor_selecionado,
+                    lado_selecionado: data.lado_selecionado,
+                    mediana: data.mediana,
+                    valor_fixo: data.valor_fixo
+                }
+            });
+            return updated;
+        } else {
+            const created = await prisma.segunda_etapa.create({
+                data: {
+                    usuario_id: data.usuario_id,
+                    tentativa: data.tentativa,
+                    pergunta: data.pergunta,
+                    valor_selecionado: data.valor_selecionado,
+                    lado_selecionado: data.lado_selecionado,
+                    mediana: data.mediana,
+                    valor_fixo: data.valor_fixo
+                }
+            });
+            return created;
+        }
     } catch (error) {
-        console.error('Erro ao salvar o cenário da segunda etapa:', error);
+        console.error('Erro ao salvar ou atualizar o cenário da primeira etapa:', error);
         throw error;
     }
 }
@@ -98,20 +140,41 @@ export const saveScenarioSelectedSecondStage = async (data: any) => {
 // Função para salvar os dados na terceira etapa, considerando a pergunta e a tentativa
 export const saveScenarioSelectedThirdStage = async (data: any) => {
     try {
-        const result = await prisma.terceira_etapa.create({
-            data: {
+        const existing = await prisma.terceira_etapa.findFirst({
+            where: {
                 usuario_id: data.usuario_id,
-                valor_selecionado: data.valor_selecionado,
-                lado_selecionado: data.lado_selecionado,
-                mediana: data.mediana,
-                pergunta: data.pergunta,
-                valor_fixo: data.valor_fixo,
-                tentativa: data.tentativa // Adicionando a tentativa ao salvar
+                tentativa: data.tentativa,
+                pergunta: data.pergunta
             }
         });
-        return result;
+
+        if (existing) {
+            const updated = await prisma.terceira_etapa.update({
+                where: { id: existing.id },
+                data: {
+                    valor_selecionado: data.valor_selecionado,
+                    lado_selecionado: data.lado_selecionado,
+                    mediana: data.mediana,
+                    valor_fixo: data.valor_fixo
+                }
+            });
+            return updated;
+        } else {
+            const created = await prisma.terceira_etapa.create({
+                data: {
+                    usuario_id: data.usuario_id,
+                    tentativa: data.tentativa,
+                    pergunta: data.pergunta,
+                    valor_selecionado: data.valor_selecionado,
+                    lado_selecionado: data.lado_selecionado,
+                    mediana: data.mediana,
+                    valor_fixo: data.valor_fixo
+                }
+            });
+            return created;
+        }
     } catch (error) {
-        console.error('Erro ao salvar o cenário da terceira etapa:', error);
+        console.error('Erro ao salvar ou atualizar o cenário da primeira etapa:', error);
         throw error;
     }
 }

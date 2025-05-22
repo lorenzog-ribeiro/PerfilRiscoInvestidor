@@ -43,9 +43,11 @@ export const getLossScenario = async (req: Request, res: Response) => {
 
         const forecast = await getSecondStageValues({
             scenario: parseInt(scenario as string || "0"),
-            userId
+            userId: userId,
+            attempt: Number(attempt)
         });
         res.status(200).json({ forecast });
+        console.log(forecast)
     }
     catch (error: any) {
         res.status(500).json({ error: "Erro no cálculo" });
@@ -72,7 +74,8 @@ export const getOnlyLossScenario = async (req: Request, res: Response) => {
 
         const forecast = await getThirdStageValues({
             scenario: parseInt(scenario as string || "0"),
-            userId
+            userId: userId,
+            attempt: Number(attempt)
         });
         res.status(200).json({ forecast });
     }

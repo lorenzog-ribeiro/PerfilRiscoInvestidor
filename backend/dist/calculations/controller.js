@@ -39,9 +39,11 @@ const getLossScenario = async (req, res) => {
         const { scenario, userId, attempt } = req.query;
         const forecast = await (0, service_1.getSecondStageValues)({
             scenario: parseInt(scenario || "0"),
-            userId
+            userId: userId,
+            attempt: Number(attempt)
         });
         res.status(200).json({ forecast });
+        console.log(forecast);
     }
     catch (error) {
         res.status(500).json({ error: "Erro no cálculo" });
@@ -66,7 +68,8 @@ const getOnlyLossScenario = async (req, res) => {
         const { scenario, userId, attempt } = req.query;
         const forecast = await (0, service_1.getThirdStageValues)({
             scenario: parseInt(scenario || "0"),
-            userId
+            userId: userId,
+            attempt: Number(attempt)
         });
         res.status(200).json({ forecast });
     }
