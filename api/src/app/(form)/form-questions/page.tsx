@@ -101,7 +101,7 @@ const QuizPage = () => {
       return;
     }
 
-    if (index === 7) {
+    if (index === 1) {
       document.cookie = `lastQuestionIndex=${index + 1}; path=/; max-age=3600;`;
       router.push("/finance-questions");
       return;
