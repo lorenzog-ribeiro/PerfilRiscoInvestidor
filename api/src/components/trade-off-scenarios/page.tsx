@@ -8,7 +8,7 @@ import ThirdScenario from "../third-scenario/page";
 
 export default function ScenarioController() {
   const router = useRouter();
-  const [currentIndex, setCurrentIndex] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (currentIndex === 3) {
