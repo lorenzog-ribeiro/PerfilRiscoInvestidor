@@ -189,10 +189,10 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                         </div>
                         <div className="text-xs text-center text-gray-600 p-5.5">
                             <div>
-                                <b>50%</b> chance de perda
+                                <b>50%</b> chance de ganho
                             </div>
                             <div>
-                                <b>50%</b> chance de ganho
+                                <b>50%</b> chance de perda
                             </div>
                         </div>
                         <div className="flex justify-center items-center">
