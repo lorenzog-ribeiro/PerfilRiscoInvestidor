@@ -94,7 +94,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
             return updated;
         });
 
-        setTimeout(() => handleNext(data), 2000);
+        setTimeout(() => handleNext(data), 1000);
     };
 
     const handleNext = (currentSelected: selectedInterface) => {
