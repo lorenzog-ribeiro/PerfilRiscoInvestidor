@@ -30,15 +30,15 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     let textoDireita: (string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined)[] = [];
 
     if (valor > 1.5) {
-        rotacao = -15;
-        textoEsquerda = ["Você", "aceitaria", "perder"];
+        rotacao = 15;
+        textoEsquerda = ["Para", "aceitar", "perder"];
         textoDireita = ["Você exige um", "ganho de pelo", "menos"];
     } else if (valor > 1) {
-        rotacao = -10;
+        rotacao = 10;
         textoEsquerda = ["Para", "aceitar", "perder"];
         textoDireita = ["Você exige um", "ganho de pelo", "menos"];
     } else if (valor <= 1) {
-        rotacao = Number(valor) === 1 ? 0 : 10;
+        rotacao = Number(valor) === 1 ? 0 : -10;
         textoEsquerda = ["Você", "aceitaria", "perder"];
         textoDireita = ["Se tivesse", "chance de", "ganhar"];
     }
