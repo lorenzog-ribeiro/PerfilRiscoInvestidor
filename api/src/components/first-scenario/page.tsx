@@ -84,7 +84,9 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
         setSelectionHistory((prev) => {
             const updated = [...prev, data.optionSelected].slice(-4);
             const lastFour = updated.join("");
-            if (lastFour === "ABAA" || lastFour === "BABB") {
+            const lastThreeFromSecond = lastFour.substring(1); // Pega do índice 1 até o fim
+
+            if (lastThreeFromSecond === "ABAA" || lastThreeFromSecond === "BABB") {
                 console.log(updated);
                 onAnswered();
                 return updated;
@@ -92,7 +94,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
             return updated;
         });
 
-        setTimeout(() => handleNext(data), 500);
+        setTimeout(() => handleNext(data), 2000);
     };
 
     const handleNext = (currentSelected: selectedInterface) => {
@@ -176,7 +178,7 @@ export default function FirstScenario({ onAnswered }: { onAnswered: () => void }
                                                                 + R${fixedValue}
                                                             </tspan>
                                                         </text>
-                                                        <text x={cx} y={cy as number  + 30} textAnchor="middle">
+                                                        <text x={cx} y={cy as number + 30} textAnchor="middle">
                                                             <tspan className="fill-white text-sm font-bold">
                                                                 Sem Ganho
                                                             </tspan>

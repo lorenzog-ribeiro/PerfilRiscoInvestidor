@@ -87,7 +87,9 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
         setSelectionHistory((prev) => {
             const updated = [...prev, data.optionSelected].slice(-4);
             const lastFour = updated.join("");
-            if (lastFour === "ABAA" || lastFour === "BABB") {
+            const lastThreeFromSecond = lastFour.substring(1); // Pega do índice 1 até o fim
+
+            if (lastThreeFromSecond === "ABAA" || lastThreeFromSecond === "BABB") {
                 console.log(updated);
                 onAnswered();
                 return updated;
@@ -95,7 +97,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
             return updated;
         });
 
-        setTimeout(() => handleNext(data), 500);
+        setTimeout(() => handleNext(data), 2000);
     };
 
     const handleNext = (currentSelected: selectedInterface) => {
