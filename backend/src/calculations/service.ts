@@ -197,17 +197,22 @@ export const result = async (data: any) => {
     const lastFirstStage = await searchResultCalc({ usuario_id: data.userId, tentativa: data.tentativa, order: 'desc', stage: 1 });
 
     const resultFirst = ((Number(firstFirstStage?.mediana)) / (Number(lastFirstStage?.mediana)));
-
+    let resultThird;
     const firstThirdStage = await searchResultCalc({ usuario_id: data.userId, tentativa: data.tentativa, order: 'asc', stage: 3 });
     const lastThirdStage = await searchResultCalc({ usuario_id: data.userId, tentativa: data.tentativa, order: 'desc', stage: 3 });
-    const resultThird = ((Number(firstThirdStage?.mediana)) / (Number(lastThirdStage?.mediana)));
-
+    if (Number(lastThirdStage?.mediana) !== 0) {
+        resultThird = ((Number(firstThirdStage?.mediana) / (Number(lastThirdStage?.mediana))));
+    }
+    else {
+        resultThird = (Number(firstThirdStage?.mediana));
+    }
     const result = resultThird / resultFirst;
-
-    return getProfile({ indice: result, perda: resultThird, ganho: resultFirst, usuario: await getbyId(data) });
+    return getProfile({ indice: result, perda: resultThird, ganho: resultFirst, usuario: await getbyId(data.userId) });
 }
 
 function getProfile(data: any) {
+    console.log(data);
+
     if (data.indice < 1.0) {
         return {
             usuario: data.usuario,
