@@ -85,7 +85,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
         setSelected(data);
 
         setSelectionHistory((prev) => {
-            const updated = [...prev, data.optionSelected].slice(-4);
+            const updated = [...prev, data.optionSelected].slice(-5); // Mantém os últimos 5
             const lastFour = updated.join("");
             const lastThreeFromSecond = lastFour.substring(1); // Pega do índice 1 até o fim
 
