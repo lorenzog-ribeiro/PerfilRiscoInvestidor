@@ -28,9 +28,9 @@ export class ScenariosService {
         });
     }
 
-    calcResult(userId: any) {
+    calcResult(userId: any, tentativa: any) {
         return AxiosInstance.get("/result", {
-            params: { userId },
+            params: { userId, tentativa },
         });
     }
 }

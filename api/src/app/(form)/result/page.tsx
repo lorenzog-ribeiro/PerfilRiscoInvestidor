@@ -15,14 +15,22 @@ import TesteA from '@/components/equilibrium/page';
 export default function ResultadoFinal() {
     const [perfilData, setPerfilData] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [storedUserId, setStoredUserId] = useState<string | undefined>(undefined);
+    const [storedUserAttempt, setStoredUserAttempt] = useState<string | undefined>(undefined);
 
     const profileService = useMemo(() => new ScenariosService(), []);
 
     useEffect(() => {
-        const storedUserId = document.cookie
+        const userId = document.cookie
             .split("; ")
             .find((row) => row.startsWith("userId="))
             ?.split("=")[1];
+        const userAttempt = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userAttempt="))
+            ?.split("=")[1];
+        setStoredUserId(userId);
+        setStoredUserAttempt(userAttempt);
 
         // Função para simular o carregamento de dados
         const carregarDadosAleatorios = () => {
@@ -31,7 +39,7 @@ export default function ResultadoFinal() {
             // Simulando tempo de carregamento
             setTimeout(() => {
                 profileService
-                    .calcResult(storedUserId)
+                    .calcResult(storedUserId, userAttempt)
                     .then((response: { data: SetStateAction<null> }) => {
                         setPerfilData(response.data);
                     })

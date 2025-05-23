@@ -19,8 +19,11 @@ interface PerfilData {
 }
 
 const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
-    const valor = perfilData.profile.valor;
-    const valorResult = (valor * 1000).toFixed(0);
+    const valor = Number(perfilData.profile.valor.toFixed(2)) / 100;
+    const valorResult = (Number(valor) * 1000).toFixed(2);
+
+    console.log("Valor do resultado:", valorResult);
+    console.log("Valor do perfil:", valor);
 
     let rotacao = 0;
     let textoEsquerda: (string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined)[] = [];
@@ -92,7 +95,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
                             <circle cx="280" cy="145" r="5" fill="#22c55e" />
                             <line x1="280" y1="145" x2="280" y2="122" stroke="#22c55e" strokeWidth="2" />
                             <text x="280" y="160" fill="green" textAnchor="middle" fontSize="12">
-                                R$ {valorResult}
+                                R$ {Number(valorResult) < 0 ? Number(valorResult) * -1 : valorResult}
                             </text>
                         </g>
                     </svg>

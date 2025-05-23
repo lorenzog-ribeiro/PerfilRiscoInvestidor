@@ -220,13 +220,13 @@ export const saveThirdStage = async (data: any) => {
 
 
 export const result = async (data: any) => {
-    const firstFirstStage = await searchResultCalc({ usuario_id: data, order: 'asc', stage: 1 });
-    const lastFirstStage = await searchResultCalc({ usuario_id: data, order: 'desc', stage: 1 });
+    const firstFirstStage = await searchResultCalc({ usuario_id: data.userId, tentativa: data.tentativa, order: 'asc', stage: 1 });
+    const lastFirstStage = await searchResultCalc({ usuario_id: data.userId, tentativa: data.tentativa, order: 'desc', stage: 1 });
 
     const resultFirst = ((Number(firstFirstStage?.mediana)) / (Number(lastFirstStage?.mediana)));
 
-    const firstThirdStage = await searchResultCalc({ usuario_id: data, order: 'asc', stage: 3 });
-    const lastThirdStage = await searchResultCalc({ usuario_id: data, order: 'desc', stage: 3 });
+    const firstThirdStage = await searchResultCalc({ usuario_id: data.userId, tentativa: data.tentativa, order: 'asc', stage: 3 });
+    const lastThirdStage = await searchResultCalc({ usuario_id: data.userId, tentativa: data.tentativa, order: 'desc', stage: 3 });
     const resultThird = ((Number(firstThirdStage?.mediana)) / (Number(lastThirdStage?.mediana)));
 
     const result = resultThird / resultFirst;
