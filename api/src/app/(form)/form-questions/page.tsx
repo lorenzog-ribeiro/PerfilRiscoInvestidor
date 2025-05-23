@@ -38,7 +38,6 @@ const QuizPage = () => {
   const [quantity, setQuantity] = useState<number>();
   const [question, setQuestion] = useState<Question | null>(null);
   const [respostas, setRespostas] = useState<{ [id: string]: string }>({});
-  router.push("/finance-questions");
 
   const initialIndex =
     typeof window !== "undefined"
