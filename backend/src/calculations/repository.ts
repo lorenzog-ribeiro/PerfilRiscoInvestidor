@@ -188,7 +188,6 @@ export const searchResultCalc = async (data: any) => {
                 result = await prisma.primeira_etapa.findFirstOrThrow({
                     where: {
                         usuario_id: data.usuario_id,
-                        pergunta: data.pergunta, // Considerando a pergunta
                         tentativa: data.tentativa // Considerando a tentativa
                     },
                     orderBy: {
@@ -200,7 +199,6 @@ export const searchResultCalc = async (data: any) => {
                 result = await prisma.segunda_etapa.findFirstOrThrow({
                     where: {
                         usuario_id: data.usuario_id,
-                        pergunta: data.pergunta, // Considerando a pergunta
                         tentativa: data.tentativa // Considerando a tentativa
                     },
                     orderBy: {
@@ -212,7 +210,6 @@ export const searchResultCalc = async (data: any) => {
                 result = await prisma.terceira_etapa.findFirstOrThrow({
                     where: {
                         usuario_id: data.usuario_id,
-                        pergunta: data.pergunta, // Considerando a pergunta
                         tentativa: data.tentativa // Considerando a tentativa
                     },
                     orderBy: {
