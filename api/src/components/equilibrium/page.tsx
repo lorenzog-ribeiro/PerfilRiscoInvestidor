@@ -19,7 +19,7 @@ interface PerfilData {
 }
 
 const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
-    const valor = 1.6;
+    const valor = perfilData.profile.valor;
     const valorResult = (valor * 1000).toFixed(0);
 
     let rotacao = 0;
