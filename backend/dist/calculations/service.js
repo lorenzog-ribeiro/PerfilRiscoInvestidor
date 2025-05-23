@@ -183,9 +183,9 @@ const result = async (data) => {
         resultThird = ((Number(firstThirdStage?.mediana) / (Number(lastThirdStage?.mediana))));
     }
     else {
-        resultThird = 0;
+        resultThird = 0.01;
     }
-    const result = resultThird !== 0 ? (resultThird / resultFirst) : 0;
+    const result = (resultThird / resultFirst);
     return getProfile({ indice: result, perda: resultThird, ganho: resultFirst, usuario: await (0, repository_2.getbyId)(data.userId) });
 };
 exports.result = result;

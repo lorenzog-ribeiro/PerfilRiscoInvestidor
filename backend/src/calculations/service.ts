@@ -204,9 +204,9 @@ export const result = async (data: any) => {
         resultThird = ((Number(firstThirdStage?.mediana) / (Number(lastThirdStage?.mediana))));
     }
     else {
-        resultThird = 0;
+        resultThird = 0.01;
     }
-    const result = resultThird !== 0 ? (resultThird / resultFirst) : 0;
+    const result = (resultThird / resultFirst);
     return getProfile({ indice: result, perda: resultThird, ganho: resultFirst, usuario: await getbyId(data.userId) });
 }
 
