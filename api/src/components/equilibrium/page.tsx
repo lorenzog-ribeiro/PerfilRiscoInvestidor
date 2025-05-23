@@ -20,7 +20,11 @@ interface PerfilData {
 
 const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     const valor = Number(perfilData.profile.valor.toFixed(2));
-    const valorResult = (Number(valor) * 1000);
+    const valorResult = (Number(valor) * 1000).toFixed(2);
+
+    if (Number(valorResult) > 5000 ) {
+        Number(valorResult) / 10;
+    }
 
     console.log("Valor do resultado:", valorResult);
     console.log("Valor do perfil:", valor);
@@ -30,15 +34,15 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     let textoDireita: (string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined)[] = [];
 
     if (valor > 1.5) {
-        rotacao = 15;
+        rotacao = -15;
         textoEsquerda = ["Para", "aceitar", "perder"];
         textoDireita = ["Você exige um", "ganho de pelo", "menos"];
     } else if (valor > 1) {
-        rotacao = 10;
+        rotacao = -10;
         textoEsquerda = ["Para", "aceitar", "perder"];
         textoDireita = ["Você exige um", "ganho de pelo", "menos"];
     } else if (valor <= 1) {
-        rotacao = Number(valor) === 1 ? 0 : -10;
+        rotacao = Number(valor) === 1 ? 0 : 10;
         textoEsquerda = ["Você", "aceitaria", "perder"];
         textoDireita = ["Se tivesse", "chance de", "ganhar"];
     }
