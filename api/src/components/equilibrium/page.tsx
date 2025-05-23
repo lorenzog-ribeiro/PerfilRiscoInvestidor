@@ -19,8 +19,8 @@ interface PerfilData {
 }
 
 const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
-    const valor = Number(perfilData.profile.valor.toFixed(2)) / 100;
-    const valorResult = (Number(valor) * 1000).toFixed(2);
+    const valor = Number(perfilData.profile.valor.toFixed(2));
+    const valorResult = (Number(valor) * 1000);
 
     console.log("Valor do resultado:", valorResult);
     console.log("Valor do perfil:", valor);
