@@ -9,7 +9,7 @@ export default function Instruction() {
         return;
     };
     return (
-        <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-8">
+        <main className="min-h-screen flex items-center justify-center px-4 py-8">
             <article className="w-full max-w-3xl bg-white bg-opacity-90 rounded-3xl shadow-xl p-6 sm:p-10 text-gray-900 font-sans space-y-8">
                 <h1 className="text-lg sm:text-md font-extrabold text-orange-700 text-center mb-6">
                     A partir de agora, você será apresentado a duas alternativas:
