@@ -85,9 +85,11 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
         setSelected(data);
 
         setSelectionHistory((prev) => {
-            const updated = [...prev, data.optionSelected].slice(-4);
+            const updated = [...prev, data.optionSelected].slice(-5); // Mantém os últimos 5
             const lastFour = updated.join("");
-            if (lastFour === "ABAA" || lastFour === "BABB") {
+            const lastThreeFromSecond = lastFour.substring(1); // Pega do índice 1 até o fim
+
+            if (lastThreeFromSecond === "ABAA" || lastThreeFromSecond === "BABB") {
                 console.log(updated);
                 onAnswered();
                 return updated;
@@ -95,7 +97,7 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
             return updated;
         });
 
-        setTimeout(() => handleNext(data), 500);
+        setTimeout(() => handleNext(data), 1000);
     };
 
     const handleNext = (currentSelected: selectedInterface) => {
@@ -187,10 +189,10 @@ export default function SecondScenario({ onAnswered }: { onAnswered: () => void 
                         </div>
                         <div className="text-xs text-center text-gray-600 p-5.5">
                             <div>
-                                <b>50%</b> chance de perda
+                                <b>50%</b> chance de ganho
                             </div>
                             <div>
-                                <b>50%</b> chance de ganho
+                                <b>50%</b> chance de perda
                             </div>
                         </div>
                         <div className="flex justify-center items-center">

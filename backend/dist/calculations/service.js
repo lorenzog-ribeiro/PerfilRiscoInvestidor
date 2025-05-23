@@ -8,9 +8,9 @@ const repository_2 = require("../user/repository");
 //     const lastattempt = await searchLastattempt(userId, stage, scenario);
 //     return lastattempt;
 // }
-function roundToNearest10(value) {
+function roundToNearest5(value) {
     const precisionValue = parseFloat(value.toFixed(2));
-    return Math.round(precisionValue / 10) * 10;
+    return Math.round(precisionValue / 5) * 5;
 }
 // Função para buscar os valores da primeira fase
 const getFirstStageValues = async (data) => {
@@ -31,7 +31,7 @@ const getFirstStageValues = async (data) => {
             const baseValue = base(Safe, Risk, 1);
             return await (0, repository_1.saveScenarioSelectedFirstStage)({
                 valor_selecionado: 0,
-                mediana: roundToNearest10(baseValue),
+                mediana: roundToNearest5(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -66,7 +66,7 @@ const saveFirstStage = async (data) => {
     // Verificar a diferença mínima
     return await (0, repository_1.saveScenarioSelectedFirstStage)({
         valor_selecionado: data.valueSelected,
-        mediana: roundToNearest10(aggregate),
+        mediana: roundToNearest5(aggregate),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
@@ -92,7 +92,7 @@ const getSecondStageValues = async (data) => {
             const baseValue = base(Safe, Risk, 2);
             return await (0, repository_1.saveScenarioSelectedSecondStage)({
                 valor_selecionado: 0,
-                mediana: roundToNearest10(baseValue),
+                mediana: roundToNearest5(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -127,7 +127,7 @@ const saveSecondStage = async (data) => {
     console.log(data.valueSelected, baseValue / (2 ** data.scenario));
     return await (0, repository_1.saveScenarioSelectedSecondStage)({
         valor_selecionado: data.valueSelected,
-        mediana: roundToNearest10(aggregate),
+        mediana: roundToNearest5(aggregate),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
@@ -153,7 +153,7 @@ const getThirdStageValues = async (data) => {
             const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
             return await (0, repository_1.saveScenarioSelectedThirdStage)({
                 valor_selecionado: 0,
-                mediana: roundToNearest10(baseValue),
+                mediana: roundToNearest5(baseValue),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
@@ -187,7 +187,7 @@ const saveThirdStage = async (data) => {
     }
     return await (0, repository_1.saveScenarioSelectedThirdStage)({
         valor_selecionado: data.valueSelected,
-        mediana: roundToNearest10(aggregate),
+        mediana: roundToNearest5(aggregate),
         lado_selecionado: data.optionSelected,
         usuario_id: data.userId,
         pergunta: data.scenario,
