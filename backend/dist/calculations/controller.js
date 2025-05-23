@@ -91,8 +91,8 @@ const onlyLossScenario = async (req, res) => {
 exports.onlyLossScenario = onlyLossScenario;
 const calcResult = async (req, res) => {
     try {
-        const { userId } = req.query;
-        const profile = await (0, service_1.result)(userId);
+        const { userId, tentativa } = req.query;
+        const profile = await (0, service_1.result)({ userId, tentativa });
         res.status(200).json({ profile });
     }
     catch (error) {

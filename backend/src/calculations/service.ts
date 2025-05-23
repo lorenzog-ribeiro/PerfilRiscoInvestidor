@@ -27,15 +27,6 @@ export const getFirstStageValues = async (data: any) => {
     console.log(data)
     switch (data.scenario) {
         case 0:
-            const scenario = await searchValueFirstStage({
-                usuario_id: data.userId,
-                pergunta: data.scenario,
-                tentativa: data.attempt
-            });
-            if (scenario) {
-                return scenario;
-            }
-
             const Safe = 1000;
             const Risk = 0;
             const baseValue = base(Safe, Risk, 1);
@@ -93,15 +84,6 @@ export const saveFirstStage = async (data: any) => {
 export const getSecondStageValues = async (data: any) => {
     switch (data.scenario) {
         case 0:
-            const scenario = await searchValueSecondStage({
-                usuario_id: data.userId,
-                pergunta: data.scenario,
-                tentativa: data.attempt
-            });
-            if (scenario) {
-                return scenario;
-            }
-
             const Safe = 0;
             const Risk = 1000;
             const baseValue = base(Safe, Risk, 2);
@@ -158,25 +140,16 @@ export const saveSecondStage = async (data: any) => {
 export const getThirdStageValues = async (data: any) => {
     switch (data.scenario) {
         case 0:
-            const scenario = await searchValueThirdStage({
-                usuario_id: data.userId,
-                pergunta: data.scenario,
-                tentativa: data.attempt
-            });
-            if (scenario) {
-                return scenario;
-            }
-
             const Safe = 0;
             const Risk = await getSecondForThird(data);
-            const baseValue = base(Safe, Number(Risk?.valor_selecionado), 3);
+            const baseValue = base(Safe, Number(Risk?.mediana), 3);
             return await saveScenarioSelectedThirdStage({
                 valor_selecionado: 0,
                 mediana: roundToNearest5(baseValue as number),
                 lado_selecionado: null,
                 usuario_id: data.userId,
                 pergunta: 0,
-                valor_fixo: Number(Risk?.valor_selecionado),
+                valor_fixo: Number(Risk?.mediana),
                 tentativa: data.attempt
             });
             break;
