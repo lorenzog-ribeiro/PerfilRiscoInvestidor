@@ -19,17 +19,25 @@ interface PerfilData {
 }
 
 const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
-    const valor = perfilData.profile.valor;
+    const valor = 1.6;
     const valorResult = (valor * 1000).toFixed(0);
 
     let rotacao = 0;
+    let textoEsquerda: (string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined)[] = [];
+    let textoDireita: (string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined)[] = [];
 
     if (valor > 1.5) {
-        rotacao = 15;
+        rotacao = -15;
+        textoEsquerda = ["Você", "aceitaria", "perder"];
+        textoDireita = ["Você exige um", "ganho de pelo", "menos"];
     } else if (valor > 1) {
-        rotacao = 10;
-    } else if (valor < 1) {
         rotacao = -10;
+        textoEsquerda = ["Para", "aceitar", "perder"];
+        textoDireita = ["Você exige um", "ganho de pelo", "menos"];
+    } else if (valor <= 1) {
+        rotacao = Number(valor) === 1 ? 0 : 10;
+        textoEsquerda = ["Você", "aceitaria", "perder"];
+        textoDireita = ["Se tivesse", "chance de", "ganhar"];
     }
 
 
@@ -65,25 +73,25 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
 
                             {/* Lado esquerdo - perder */}
                             <text x="120" y="80" fill="#000" textAnchor="middle" fontSize="12">
-                                <tspan x="120" dy="0">Você</tspan>
-                                <tspan x="120" dy="1.2em">aceitaria</tspan>
-                                <tspan x="120" dy="1.2em">perder</tspan>
+                                <tspan x="120" dy="0">{textoEsquerda[0]}</tspan>
+                                <tspan x="120" dy="1.2em">{textoEsquerda[1]}</tspan>
+                                <tspan x="120" dy="1.2em">{textoEsquerda[2]}</tspan>
                             </text>
-                            <circle cx="120" cy="165" r="5" fill="#ef4444" />
-                            <line x1="120" y1="165" x2="120" y2="125" stroke="#ef4444" strokeWidth="2" />
-                            <text x="120" y="185" fill="red" textAnchor="middle" fontSize="12">
+                            <circle cx="120" cy="145" r="5" fill="#ef4444" />
+                            <line x1="120" y1="145" x2="120" y2="125" stroke="#ef4444" strokeWidth="2" />
+                            <text x="120" y="160" fill="red" textAnchor="middle" fontSize="12">
                                 R$ 1000
                             </text>
 
                             {/* Lado direito - ganhar */}
                             <text x="280" y="80" fill="#000" textAnchor="middle" fontSize="12">
-                                <tspan x="280" dy="0">Se tivesse</tspan>
-                                <tspan x="280" dy="1.2em">chance de</tspan>
-                                <tspan x="280" dy="1.2em">ganhar</tspan>
+                                <tspan x="280" dy="0">{textoDireita[0]}</tspan>
+                                <tspan x="280" dy="1.2em">{textoDireita[1]}</tspan>
+                                <tspan x="280" dy="1.2em">{textoDireita[2]}</tspan>
                             </text>
-                            <circle cx="280" cy="165" r="5" fill="#22c55e" />
-                            <line x1="280" y1="165" x2="280" y2="122" stroke="#22c55e" strokeWidth="2" />
-                            <text x="280" y="180" fill="green" textAnchor="middle" fontSize="12">
+                            <circle cx="280" cy="145" r="5" fill="#22c55e" />
+                            <line x1="280" y1="145" x2="280" y2="122" stroke="#22c55e" strokeWidth="2" />
+                            <text x="280" y="160" fill="green" textAnchor="middle" fontSize="12">
                                 R$ {valorResult}
                             </text>
                         </g>
