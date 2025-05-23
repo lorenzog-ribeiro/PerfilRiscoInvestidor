@@ -146,10 +146,10 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                         </div>
                         <div className="text-xs text-center text-gray-600">
                             <div>
-                                <b>50% chance de não perder</b>
+                                <b>50%</b> chance de não perder
                             </div>
                             <div>
-                                <b>50% chance de perda</b>
+                                <b>50%</b> chance de perda
                             </div>
                         </div>
                         <div className="flex justify-center items-center">
@@ -216,7 +216,7 @@ export default function ThirdScenario({ onAnswered }: { onAnswered: () => void }
                         </div>
                         <div className="text-xs text-center text-gray-600 p-2.5">
                             <div>
-                                <b>100% certeza de perda</b>
+                                <b>100%</b>  certeza de perda
                             </div>
                         </div>
                         <div className="flex justify-center items-center pt-.5">
