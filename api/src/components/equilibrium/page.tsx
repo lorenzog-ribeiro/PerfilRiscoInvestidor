@@ -22,10 +22,6 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     const valor = Number(perfilData.profile.valor.toFixed(2));
     const valorResult = (Number(valor) * 1000).toFixed(2);
 
-    if (Number(valorResult) > 5000 ) {
-        Number(valorResult) / 10;
-    }
-
     console.log("Valor do resultado:", valorResult);
     console.log("Valor do perfil:", valor);
 
