@@ -92,7 +92,7 @@ exports.onlyLossScenario = onlyLossScenario;
 const calcResult = async (req, res) => {
     try {
         const { userId, tentativa } = req.query;
-        const profile = await (0, service_1.result)({ userId, tentativa });
+        const profile = await (0, service_1.result)({ userId: userId, tentativa: Number(tentativa) });
         res.status(200).json({ profile });
     }
     catch (error) {
