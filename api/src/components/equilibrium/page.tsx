@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react"; // ✅ Removido useState não usado
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "../ui/button";
@@ -19,6 +19,12 @@ interface PerfilData {
 }
 
 const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
+    useEffect(() => {
+        console.log("👤 Usuário carregado:", perfilData?.profile?.usuario?.nome);
+        console.log("⏰ Timestamp:", new Date().toLocaleString());
+        console.log("📊 Dados completos:", perfilData);
+    }, [perfilData]);
+
     const valor = Number(perfilData.profile.valor.toFixed(2));
     const valorResult = (Number(valor) * 1000).toFixed(2);
 
@@ -26,8 +32,8 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     console.log("Valor do perfil:", valor);
 
     let rotacao = 0;
-    let textoEsquerda: (string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined)[] = [];
-    let textoDireita: (string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined)[] = [];
+    let textoEsquerda: string[] = []; // ✅ Tipo específico ao invés de any
+    let textoDireita: string[] = []; // ✅ Tipo específico ao invés de any
 
     if (valor > 1.5) {
         rotacao = -15;
@@ -43,12 +49,20 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
         textoDireita = ["Se tivesse", "chance de", "ganhar"];
     }
 
-
     const removeCookies = () => {
+        console.log("🧹 Iniciando limpeza de cookies e storage...");
+        
         document.cookie.split(";").forEach(cookie => {
             const name = cookie.split("=")[0].trim();
             document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
         });
+
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        console.log("✅ Cookies e storage limpos");
+        window.location.href = `/?t=${Date.now()}&clear=true`;
     };
 
     return (
