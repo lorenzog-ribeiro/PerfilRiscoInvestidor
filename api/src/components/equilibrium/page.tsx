@@ -26,7 +26,7 @@ const TesteA: React.FC<{ perfilData: PerfilData }> = ({ perfilData }) => {
     }, [perfilData]);
 
     const valor = Number(perfilData.profile.valor.toFixed(2));
-    const valorResult = (Number(valor)).toFixed(2);
+    const valorResult = (Number(valor) * 100).toFixed(2);
 
     console.log("Valor do resultado:", valorResult);
     console.log("Valor do perfil:", valor);
