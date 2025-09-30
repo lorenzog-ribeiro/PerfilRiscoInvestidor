@@ -58,12 +58,11 @@ export default function UserPage() {
       .createUser(userData)
       .then((response: { data: SetStateAction<string> }) => {
         const userId = response.data as string;
-        console.log(response.data);
         // Armazenar o userId no cookie por 7 dias
         setCookie("userId", userId, 7);
 
         // Redirecionar para a página com o userId na URL
-        //router.push(`/form-questions`);
+        router.push(`/form-questions`);
       })
       .catch((error: { message: string }) => {
         setError(error.message); // Exibir mensagem de erro
