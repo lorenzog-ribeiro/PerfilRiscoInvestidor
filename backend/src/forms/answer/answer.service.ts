@@ -1,13 +1,17 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Body, Injectable, Logger } from '@nestjs/common';
 import { AnswerDto } from './create-answer.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Cookies } from 'src/common/decorators/cookies.decorator';
 
 @Injectable()
 export class AnswerService {
   private readonly logger = new Logger(AnswerService.name);
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, createAnswerDto: AnswerDto): Promise<any> {
+  async create(
+    @Cookies() userId: string,
+    @Body() createAnswerDto: AnswerDto,
+  ): Promise<any> {
     try {
       const result = await this.prisma.result.create({
         data: {
