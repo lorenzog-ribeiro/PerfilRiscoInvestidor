@@ -8,102 +8,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model categorias {
-  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome      String
-  perguntas perguntas[]
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  birthDate DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relacionamentos
+  results Result[]
+
+  @@map("users")
 }
 
-model perfis {
-  id        Int     @id @default(autoincrement())
-  nome      String
-  min_media Decimal @db.Decimal
-  max_media Decimal @db.Decimal
+model Question {
+  id       String @id @default(cuid())
+  category String // Categoria da pergunta
+  text     String
+  order    Int    @unique
+  options  Json? // Para perguntas de múltipla escolha
+
+  @@map("questions")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model perguntas {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  categoria_id       String?              @db.Uuid
-  texto              String
-  tipo               String
-  ordem              Int
-  categorias         categorias?          @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  respostas          respostas[]
-  respostas_usuarios respostas_usuarios[]
-}
+model Result {
+  id     String @id @default(cuid())
+  userId String @map("user_id")
 
-model respostas {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  pergunta_id String?    @db.Uuid
-  texto       String
-  peso        Int?
-  tentativa   Int?
-  perguntas   perguntas? @relation(fields: [pergunta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
+  answers Json?
 
-model respostas_usuarios {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  usuario_id    String?    @db.Uuid
-  pergunta_id   String?    @db.Uuid
-  resposta      String
-  respondido_em DateTime?  @default(now()) @db.Timestamp(6)
-  tentativa     Int?
-  perguntas     perguntas? @relation(fields: [pergunta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  usuarios      usuarios?  @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
+  // Resultado final
+  profileName String? @map("profile_name") // Null enquanto não completado
+  score       Int? // Null enquanto não completado
+  details     Json? // Cálculos e detalhes adicionais
 
-model usuarios {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email              String?              @unique
-  nome               String?
-  criado_em          DateTime?            @default(now()) @db.Timestamp(6)
-  tentativa          Int?
-  primeira_etapa     primeira_etapa[]
-  respostas_usuarios respostas_usuarios[]
-  segunda_etapa      segunda_etapa[]
-  terceira_etapa     terceira_etapa[]
-}
+  startedAt   DateTime  @default(now()) @map("started_at")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-model primeira_etapa {
-  id                Int       @id @default(autoincrement())
-  valor_selecionado Int
-  mediana           Decimal   @db.Decimal(10, 2)
-  lado_selecionado  String?   @db.Char(1)
-  usuario_id        String?   @db.Uuid
-  pergunta          Int?
-  valor_fixo        Int?
-  tentativa         Int?
-  usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_primeira_etapa_usuario")
-}
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model segunda_etapa {
-  id                Int       @id @default(autoincrement())
-  valor_selecionado Int
-  mediana           Decimal   @db.Decimal(10, 2)
-  lado_selecionado  String?   @db.Char(1)
-  usuario_id        String?   @db.Uuid
-  pergunta          Int?
-  valor_fixo        Int?
-  tentativa         Int?
-  usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_segunda_etapa_usuario")
-}
-
-model terceira_etapa {
-  id                Int       @id @default(autoincrement())
-  valor_selecionado Int
-  mediana           Decimal   @db.Decimal(10, 2)
-  lado_selecionado  String?   @db.Char(1)
-  usuario_id        String?   @db.Uuid
-  pergunta          Int?
-  valor_fixo        Int?
-  tentativa         Int?
-  usuarios          usuarios? @relation(fields: [usuario_id], references: [id], map: "fk_terceira_etapa_usuario")
-}
-
-model perfil_risco {
-  id         Int     @id
-  usuario_id String? @db.Uuid
-  resultado  Int?
-  perfil     String?
+  @@map("results")
 }
