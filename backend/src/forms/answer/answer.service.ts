@@ -58,7 +58,7 @@ export class AnswerService {
         sideSelected: data.side,
         valueBase: valueBase ?? 0,
         question: data.question,
-        valueSelected: data.valueVar,
+        valueVar: data.valueVar,
         scenario: data.scenario,
       };
 
@@ -95,24 +95,24 @@ export class AnswerService {
     sideSelected;
     valueBase;
     question;
-    valueSelected;
+    valueVar;
     scenario;
   }) {
     switch (data.scenario) {
       case 1:
         return data.sideSelected === 'left'
-          ? data.valueSelected + data.valueBase / 2 ** data.question
-          : data.valueSelected - data.valueBase / 2 ** data.question;
+          ? data.valueVar + data.valueBase / 2 ** data.question
+          : data.valueVar - data.valueBase / 2 ** data.question;
         break;
       case 2:
         return data.sideSelected === 'left'
-          ? data.valueSelected - data.valueBase / 2 ** data.question
-          : data.valueSelected + data.valueBase / 2 ** data.question;
+          ? data.valueVar - data.valueBase / 2 ** data.question
+          : data.valueVar + data.valueBase / 2 ** data.question;
         break;
       case 3:
         return data.sideSelected === 'left'
-          ? data.valueSelected - data.valueBase / 2 ** data.question
-          : data.valueSelected + data.valueBase / 2 ** data.question;
+          ? data.valueVar - data.valueBase / 2 ** data.question
+          : data.valueVar + data.valueBase / 2 ** data.question;
         break;
     }
   }

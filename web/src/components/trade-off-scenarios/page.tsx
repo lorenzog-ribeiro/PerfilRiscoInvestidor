@@ -14,7 +14,6 @@ export default function ScenarioController() {
     }
   }, [currentIndex, router]);
 
-  // 🔥 Define os cenários como objetos
   const scenariosConfig = [
     { scenario: 1, title: "Cenário 1" },
     { scenario: 2, title: "Cenário 2" },

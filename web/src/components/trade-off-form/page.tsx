@@ -53,10 +53,9 @@ export default function TradeOffForm({
         setValue(mediana);
         setFixedValue(valor_fixo);
 
-        if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
-          setIndex(0);
-          onAnswered();
-        }
+        // if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
+        //   onAnswered();
+        // }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
         // Implementar feedback visual de erro aqui.
@@ -65,7 +64,7 @@ export default function TradeOffForm({
       }
     };
     fetchData();
-  }, [index, tradeOffService, onAnswered]);
+  }, [tradeOffService, onAnswered]);
 
   const handleSelection = async (data: SelectedInterface) => {
     if (loading) return;
@@ -80,7 +79,6 @@ export default function TradeOffForm({
     // Checks if the sequence of choices ends the test.
     const lastFour = updatedHistory.join("");
     if (lastFour === "ABAA" || lastFour === "BABB") {
-      setIndex(0);
       onAnswered();
       return;
     }
@@ -102,17 +100,15 @@ export default function TradeOffForm({
         setFixedValue(valor_fixo);
 
         // Verifica condição de parada
-        if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
-          setIndex(0);
-          onAnswered();
-          return;
-        }
+        // if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
+        //   onAnswered();
+        //   return;
+        // }
       }
       const nextIndex =
         index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
 
       if (nextIndex >= totalQuestions - 1) {
-        setIndex(0);
         onAnswered();
         return;
       }
