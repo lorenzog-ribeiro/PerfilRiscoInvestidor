@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "../../components/ui/card";
 import { PieChart, Pie, Cell, Label } from "recharts";
 import { TradeOffService } from "../../../services/TradeOffService";
+import { LabelProps } from "recharts";
 
 interface SelectedInterface {
   optionSelected: string;
@@ -178,22 +179,22 @@ export default function TradeOffForm({
                     <Cell key={`cell-${idx}`} fill={entry.color} />
                   ))}
                   <Label
-                    content={({ viewBox }) => {
-                      const { cx, cy } = viewBox || {};
+                    content={(props: LabelProps) => {
+                      const { cx, cy } = props || {};
                       return (
                         <>
                           <text
                             x={cx}
-                            y={(cy ?? 0) - 30}
+                            y={typeof cy === "number" ? cy - 30 : -30}
                             textAnchor="middle"
                             dominantBaseline="middle"
                             className="fill-white text-sm font-bold"
                           >
-                            + R${fixedValue}
+                            R${fixedValue}
                           </text>
                           <text
                             x={cx}
-                            y={(cy ?? 0) + 30}
+                            y={typeof cy === "number" ? cy + 30 : 30}
                             textAnchor="middle"
                             dominantBaseline="middle"
                             className="fill-white text-sm font-bold"
@@ -241,8 +242,8 @@ export default function TradeOffForm({
                   strokeWidth={0}
                 >
                   <Label
-                    content={({ viewBox }) => {
-                      const { cx, cy } = viewBox || {};
+                    content={(props: LabelProps) => {
+                      const { cx, cy } = props || {};
                       return (
                         <text
                           x={cx}
@@ -251,7 +252,7 @@ export default function TradeOffForm({
                           dominantBaseline="middle"
                           className="fill-white text-sm font-bold"
                         >
-                          + R${value}
+                          R${value}
                         </text>
                       );
                     }}
