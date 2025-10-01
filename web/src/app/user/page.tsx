@@ -18,14 +18,6 @@ export default function UserPage() {
   const userService = useMemo(() => new UserService(), []);
   const router = useRouter();
 
-  // Função para definir um cookie
-  const setCookie = (name: string, value: string, days: number) => {
-    const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000); // Expiração do cookie
-    const expires = "expires=" + date.toUTCString();
-    document.cookie = `${name}=${value}; ${expires}; path=/`;
-  };
-
   // Validação simples para os campos
   const validateForm = () => {
     if (!name || !email || !birthDate) {
@@ -52,56 +44,68 @@ export default function UserPage() {
     if (!validateForm()) return;
 
     setLoading(true); // Ativar carregamento
-    const userData = { name, email, birthDate };
+    try {
+      const userData = { name, email, birthDate: new Date(birthDate) };
+      const response = await userService.createUser(userData);
+      const userId = response.data as string;
 
-    userService
-      .createUser(userData)
-      .then((response: { data: SetStateAction<string> }) => {
-        const userId = response.data as string;
-        // Armazenar o userId no cookie por 7 dias
-        setCookie("userId", userId, 7);
-
-        // Redirecionar para a página com o userId na URL
-        router.push(`/form-questions`);
-      })
-      .catch((error: { message: string }) => {
-        setError(error.message); // Exibir mensagem de erro
-      })
-      .finally(() => {
-        setLoading(false); // Desativar carregamento após a requisição
-      });
+      router.push(`/form-questions`);
+    } catch (error: any) {
+      // Acessa a mensagem de erro da API
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#f1f5f9]">
-      <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleCreateUser();
+        }}
+        className="w-full max-w-md bg-white rounded-2xl p-6 shadow-md space-y-6"
+      >
         <h1 className="text-xl font-bold color text-orange-500">
           Qual é o seu perfil de investidor?{" "}
         </h1>
-
         {/* Exibe a mensagem de erro, se houver */}
-        {error && <div className="text-red-500 text-sm">{error}</div>}
-
-        <Input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Escreva seu nome"
-        />
-
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Escreva seu email"
-          className={emailError ? "border-red-500" : ""}
-        />
-        <Input
-          type="date"
-          value={birthDate}
-          onChange={(e) => setbirthDate(e.target.value)}
-          placeholder="Selecione a data do seu aniversario"
-        />
+        <div className="space-y-2">
+          <Label htmlFor="name">Nome</Label>
+          <Input
+            type="text"
+            value={name}
+            id="name"
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Escreva seu nome"
+            disabled={loading}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="name">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            max={new Date().toISOString().split("T")[0]}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Escreva seu email"
+            className={emailError ? "border-red-500" : ""}
+            disabled={loading}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="name">Data de Nascimento</Label>
+          <Input
+            id="birthDate"
+            type="date"
+            value={birthDate}
+            onChange={(e) => setbirthDate(e.target.value)}
+            placeholder="Selecione a data do seu aniversario"
+            disabled={loading}
+          />
+        </div>
         <div>
           <p className="text-sm text-left">
             Para participar da pesquisa, leia atentamente o Termo de
@@ -130,14 +134,14 @@ export default function UserPage() {
           </Label>
         </div>
         <Button
+          type="submit"
           className="bg-orange-500 hover:bg-orange-600 text-white"
-          onClick={handleCreateUser}
-          disabled={loading} // Desabilita o botão durante o carregamento
+          disabled={loading}
         >
           {loading ? "Carregando..." : "Continuar"}{" "}
           {/* Texto condicional no botão */}
         </Button>
-      </div>
+      </form>
     </div>
   );
 }

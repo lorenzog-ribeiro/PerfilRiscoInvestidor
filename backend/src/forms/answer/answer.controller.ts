@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AnswerService } from './answer.service';
 import { AnswerDto } from './create-answer.dto';
+import { TradeOffRequestDto } from './tradeoff.dto';
 
 @Controller('answers')
 export class AnswerController {
@@ -17,7 +18,7 @@ export class AnswerController {
   }
 
   @Post('tradeOff')
-  TradeOff(@Body() data) {
+  TradeOff(@Body() data: TradeOffRequestDto) {
     return this.answerService.tradeOff(data);
   }
 }

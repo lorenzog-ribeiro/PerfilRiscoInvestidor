@@ -2,6 +2,7 @@ import { Body, Injectable, Logger } from '@nestjs/common';
 import { AnswerDto } from './create-answer.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Cookies } from 'src/common/decorators/cookies.decorator';
+import { TradeOffRequestDto } from './tradeoff.dto';
 
 @Injectable()
 export class AnswerService {
@@ -34,20 +35,20 @@ export class AnswerService {
     return this.prisma.result.findMany();
   }
 
-  async tradeOff(data) {
+  async tradeOff(data: TradeOffRequestDto) {
     try {
       let Safe = 0;
       let Risk = 0;
-
+      console.log(data);
       switch (data.scenario) {
         case 1:
-          Safe = 1000;
+          Safe = data.valueFixed || 0;
           break;
         case 2:
-          Risk = -1000;
+          Risk = data.valueFixed || 0;
           break;
         case 3:
-          Risk = data.valueFixed;
+          Risk = data.valueFixed || 0;
           break;
       }
 
@@ -61,8 +62,15 @@ export class AnswerService {
         scenario: data.scenario,
       };
 
-      let result = this.calculateMedian(dataForCalc);
-      return result;
+      let mediana = this.calculateMedian(dataForCalc);
+
+      // Retorna no formato esperado pelo frontend
+      return {
+        forecast: {
+          mediana: Math.round(mediana),
+          valor_fixo: Math.round(data.valueFixed ?? 0),
+        },
+      };
     } catch (error) {
       this.logger.error(`Failed to create answer for user`, error.stack);
       throw error;
