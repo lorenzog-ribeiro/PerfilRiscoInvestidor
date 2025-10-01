@@ -49,13 +49,15 @@ export default function UserPage() {
       const response = await userService.createUser(userData);
       const userId = response.data as string;
 
-      router.push(`/form-questions`);
-    } catch (error: any) {
-      // Acessa a mensagem de erro da API
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+        // Redirecionar para a página com o userId na URL
+        router.push(`/instructions`);
+      })
+      .catch((error: { message: string }) => {
+        setError(error.message); // Exibir mensagem de erro
+      })
+      .finally(() => {
+        setLoading(false); // Desativar carregamento após a requisição
+      });
   };
 
   return (
