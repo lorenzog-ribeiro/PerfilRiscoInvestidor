@@ -184,9 +184,40 @@ export default function TradeOffForm({
                       const centerX = typeof cx === "number" ? cx : 90;
                       const centerY = typeof cy === "number" ? cy : 90;
 
-                      // Só renderiza se tiver valor
-                      if (!fixedValue) return null;
+                      // Só renderiza se tiver valores
+                      if (!fixedValue || !value) return null;
 
+                      // Cenário 2: valor variável em cima, fixo embaixo
+                      if (scenario === 2) {
+                        return (
+                          <g>
+                            <text
+                              x={centerX}
+                              y={centerY - 30}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              fill="white"
+                              fontSize="16"
+                              fontWeight="bold"
+                            >
+                              R${value.toLocaleString("pt-BR")}
+                            </text>
+                            <text
+                              x={centerX}
+                              y={centerY + 30}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              fill="white"
+                              fontSize="14"
+                              fontWeight="bold"
+                            >
+                              R${fixedValue.toLocaleString("pt-BR")}
+                            </text>
+                          </g>
+                        );
+                      }
+
+                      // Cenário 1: padrão (valor fixo em cima, "Sem Ganho" embaixo)
                       return (
                         <g>
                           <text
@@ -258,8 +289,26 @@ export default function TradeOffForm({
                       const centerY = typeof cy === "number" ? cy : 90;
 
                       // Só renderiza se tiver valor
-                      if (!value) return null;
+                      if (!value && scenario !== 2) return null;
 
+                      // Cenário 2: texto fixo
+                      if (scenario === 2) {
+                        return (
+                          <text
+                            x={centerX}
+                            y={centerY}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="white"
+                            fontSize="16"
+                            fontWeight="bold"
+                          >
+                            Ganho Certo
+                          </text>
+                        );
+                      }
+
+                      // Cenário 1: padrão (mostra o valor)
                       return (
                         <text
                           x={centerX}
@@ -270,7 +319,7 @@ export default function TradeOffForm({
                           fontSize="16"
                           fontWeight="bold"
                         >
-                          R${value.toLocaleString("pt-BR")}
+                          R${(value ?? 0).toLocaleString("pt-BR")}
                         </text>
                       );
                     }}

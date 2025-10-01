@@ -58,8 +58,8 @@ export class TradeOffService {
         };
       case 2:
         return {
-          mediana: -500,
-          valor_fixo: -1000,
+          mediana: -1000,
+          valor_fixo: 1000,
         };
       case 3:
         return {
