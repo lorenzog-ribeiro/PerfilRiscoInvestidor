@@ -15,16 +15,22 @@ interface ApiResponse {
   };
 }
 
+interface TradeOffFormProps {
+  scenario: number;
+  title?: string;
+  onAnswered: () => void;
+}
+
 const dataB = [
   { name: "Ganho", value: 50, color: "#228b22" },
   { name: "Perda", value: 50, color: "gray" },
 ];
 
-export default function FirstScenario({
+export default function TradeOffForm({
+  scenario,
+  title,
   onAnswered,
-}: {
-  onAnswered: () => void;
-}) {
+}: TradeOffFormProps) {
   const [index, setIndex] = useState(0);
   const [value, setValue] = useState<number>();
   const [fixedValue, setFixedValue] = useState<number>();
@@ -42,13 +48,14 @@ export default function FirstScenario({
       setSelected(null);
       try {
         const response: { data: ApiResponse } =
-          await tradeOffService.getTradeOffValues(index);
+          await tradeOffService.getTradeOffValues(scenario);
         const { mediana, valor_fixo } = response.data.forecast;
         setValue(mediana);
         setFixedValue(valor_fixo);
 
         if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
-          //   onAnswered();
+          setIndex(0);
+          onAnswered();
         }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
@@ -73,6 +80,7 @@ export default function FirstScenario({
     // Checks if the sequence of choices ends the test.
     const lastFour = updatedHistory.join("");
     if (lastFour === "ABAA" || lastFour === "BABB") {
+      setIndex(0);
       onAnswered();
       return;
     }
@@ -80,7 +88,7 @@ export default function FirstScenario({
     try {
       const valueToSend = data.valueSelected;
       const response = await tradeOffService.tradeOff({
-        scenario: 1,
+        scenario: scenario,
         optionSelected: data.optionSelected,
         valueVar: valueToSend,
         valueFixed: fixedValue ?? 0,
@@ -95,7 +103,8 @@ export default function FirstScenario({
 
         // Verifica condição de parada
         if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
-          //   onAnswered();
+          setIndex(0);
+          onAnswered();
           return;
         }
       }
@@ -103,7 +112,8 @@ export default function FirstScenario({
         index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
 
       if (nextIndex >= totalQuestions - 1) {
-        // onAnswered();
+        setIndex(0);
+        onAnswered();
         return;
       }
 
