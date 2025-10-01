@@ -19,7 +19,7 @@ export default function Home() {
           </b>
         </p>
         <Button className="mb-4 bg-orange-400 hover:bg-orange-300" asChild>
-          <Link href="/instructions">Iniciar Quiz</Link>
+          <Link href="/user">Iniciar Quiz</Link>
         </Button>
         <hr />
         <div className="flex flex-col items-center justify-center">

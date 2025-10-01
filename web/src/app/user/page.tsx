@@ -62,7 +62,7 @@ export default function UserPage() {
         setCookie("userId", userId, 7);
 
         // Redirecionar para a página com o userId na URL
-        router.push(`/form-questions`);
+        router.push(`/instructions`);
       })
       .catch((error: { message: string }) => {
         setError(error.message); // Exibir mensagem de erro
