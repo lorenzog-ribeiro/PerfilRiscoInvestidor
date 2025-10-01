@@ -181,27 +181,37 @@ export default function TradeOffForm({
                   <Label
                     content={(props: LabelProps) => {
                       const { cx, cy } = props || {};
+                      const centerX = typeof cx === "number" ? cx : 90;
+                      const centerY = typeof cy === "number" ? cy : 90;
+
+                      // Só renderiza se tiver valor
+                      if (!fixedValue) return null;
+
                       return (
-                        <>
+                        <g>
                           <text
-                            x={cx}
-                            y={typeof cy === "number" ? cy - 30 : -30}
+                            x={centerX}
+                            y={centerY - 30}
                             textAnchor="middle"
                             dominantBaseline="middle"
-                            className="fill-white text-sm font-bold"
+                            fill="white"
+                            fontSize="16"
+                            fontWeight="bold"
                           >
-                            R${fixedValue}
+                            R${fixedValue.toLocaleString("pt-BR")}
                           </text>
                           <text
-                            x={cx}
-                            y={typeof cy === "number" ? cy + 30 : 30}
+                            x={centerX}
+                            y={centerY + 30}
                             textAnchor="middle"
                             dominantBaseline="middle"
-                            className="fill-white text-sm font-bold"
+                            fill="white"
+                            fontSize="14"
+                            fontWeight="bold"
                           >
                             Sem Ganho
                           </text>
-                        </>
+                        </g>
                       );
                     }}
                   />
@@ -244,15 +254,23 @@ export default function TradeOffForm({
                   <Label
                     content={(props: LabelProps) => {
                       const { cx, cy } = props || {};
+                      const centerX = typeof cx === "number" ? cx : 90;
+                      const centerY = typeof cy === "number" ? cy : 90;
+
+                      // Só renderiza se tiver valor
+                      if (!value) return null;
+
                       return (
                         <text
-                          x={cx}
-                          y={cy}
+                          x={centerX}
+                          y={centerY}
                           textAnchor="middle"
                           dominantBaseline="middle"
-                          className="fill-white text-sm font-bold"
+                          fill="white"
+                          fontSize="16"
+                          fontWeight="bold"
                         >
-                          R${value}
+                          R${value.toLocaleString("pt-BR")}
                         </text>
                       );
                     }}
