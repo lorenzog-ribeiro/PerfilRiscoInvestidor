@@ -82,7 +82,7 @@ export default function FirstScenario({
       const response = await tradeOffService.tradeOff({
         scenario: 1,
         optionSelected: data.optionSelected,
-        valueSelected: valueToSend,
+        valueVar: valueToSend,
         valueFixed: fixedValue ?? 0,
         question: index,
       });

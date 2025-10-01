@@ -58,7 +58,7 @@ export class AnswerService {
         sideSelected: data.side,
         valueBase: valueBase ?? 0,
         question: data.question,
-        valueSelected: data.valueSelected,
+        valueSelected: data.valueVar,
         scenario: data.scenario,
       };
 

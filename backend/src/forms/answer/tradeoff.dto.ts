@@ -8,7 +8,7 @@ export class TradeOffRequestDto {
   side: string;
 
   @IsNumber()
-  valueSelected: number;
+  valueVar: number;
 
   @IsString()
   userId: string;

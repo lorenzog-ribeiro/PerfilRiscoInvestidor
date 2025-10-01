@@ -3,7 +3,7 @@ import { AxiosInstance } from "./Axios";
 interface TradeOffRequest {
   scenario: number;
   optionSelected: string;
-  valueSelected: number;
+  valueVar: number;
   valueFixed: number;
   question?: number;
 }
@@ -36,7 +36,7 @@ export class TradeOffService {
     const backendData = {
       scenario: data.scenario,
       side: data.optionSelected === "A" ? "left" : "right",
-      valueSelected: data.valueSelected,
+      valueVar: data.valueVar,
       question: data.question || 1,
       valueFixed: data.valueFixed,
     };
