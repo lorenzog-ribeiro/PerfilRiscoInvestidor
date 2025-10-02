@@ -7,6 +7,9 @@ import TradeOffForm from "../trade-off-form/page";
 export default function ScenarioController() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [scenario2LastValue, setScenario2LastValue] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     if (currentIndex === 3) {
@@ -20,13 +23,25 @@ export default function ScenarioController() {
     { scenario: 3, title: "Cenário 3" },
   ];
 
+  const currentScenario = scenariosConfig[currentIndex];
+
   return (
     <div className="flex flex-col items-center justify-center space-y-6">
       <TradeOffForm
-        key={scenariosConfig[currentIndex].scenario}
-        scenario={scenariosConfig[currentIndex].scenario}
-        title={scenariosConfig[currentIndex].title}
+        key={currentScenario.scenario}
+        scenario={currentScenario.scenario}
+        title={currentScenario.title}
         onAnswered={() => setCurrentIndex(currentIndex + 1)}
+        onValueSelected={(value) => {
+          // Salva o valor quando estiver no cenário 2
+          if (currentScenario.scenario === 2) {
+            setScenario2LastValue(value);
+          }
+        }}
+        initialFixedValue={
+          // Passa o valor salvo apenas no cenário 3
+          currentScenario.scenario === 3 ? scenario2LastValue : null
+        }
       />
     </div>
   );

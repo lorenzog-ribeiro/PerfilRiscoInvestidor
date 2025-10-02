@@ -16,21 +16,25 @@ interface ApiResponse {
   };
 }
 
-interface TradeOffFormProps {
-  scenario: number;
-  title?: string;
-  onAnswered: () => void;
-}
-
 const dataB = [
   { name: "Ganho", value: 50, color: "#228b22" },
   { name: "Perda", value: 50, color: "gray" },
 ];
 
+interface TradeOffFormProps {
+  scenario: number;
+  title?: string;
+  onAnswered: () => void;
+  onValueSelected?: (value: number) => void; // NOVA
+  initialFixedValue?: number | null; // NOVA
+}
+
 export default function TradeOffForm({
   scenario,
   title,
   onAnswered,
+  onValueSelected,
+  initialFixedValue,
 }: TradeOffFormProps) {
   const [index, setIndex] = useState(0);
   const [value, setValue] = useState<number>();
@@ -51,21 +55,23 @@ export default function TradeOffForm({
         const response: { data: ApiResponse } =
           await tradeOffService.getTradeOffValues(scenario);
         const { mediana, valor_fixo } = response.data.forecast;
-        setValue(mediana);
-        setFixedValue(valor_fixo);
 
-        // if (Math.abs(mediana - valor_fixo) < 10 || mediana < 10) {
-        //   onAnswered();
-        // }
+        setValue(mediana);
+
+        // MODIFICAÇÃO: Se for cenário 3 e tiver valor inicial, usa ele
+        if (scenario === 3 && initialFixedValue !== null) {
+          setFixedValue(initialFixedValue);
+        } else {
+          setFixedValue(valor_fixo);
+        }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
-        // Implementar feedback visual de erro aqui.
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [tradeOffService, onAnswered]);
+  }, [tradeOffService, onAnswered, scenario, initialFixedValue]);
 
   const handleSelection = async (data: SelectedInterface) => {
     if (loading) return;
@@ -80,6 +86,9 @@ export default function TradeOffForm({
     // Checks if the sequence of choices ends the test.
     const lastFour = updatedHistory.join("");
     if (lastFour === "ABAA" || lastFour === "BABB") {
+      if (onValueSelected) {
+        onValueSelected(data.valueSelected);
+      }
       onAnswered();
       return;
     }
@@ -105,6 +114,10 @@ export default function TradeOffForm({
         //   onAnswered();
         //   return;
         // }
+
+        if (onValueSelected) {
+          onValueSelected(data.valueSelected);
+        }
       }
       const nextIndex =
         index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
