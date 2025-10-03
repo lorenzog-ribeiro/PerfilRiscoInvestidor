@@ -2,7 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import TradeOffForm from "../trade-off-form/page";
+import dynamic from "next/dynamic"; // ADICIONAR
+
+// MODIFICAR: Importar com dynamic e ssr: false
+const TradeOffForm = dynamic(() => import("../trade-off-form/page"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Carregando...</p>
+      </div>
+    </div>
+  ),
+});
 
 export default function ScenarioController() {
   const router = useRouter();
@@ -10,6 +23,12 @@ export default function ScenarioController() {
   const [scenario2LastValue, setScenario2LastValue] = useState<number | null>(
     null
   );
+  const [isMounted, setIsMounted] = useState(false); // ADICIONAR
+
+  // ADICIONAR: Garante que só renderiza no cliente
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (currentIndex === 3) {
@@ -25,6 +44,17 @@ export default function ScenarioController() {
 
   const currentScenario = scenariosConfig[currentIndex];
 
+  if (!isMounted) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center justify-center space-y-6">
       <TradeOffForm
@@ -33,13 +63,11 @@ export default function ScenarioController() {
         title={currentScenario.title}
         onAnswered={() => setCurrentIndex(currentIndex + 1)}
         onValueSelected={(value) => {
-          // Salva o valor quando estiver no cenário 2
           if (currentScenario.scenario === 2) {
             setScenario2LastValue(value);
           }
         }}
         initialFixedValue={
-          // Passa o valor salvo apenas no cenário 3
           currentScenario.scenario === 3 ? scenario2LastValue : null
         }
       />
