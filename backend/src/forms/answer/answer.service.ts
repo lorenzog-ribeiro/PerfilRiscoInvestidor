@@ -39,7 +39,7 @@ export class AnswerService {
     try {
       let Safe = 0;
       let Risk = 0;
-      console.log(data);
+
       switch (data.scenario) {
         case 1:
           Safe = data.valueFixed || 0;
@@ -54,7 +54,7 @@ export class AnswerService {
 
       let valueBase = this.base(Safe, Risk, data.scenario);
 
-      if (data.scenario === 3 && data.question === 0) {
+      if (data.scenario === 3 && data.valueVar === 0) {
         return {
           forecast: {
             mediana: Math.round(valueBase ?? 0),
@@ -95,7 +95,7 @@ export class AnswerService {
         return 0 * 1 + 0 * 0 - (Risk * (1 / 2)) / (1 / 2);
         break;
       case 3:
-        return Risk * (1 / 2);
+        return Risk * (1 / 2) + Safe * (1 / 2) - (0 * 0) / 100;
         break;
     }
   }

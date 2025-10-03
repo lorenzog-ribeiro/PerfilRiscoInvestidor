@@ -18,7 +18,7 @@ export class AnswerController {
   }
 
   @Post('tradeOff')
-  TradeOff(@Body() data: TradeOffRequestDto) {
+  TradeOff(@Body() data) {
     return this.answerService.tradeOff(data);
   }
 }

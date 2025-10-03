@@ -58,7 +58,7 @@ export default function TradeOffForm({
             optionSelected: "left",
             valueVar: 0,
             valueFixed: initialFixedValue ?? 0,
-            question: index,
+            question: 0,
           });
 
           if (response?.data?.forecast) {

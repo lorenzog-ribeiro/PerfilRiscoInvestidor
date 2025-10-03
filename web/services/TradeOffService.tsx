@@ -32,7 +32,6 @@ export class TradeOffService {
 
   // Método para enviar a resposta do usuário
   async tradeOff(data: TradeOffRequest) {
-    // Mapeia os dados do frontend para o formato esperado pelo backend
     const backendData = {
       scenario: data.scenario,
       side: data.optionSelected === "A" ? "left" : "right",
@@ -56,21 +55,19 @@ export class TradeOffService {
           mediana: 500,
           valor_fixo: 1000,
         };
+        break;
       case 2:
         return {
           mediana: -1000,
           valor_fixo: 1000,
         };
-      case 3:
-        return {
-          mediana: 250,
-          valor_fixo: 500,
-        };
+        break;
       default:
         return {
-          mediana: 500,
-          valor_fixo: 1000,
+          mediana: 0,
+          valor_fixo: 0,
         };
+        break;
     }
   }
 }
