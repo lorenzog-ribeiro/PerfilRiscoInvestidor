@@ -52,16 +52,26 @@ export default function TradeOffForm({
       setLoading(true);
       setSelected(null);
       try {
-        const response: { data: ApiResponse } =
-          await tradeOffService.getTradeOffValues(scenario);
-        const { mediana, valor_fixo } = response.data.forecast;
+        if (index === 0 && scenario === 3) {
+          const response = await tradeOffService.tradeOff({
+            scenario: scenario,
+            optionSelected: "left",
+            valueVar: 0,
+            valueFixed: initialFixedValue ?? 0,
+            question: index,
+          });
 
-        setValue(mediana);
-
-        // MODIFICAÇÃO: Se for cenário 3 e tiver valor inicial, usa ele
-        if (scenario === 3 && initialFixedValue !== null) {
-          setFixedValue(initialFixedValue);
+          if (response?.data?.forecast) {
+            const { mediana, valor_fixo } = response.data.forecast;
+            setValue(mediana);
+            setFixedValue(valor_fixo);
+          }
         } else {
+          const response: { data: ApiResponse } =
+            await tradeOffService.getTradeOffValues(scenario);
+          const { mediana, valor_fixo } = response.data.forecast;
+
+          setValue(mediana);
           setFixedValue(valor_fixo);
         }
       } catch (error) {

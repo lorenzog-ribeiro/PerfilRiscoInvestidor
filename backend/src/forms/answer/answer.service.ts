@@ -54,6 +54,15 @@ export class AnswerService {
 
       let valueBase = this.base(Safe, Risk, data.scenario);
 
+      if (data.scenario === 3 && data.question === 0) {
+        return {
+          forecast: {
+            mediana: Math.round(valueBase ?? 0),
+            valor_fixo: Math.round(data.valueFixed ?? 0),
+          },
+        };
+      }
+
       let dataForCalc = {
         sideSelected: data.side,
         valueBase: valueBase ?? 0,
@@ -86,7 +95,7 @@ export class AnswerService {
         return 0 * 1 + 0 * 0 - (Risk * (1 / 2)) / (1 / 2);
         break;
       case 3:
-        return Risk * (1 / 2) + Safe * (1 / 2) - (0 * 0) / 100;
+        return Risk * (1 / 2);
         break;
     }
   }
