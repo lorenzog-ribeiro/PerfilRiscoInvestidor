@@ -1,12 +1,12 @@
 'use client';
 
-import { InvestorData, LiteracyData, DospertData } from '@/services/types';
+import { InvestorData, LiteracyData, DospertData, TradeOffData } from '@/services/types';
 import InvestorQuiz from '@/src/components/quiz/investorQuiz';
 import LiteracyQuiz from '@/src/components/quiz/literacyQuiz';
 import RiskTakingQuiz from '@/src/components/quiz/riskTakingQuiz';
 import { Card } from '@/src/components/ui/card';
 import { investorQuestions, literacyQuestions, dospertQuestions } from '@/src/lib/constants';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ResultPage from '../result/page';
 
 enum Screen {
@@ -22,8 +22,22 @@ export default function QuizPage() {
     const [investorData, setInvestorData] = useState<InvestorData | null>(null);
     const [literacyData, setLiteracyData] = useState<LiteracyData | null>(null);
     const [dospertData, setDospertData] = useState<DospertData | null>(null);
+    const [tradeOffData, setTradeOffData] = useState<TradeOffData | null>(null);
 
     const totalQuestions = investorQuestions.length + literacyQuestions.length + dospertQuestions.length;
+
+    // Load tradeOff data from sessionStorage on component mount
+    useEffect(() => {
+        const storedTradeOffData = sessionStorage.getItem('tradeOffData');
+        if (storedTradeOffData) {
+            try {
+                const parsedData = JSON.parse(storedTradeOffData) as TradeOffData;
+                setTradeOffData(parsedData);
+            } catch (error) {
+                console.error('Error parsing tradeOff data from sessionStorage:', error);
+            }
+        }
+    }, []);
 
     const handleInvestorComplete = (data: InvestorData) => {
         setInvestorData(data);
@@ -72,6 +86,7 @@ export default function QuizPage() {
                         investorData={investorData}
                         literacyData={literacyData}
                         dospertData={dospertData}
+                        tradeOffData={tradeOffData}
                     />
                 )}
             </Card>

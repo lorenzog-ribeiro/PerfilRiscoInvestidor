@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { TradeOffService } from "../../../services/TradeOffService";
 import { scenarioConfigs } from "./config";
 import TradeOffCard from "./TradeOffCard";
+import { TradeOffScenarioData } from "@/services/types";
 
 interface SelectedInterface {
   optionSelected: string;
@@ -18,7 +19,7 @@ interface ApiResponse {
 interface TradeOffFormProps {
   scenario: number;
   title?: string;
-  onAnswered: () => void;
+  onAnswered: (scenarioData: TradeOffScenarioData) => void;
   onValueSelected?: (value: number) => void;
   initialFixedValue?: number | null;
 }
@@ -36,10 +37,19 @@ export default function TradeOffForm({
   const [loading, setLoading] = useState(true);
   const [totalQuestions] = useState(7);
   const [selectionHistory, setSelectionHistory] = useState<string[]>([]);
+  const [selectedValues, setSelectedValues] = useState<number[]>([]);
   const tradeOffService = useMemo(() => new TradeOffService(), []);
 
   // Obtém a configuração do cenário atual
   const config = scenarioConfigs[scenario] || scenarioConfigs[1];
+
+  // Helper function to create scenario data
+  const createScenarioData = (finalValue: number): TradeOffScenarioData => ({
+    scenario,
+    selectedValues: [...selectedValues, finalValue],
+    finalValue,
+    selectionHistory,
+  });
 
   useEffect(() => {
     if (index !== 0) return;
@@ -93,7 +103,13 @@ export default function TradeOffForm({
       if (onValueSelected) {
         onValueSelected(data.valueSelected);
       }
-      onAnswered();
+      
+      // Add this value to selected values before creating scenario data
+      const finalSelectedValues = [...selectedValues, data.valueSelected];
+      setSelectedValues(finalSelectedValues);
+      
+      const scenarioData = createScenarioData(data.valueSelected);
+      onAnswered(scenarioData);
       return;
     }
 
@@ -116,12 +132,22 @@ export default function TradeOffForm({
         if (onValueSelected) {
           onValueSelected(data.valueSelected);
         }
+        
+        // Add current selection to selected values
+        setSelectedValues(prev => [...prev, data.valueSelected]);
       }
       const nextIndex =
         index === 0 ? 2 : Math.min(index + 1, totalQuestions - 1);
 
       if (nextIndex >= totalQuestions - 1) {
-        onAnswered();
+        const finalSelectedValues = [...selectedValues, data.valueSelected];
+        const scenarioData: TradeOffScenarioData = {
+          scenario,
+          selectedValues: finalSelectedValues,
+          finalValue: data.valueSelected,
+          selectionHistory: updatedHistory,
+        };
+        onAnswered(scenarioData);
         return;
       }
 

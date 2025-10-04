@@ -82,7 +82,7 @@ export default function TradeOffCard({
 
         {/* Gráfico */}
         <div
-          className={`flex justify-center items-center ${config.chartType === "full" ? "pt-9.5" : "pt-2.5"}`}
+          className={`flex justify-center items-center ${config.chartType === "full" ? "pt-6.5" : "pt-2.5"}`}
         >
           <PieChart width={180} height={180}>
             <Pie

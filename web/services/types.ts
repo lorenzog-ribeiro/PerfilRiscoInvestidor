@@ -21,6 +21,15 @@ export interface InvestorData {
 export type LiteracyData = Record<string, string>;
 export type DospertData = Record<string, number>;
 
+export interface TradeOffScenarioData {
+  scenario: number;
+  selectedValues: number[];
+  finalValue: number;
+  selectionHistory: string[];
+}
+
+export type TradeOffData = Record<number, TradeOffScenarioData>;
+
 export interface DospertDomainInfo {
     name: string;
     items: number[];

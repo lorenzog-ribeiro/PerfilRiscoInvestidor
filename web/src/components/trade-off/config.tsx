@@ -31,7 +31,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeText: "Investimento A",
       badgeTextColor: "text-yellow-800",
       chartType: "split",
-      ChartSubTittle: "50% chance de ganhar 50% chance de não ter ganho",
+      ChartSubTittle: "50% chance de ganhar 50% chance sem ganho",
       chartColors: {
         gain: "#228b22", // Verde
         loss: "#9ca3af", // Cinza
@@ -140,7 +140,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeColor: "bg-yellow-100",
       badgeText: "Investimento A",
       badgeTextColor: "text-yellow-800",
-      ChartSubTittle: "Sem ganho ou perda com certeza",
+      ChartSubTittle: "Sem ganho ou perda",
       chartType: "full",
       chartColors: {
         gain: "#9ca3af", // Verde
@@ -183,7 +183,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeText: "Investimento A",
       badgeTextColor: "text-yellow-800",
       chartType: "split",
-      ChartSubTittle: "50% chance de não perder 50% chance de perda",
+      ChartSubTittle: "50% chance sem perda 50% chance de perda",
       chartColors: {
         gain: "#9ca3af", // Verde
         loss: "red", // Cinza

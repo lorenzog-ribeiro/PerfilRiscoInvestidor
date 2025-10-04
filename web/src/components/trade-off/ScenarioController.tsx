@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic"; // ADICIONAR
+import dynamic from "next/dynamic";
+import { TradeOffData, TradeOffScenarioData } from "@/services/types";
 
-// MODIFICAR: Importar com dynamic e ssr: false
 const TradeOffForm = dynamic(() => import("./TradeOffForm"), {
   ssr: false,
   loading: () => (
@@ -17,13 +17,18 @@ const TradeOffForm = dynamic(() => import("./TradeOffForm"), {
   ),
 });
 
-export default function ScenarioController() {
+interface ScenarioControllerProps {
+  onTradeOffComplete?: (data: TradeOffData) => void;
+}
+
+export default function ScenarioController({ onTradeOffComplete }: ScenarioControllerProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [scenario2LastValue, setScenario2LastValue] = useState<number | null>(
     null
   );
   const [isMounted, setIsMounted] = useState(false);
+  const [tradeOffData, setTradeOffData] = useState<TradeOffData>({});
 
   useEffect(() => {
     setIsMounted(true);
@@ -31,9 +36,16 @@ export default function ScenarioController() {
 
   useEffect(() => {
     if (currentIndex === 3) {
-      router.push("/quiz");
+      // Pass the collected tradeOff data to parent or navigate to quiz
+      if (onTradeOffComplete) {
+        onTradeOffComplete(tradeOffData);
+      } else {
+        // Store in sessionStorage for cross-page navigation
+        sessionStorage.setItem('tradeOffData', JSON.stringify(tradeOffData));
+        router.push("/quiz");
+      }
     }
-  }, [currentIndex, router]);
+  }, [currentIndex, router, onTradeOffComplete, tradeOffData]);
 
   const scenariosConfig = [
     { scenario: 1, title: "Cenário 1" },
@@ -71,7 +83,14 @@ export default function ScenarioController() {
         key={currentScenario.scenario}
         scenario={currentScenario.scenario}
         title={currentScenario.title}
-        onAnswered={() => setCurrentIndex(currentIndex + 1)}
+        onAnswered={(scenarioData) => {
+          // Store the scenario data
+          setTradeOffData(prev => ({
+            ...prev,
+            [currentScenario.scenario]: scenarioData
+          }));
+          setCurrentIndex(currentIndex + 1);
+        }}
         onValueSelected={(value) => {
           if (currentScenario.scenario === 2) {
             setScenario2LastValue(value);
