@@ -32,7 +32,7 @@ export default function ScenarioController() {
 
   useEffect(() => {
     if (currentIndex === 3) {
-      router.push("/form-questions");
+      router.push("/quiz");
     }
   }, [currentIndex, router]);
 
