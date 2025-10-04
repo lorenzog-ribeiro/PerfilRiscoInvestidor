@@ -9,6 +9,7 @@ interface CardConfig {
     gain: string;
     loss?: string;
   };
+  ChartSubTittle: string;
   renderLabel: (
     fixedValue: number | undefined,
     value: number | undefined,
@@ -30,6 +31,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeText: "Investimento A",
       badgeTextColor: "text-yellow-800",
       chartType: "split",
+      ChartSubTittle: "50% chance de ganhar 50% chance de não ter ganho",
       chartColors: {
         gain: "#228b22", // Verde
         loss: "#9ca3af", // Cinza
@@ -69,6 +71,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeText: "Investimento B",
       badgeTextColor: "text-blue-800",
       chartType: "full",
+      ChartSubTittle: "100% certeza de ganho",
       chartColors: {
         gain: "#228b22", // Verde
       },
@@ -98,6 +101,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeText: "Investimento B",
       badgeTextColor: "text-blue-800",
       chartType: "split",
+      ChartSubTittle: "50% chance de perda 50% chance de ganho",
       chartColors: {
         gain: "#228b22", // Verde
         loss: "red", // Cinza
@@ -136,6 +140,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeColor: "bg-yellow-100",
       badgeText: "Investimento A",
       badgeTextColor: "text-yellow-800",
+      ChartSubTittle: "Sem ganho ou perda com certeza",
       chartType: "full",
       chartColors: {
         gain: "#9ca3af", // Verde
@@ -151,10 +156,18 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
             fontSize="16"
             fontWeight="bold"
           >
-            <tspan dy="-0.6em" className="fill-white text-sm font-bold">
+            <tspan
+              x={centerX}
+              dy="-0.6em"
+              className="fill-white text-sm font-bold"
+            >
               Sem Ganho
             </tspan>
-            <tspan dy="1.2em" className="fill-white text-sm font-bold">
+            <tspan
+              x={centerX}
+              dy="1.2em"
+              className="fill-white text-sm font-bold"
+            >
               ou Perda
             </tspan>
           </text>
@@ -170,6 +183,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeText: "Investimento A",
       badgeTextColor: "text-yellow-800",
       chartType: "split",
+      ChartSubTittle: "50% chance de não perder 50% chance de perda",
       chartColors: {
         gain: "#9ca3af", // Verde
         loss: "red", // Cinza
@@ -208,6 +222,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
       badgeColor: "bg-blue-100",
       badgeText: "Investimento B",
       badgeTextColor: "text-blue-800",
+      ChartSubTittle: "100% certeza de perda",
       chartType: "full",
       chartColors: {
         gain: "red", // Verde

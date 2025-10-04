@@ -8,6 +8,7 @@ interface CardConfig {
   badgeText: string;
   badgeTextColor: string;
   chartType: "split" | "full";
+  ChartSubTittle: string;
   chartColors: {
     gain: string;
     loss?: string;
@@ -70,20 +71,11 @@ export default function TradeOffCard({
 
         {/* Descrição */}
         <div className="text-xs text-center text-gray-600 p-6">
-          {config.chartType === "split" ? (
+          {
             <>
-              <div>
-                <b>50%</b> chance de ganhar
-              </div>
-              <div>
-                <b>50%</b> chance de não ter ganho
-              </div>
+              <div>{config.ChartSubTittle}</div>
             </>
-          ) : (
-            <div>
-              <b>100%</b> certeza de ganho
-            </div>
-          )}
+          }
         </div>
 
         {/* Gráfico */}
