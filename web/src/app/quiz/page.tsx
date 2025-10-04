@@ -1,7 +1,6 @@
 'use client';
 
 import { InvestorData, LiteracyData, DospertData } from '@/services/types';
-import InstructionsScreen from '@/src/components/instructions/initial-instructions/page';
 import InvestorQuiz from '@/src/components/quiz/investorQuiz';
 import LiteracyQuiz from '@/src/components/quiz/literacyQuiz';
 import RiskTakingQuiz from '@/src/components/quiz/riskTakingQuiz';
@@ -49,7 +48,6 @@ export default function QuizPage() {
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
             <div className="h-screen flex flex-col">
-
                 {currentScreen === Screen.Investor && (
                     <InvestorQuiz
                         onComplete={handleInvestorComplete}
@@ -73,15 +71,6 @@ export default function QuizPage() {
                         initialAnsweredCount={investorQuestions.length + literacyQuestions.length}
                     />
                 )}
-
-                {/* {currentScreen === Screen.Results && investorData && literacyData && dospertData && (
-          <ResultsScreen
-            investorData={investorData}
-            literacyData={literacyData}
-            dospertData={dospertData}
-            onRestart={handleRestart}
-          />
-        )} */}
             </div>
         </main>
     );
