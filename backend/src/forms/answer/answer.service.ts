@@ -31,6 +31,38 @@ export class AnswerService {
     }
   }
 
+  /**
+   * Creates a form submission with the new FormData structure
+   * This method handles both regular responses and tradeoff data
+   * 
+   * @param userId - The user's unique identifier
+   * @param answerDto - The form data containing responses and tradeoffs
+   * @returns The created result record
+   */
+  async createFormSubmission(
+    userId: string,
+    answerDto: AnswerDto,
+  ): Promise<any> {
+    try {
+      const result = await this.prisma.result.create({
+        data: {
+          userId: userId,
+          answers: JSON.parse(JSON.stringify(answerDto.formData)),
+        },
+      });
+      this.logger.log(
+        `Created form submission for user ${userId} with ${answerDto.formData.responses.length} responses and ${answerDto.formData.tradeoffs.length} tradeoffs`,
+      );
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `Failed to create form submission for user ${userId}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
   findAllUserAnswers() {
     return this.prisma.result.findMany();
   }
