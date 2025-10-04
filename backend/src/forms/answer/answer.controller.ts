@@ -12,6 +12,14 @@ export class AnswerController {
     return this.answerService.create(userId, createAnswerDto);
   }
 
+  @Post('submit')
+  submitForm(@Body() answerDto: AnswerDto) {
+    return this.answerService.createFormSubmission(
+      answerDto.userId,
+      answerDto,
+    );
+  }
+
   @Get('all')
   findAllUserAnswers() {
     return this.answerService.findAllUserAnswers();
