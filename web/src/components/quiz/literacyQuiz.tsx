@@ -99,7 +99,7 @@ export default function LiteracyQuiz({ onComplete, totalQuestions, initialAnswer
                 )}
 
                 {currentResponse && (
-                    <div className='flex justify-end'>
+                    <div className='flex justify-end pt-4'>
                         <Button
                             onClick={handleNext}
                             className="self-end bg-blue-600 hover:bg-blue-700"
