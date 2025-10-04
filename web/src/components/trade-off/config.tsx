@@ -84,7 +84,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
             fontSize="16"
             fontWeight="bold"
           >
-            R${value.toLocaleString("pt-BR")}
+            {value !== undefined ? `R$${value.toLocaleString("pt-BR")}` : ""}
           </text>
         );
       },
@@ -126,7 +126,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
               fontSize="14"
               fontWeight="bold"
             >
-              R${value.toLocaleString("pt-BR")}
+              {value !== undefined ? `R$${value.toLocaleString("pt-BR")}` : ""}
             </text>
           </g>
         );
@@ -223,7 +223,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
             fontSize="16"
             fontWeight="bold"
           >
-            R${value.toLocaleString("pt-BR")}
+            {value !== undefined ? `R$${value.toLocaleString("pt-BR")}` : ""}
           </text>
         );
       },
