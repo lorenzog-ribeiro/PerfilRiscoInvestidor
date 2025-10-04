@@ -31,7 +31,6 @@ interface TradeOffFormProps {
 
 export default function TradeOffForm({
   scenario,
-  title,
   onAnswered,
   onValueSelected,
   initialFixedValue,

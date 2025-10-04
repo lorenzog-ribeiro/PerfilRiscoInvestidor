@@ -31,8 +31,8 @@ export default function LiteracyQuiz({ onComplete, totalQuestions, initialAnswer
     const isLikert = currentQuestion.type === 'likert-5';
 
     return (
-        <div className="flex flex-col h-full bg-white relative">
-            <header className="p-4 border-b">                
+        <div className="w-full flex flex-col h-full bg-white relative">
+            <header className="p-4 border-b">
                 <h2 className="text-base font-bold text-center text-gray-800">Litenracy</h2>
                 <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -97,16 +97,18 @@ export default function LiteracyQuiz({ onComplete, totalQuestions, initialAnswer
                         </div>
                     </>
                 )}
-            </div>
 
-            {currentResponse && (
-                <Button
-                    onClick={handleNext}
-                    className="fixed bottom-6 right-6 w-14 h-14 rounded-xl bg-blue-600 hover:bg-blue-700 p-0"
-                >
-                    <ArrowRight className="h-6 w-6" />
-                </Button>
-            )}
+                {currentResponse && (
+                    <div className='flex justify-end'>
+                        <Button
+                            onClick={handleNext}
+                            className="self-end bg-blue-600 hover:bg-blue-700"
+                        >
+                            Próxima
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

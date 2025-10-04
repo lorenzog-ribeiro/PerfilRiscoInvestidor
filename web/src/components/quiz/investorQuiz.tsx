@@ -195,22 +195,18 @@ export default function InvestorQuiz({ onComplete, totalQuestions, initialAnswer
                         );
                     })}
                 </div>
+
+                {currentResponse && (
+                    <div className='flex justify-end'>
+                        <Button
+                            onClick={handleNext}
+                            className="self-end mt-6 bg-blue-600 hover:bg-blue-700 "
+                        >
+                            Próxima
+                        </Button>
+                    </div>
+                )}
             </div>
-
-            {showHint && (
-                <div className="fixed bottom-24 right-6 bg-gray-800 text-white text-sm font-semibold py-2 px-4 rounded-lg shadow-lg animate-pulse">
-                    Selecione uma opção
-                </div>
-            )}
-
-            {currentResponse && (
-                <Button
-                    onClick={handleNext}
-                    className="fixed bottom-6 right-6 w-14 h-14 rounded-xl bg-blue-600 hover:bg-blue-700 p-0"
-                >
-                    <ArrowRight className="h-6 w-6" />
-                </Button>
-            )}
         </div>
     );
 }

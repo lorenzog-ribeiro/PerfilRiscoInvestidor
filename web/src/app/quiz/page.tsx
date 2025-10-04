@@ -4,6 +4,7 @@ import { InvestorData, LiteracyData, DospertData } from '@/services/types';
 import InvestorQuiz from '@/src/components/quiz/investorQuiz';
 import LiteracyQuiz from '@/src/components/quiz/literacyQuiz';
 import RiskTakingQuiz from '@/src/components/quiz/riskTakingQuiz';
+import { Card } from '@/src/components/ui/card';
 import { investorQuestions, literacyQuestions, dospertQuestions } from '@/src/lib/constants';
 import { useState } from 'react';
 
@@ -46,32 +47,30 @@ export default function QuizPage() {
     };
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-            <div className="h-screen flex flex-col">
-                {currentScreen === Screen.Investor && (
-                    <InvestorQuiz
-                        onComplete={handleInvestorComplete}
-                        totalQuestions={totalQuestions}
-                        initialAnsweredCount={0}
-                    />
-                )}
+        <main className="min-h-screen max-w-4xl mx-auto shadow-lg flex flex-col justify-center p-3">
+            {currentScreen === Screen.Investor && (
+                <InvestorQuiz
+                    onComplete={handleInvestorComplete}
+                    totalQuestions={totalQuestions}
+                    initialAnsweredCount={0}
+                />
+            )}
 
-                {currentScreen === Screen.Literacy && (
-                    <LiteracyQuiz
-                        onComplete={handleLiteracyComplete}
-                        totalQuestions={totalQuestions}
-                        initialAnsweredCount={investorQuestions.length}
-                    />
-                )}
+            {currentScreen === Screen.Literacy && (
+                <LiteracyQuiz
+                    onComplete={handleLiteracyComplete}
+                    totalQuestions={totalQuestions}
+                    initialAnsweredCount={investorQuestions.length}
+                />
+            )}
 
-                {currentScreen === Screen.RiskTaking && (
-                    <RiskTakingQuiz
-                        onComplete={handleRiskTakingComplete}
-                        totalQuestions={totalQuestions}
-                        initialAnsweredCount={investorQuestions.length + literacyQuestions.length}
-                    />
-                )}
-            </div>
+            {currentScreen === Screen.RiskTaking && (
+                <RiskTakingQuiz
+                    onComplete={handleRiskTakingComplete}
+                    totalQuestions={totalQuestions}
+                    initialAnsweredCount={investorQuestions.length + literacyQuestions.length}
+                />
+            )}
         </main>
     );
 }

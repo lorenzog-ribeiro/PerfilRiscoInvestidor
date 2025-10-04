@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Check } from 'lucide-react';
 import { DospertData } from '@/services/types';
 import { dospertQuestions, dospertScale } from '@/src/lib/constants';
 import { Button } from '../ui/button';
@@ -24,7 +23,7 @@ export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsw
     const allAnswered = answeredCount === dospertQuestions.length;
 
     return (
-        <div className="flex flex-col h-full bg-white relative">
+        <div className="flex flex-col bg-white relative">
             <header className="p-4 border-b">
                 <h2 className="text-base font-bold text-center text-gray-800">Propensão a Assumir Riscos</h2>
                 <div className="mt-2">
@@ -34,7 +33,7 @@ export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsw
                 </div>
             </header>
 
-            <div className="flex-grow overflow-y-auto p-4 sm:p-6 pb-28 bg-gray-50">
+            <div className="flex-grow p-4 sm:p-6 pb-28 bg-gray-50">
                 {dospertQuestions.map(question => {
                     const currentResponse = responses[question.id.toString()];
                     return (
@@ -42,7 +41,7 @@ export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsw
                             <fieldset>
                                 <legend className="text-base sm:text-lg font-semibold text-gray-800 mb-2">{question.text}</legend>
                                 <p className="text-xs sm:text-sm text-gray-600 mb-4">
-                                    Indique a probabilidade de sua ação, onde <strong>1</strong> é "Extremamente improvável" e <strong>7</strong> é "Extremamente provável".
+                                    Indique a probabilidade de sua ação, onde <strong>1</strong> é &quot;Extremamente improvável&quot; e <strong>7</strong> é &quot;Extremamente provável&quot;.
                                 </p>
 
                                 <div className="flex justify-between items-center">
@@ -75,16 +74,18 @@ export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsw
                         </div>
                     );
                 })}
-            </div>
 
-            {allAnswered && (
-                <Button
-                    onClick={() => onComplete(responses)}
-                    className="fixed bottom-6 right-6 w-14 h-14 rounded-xl bg-green-600 hover:bg-green-700 p-0"
-                >
-                    <Check className="h-6 w-6" />
-                </Button>
-            )}
+                {allAnswered && (
+                    <div className='flex justify-end'>
+                        <Button
+                            onClick={() => onComplete(responses)}
+                            className="self-end bg-green-600 hover:bg-green-700"
+                        >
+                            Finalizar
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
