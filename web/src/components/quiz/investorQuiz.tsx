@@ -197,7 +197,7 @@ export default function InvestorQuiz({ onComplete, totalQuestions, initialAnswer
                 </div>
 
                 {currentResponse && (
-                    <div className='flex justify-end'>
+                    <div className='flex justify-end pt-4'>
                         <Button
                             onClick={handleNext}
                             className="self-end mt-6 bg-blue-600 hover:bg-blue-700 "

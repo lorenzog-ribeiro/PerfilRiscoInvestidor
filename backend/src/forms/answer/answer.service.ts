@@ -17,7 +17,7 @@ export class AnswerService {
       const result = await this.prisma.result.create({
         data: {
           userId: userId,
-          answers: JSON.parse(JSON.stringify(createAnswerDto.answers)),
+          answers: JSON.parse(JSON.stringify(createAnswerDto.formData)),
         },
       });
       this.logger.log(`Created answer for user ${userId}`);

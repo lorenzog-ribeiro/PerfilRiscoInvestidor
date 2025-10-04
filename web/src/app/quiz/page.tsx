@@ -7,6 +7,7 @@ import RiskTakingQuiz from '@/src/components/quiz/riskTakingQuiz';
 import { Card } from '@/src/components/ui/card';
 import { investorQuestions, literacyQuestions, dospertQuestions } from '@/src/lib/constants';
 import { useState } from 'react';
+import ResultPage from '../result/page';
 
 enum Screen {
     Investor,
@@ -39,38 +40,41 @@ export default function QuizPage() {
         setCurrentScreen(Screen.Results);
     };
 
-    const handleRestart = () => {
-        setCurrentScreen(Screen.Instructions);
-        setInvestorData(null);
-        setLiteracyData(null);
-        setDospertData(null);
-    };
-
     return (
-        <main className="min-h-screen max-w-4xl mx-auto shadow-lg flex flex-col justify-center p-3">
-            {currentScreen === Screen.Investor && (
-                <InvestorQuiz
-                    onComplete={handleInvestorComplete}
-                    totalQuestions={totalQuestions}
-                    initialAnsweredCount={0}
-                />
-            )}
+        <main className="min-h-screen max-w-4xl mx-auto flex flex-col justify-center p-3">
+            <Card className='w-full h-full'>
+                {currentScreen === Screen.Investor && (
+                    <InvestorQuiz
+                        onComplete={handleInvestorComplete}
+                        totalQuestions={totalQuestions}
+                        initialAnsweredCount={0}
+                    />
+                )}
 
-            {currentScreen === Screen.Literacy && (
-                <LiteracyQuiz
-                    onComplete={handleLiteracyComplete}
-                    totalQuestions={totalQuestions}
-                    initialAnsweredCount={investorQuestions.length}
-                />
-            )}
+                {currentScreen === Screen.Literacy && (
+                    <LiteracyQuiz
+                        onComplete={handleLiteracyComplete}
+                        totalQuestions={totalQuestions}
+                        initialAnsweredCount={investorQuestions.length}
+                    />
+                )}
 
-            {currentScreen === Screen.RiskTaking && (
-                <RiskTakingQuiz
-                    onComplete={handleRiskTakingComplete}
-                    totalQuestions={totalQuestions}
-                    initialAnsweredCount={investorQuestions.length + literacyQuestions.length}
-                />
-            )}
+                {currentScreen === Screen.RiskTaking && (
+                    <RiskTakingQuiz
+                        onComplete={handleRiskTakingComplete}
+                        totalQuestions={totalQuestions}
+                        initialAnsweredCount={investorQuestions.length + literacyQuestions.length}
+                    />
+                )}
+
+                {currentScreen === Screen.Results && investorData && literacyData && dospertData && (
+                    <ResultPage
+                        investorData={investorData}
+                        literacyData={literacyData}
+                        dospertData={dospertData}
+                    />
+                )}
+            </Card>
         </main>
     );
 }
