@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic"; // ADICIONAR
 
 // MODIFICAR: Importar com dynamic e ssr: false
-const TradeOffForm = dynamic(() => import("../trade-off-form/page"), {
+const TradeOffForm = dynamic(() => import("./TradeOffForm"), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center min-h-[400px]">

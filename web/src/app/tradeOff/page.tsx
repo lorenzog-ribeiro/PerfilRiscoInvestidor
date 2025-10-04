@@ -1,7 +1,7 @@
 "use client";
 
+import ScenarioController from "@/src/components/trade-off/ScenarioController";
 import { Suspense } from "react";
-import ScenarioController from "../../components/trade-off-scenarios/page";
 
 export default function FinanceQuestions() {
   return (
