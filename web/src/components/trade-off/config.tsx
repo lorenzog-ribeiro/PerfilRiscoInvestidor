@@ -57,7 +57,7 @@ export const scenarioConfigs: Record<number, ScenarioConfig> = {
               textAnchor="middle"
               dominantBaseline="middle"
               fill="white"
-              fontSize="14"
+              fontSize="16"
               fontWeight="bold"
             >
               Sem Ganho
