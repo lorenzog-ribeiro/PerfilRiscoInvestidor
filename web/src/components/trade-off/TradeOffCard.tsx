@@ -71,11 +71,13 @@ export default function TradeOffCard({
 
         {/* Descrição */}
         <div className="text-xs text-center text-gray-600 p-6">
-          {
+          {config.chartType === "split" ? (
             <>
               <div>{config.ChartSubTittle}</div>
             </>
-          }
+          ) : (
+            <div>{config.ChartSubTittle}</div>
+          )}
         </div>
 
         {/* Gráfico */}
