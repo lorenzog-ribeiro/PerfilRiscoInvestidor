@@ -53,12 +53,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      html2canvas:
-        specifier: ^1.4.1
-        version: 1.4.1
-      jspdf:
-        specifier: ^3.0.3
-        version: 3.0.3
+      html2pdf.js:
+        specifier: ^0.12.1
+        version: 0.12.1
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@19.1.0)
@@ -1787,6 +1784,9 @@ packages:
   html2canvas@1.4.1:
     resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
     engines: {node: '>=8.0.0'}
+
+  html2pdf.js@0.12.1:
+    resolution: {integrity: sha512-3rBWQ96H5oOU9jtoz3MnE/epGi27ig9h8aonBk4JTpvUERM3lMRxhIRckhJZEi4wE0YfRINoYOIDY0hLY0CHgQ==}
 
   https-proxy-agent@7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
@@ -4458,6 +4458,11 @@ snapshots:
     dependencies:
       css-line-break: 2.1.0
       text-segmentation: 1.0.3
+
+  html2pdf.js@0.12.1:
+    dependencies:
+      html2canvas: 1.4.1
+      jspdf: 3.0.3
 
   https-proxy-agent@7.0.6:
     dependencies:
