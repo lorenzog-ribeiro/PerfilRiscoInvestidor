@@ -11,6 +11,7 @@ async function bootstrap() {
     'http://localhost:3000', // Dev local
     'http://localhost:3001', // Dev local (frontend)
     'https://devsof.duodevs.com.br', // Produção frontend
+    'https://perfilderiscosof.duodevs.com.br/user',
     process.env.FRONTEND_URL, // Dinâmico
   ].filter(Boolean); // Remove undefined
 
