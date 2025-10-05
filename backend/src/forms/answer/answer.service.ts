@@ -41,7 +41,7 @@ export class AnswerService {
    */
   async createFormSubmission(
     userId: string,
-    answerDto: AnswerDto,
+    answerDto,
   ): Promise<any> {
     try {
       const result = await this.prisma.result.create({

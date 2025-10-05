@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, JSX } from 'react';
+import { Loader2 } from 'lucide-react';
 import { DospertData } from '@/services/types';
 import { dospertQuestions, dospertScale } from '@/src/lib/constants';
 import { Button } from '../ui/button';
@@ -9,9 +10,10 @@ interface RiskTakingQuizProps {
     onComplete: (data: DospertData) => void;
     totalQuestions: number;
     initialAnsweredCount: number;
+    isSubmitting?: boolean;
 }
 
-export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsweredCount }: RiskTakingQuizProps) {
+export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsweredCount, isSubmitting = false }: RiskTakingQuizProps) {
     const [responses, setResponses] = useState<DospertData>({});
 
     const answeredCount = Object.keys(responses).length;
@@ -96,9 +98,17 @@ export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsw
                     <div className='flex justify-end pt-4'>
                         <Button
                             onClick={() => onComplete(responses)}
-                            className="self-end bg-green-600 hover:bg-green-700"
+                            disabled={isSubmitting}
+                            className="self-end bg-green-600 hover:bg-green-700 disabled:opacity-50"
                         >
-                            Finalizar
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Finalizando...
+                                </>
+                            ) : (
+                                'Finalizar'
+                            )}
                         </Button>
                     </div>
                 )}

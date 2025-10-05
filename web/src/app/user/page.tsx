@@ -1,5 +1,5 @@
 "use client";
-import { SetStateAction, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/src//components/ui/button";
 import { Input } from "@/src//components/ui/input";
 import { Label } from "@/src//components/ui/label";
@@ -7,6 +7,7 @@ import { UserService } from "../../../services/UserService";
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Card } from "@/src/components/ui/card";
+import { setUserIdInCookie } from "@/src/lib/userUtils";
 
 export default function UserPage() {
   const [name, setName] = useState("");
@@ -50,11 +51,14 @@ export default function UserPage() {
       const response = await userService.createUser(userData);
       const userId = response.data as string;
 
+      // Set the user ID in cookie for later use
+      setUserIdInCookie(userId);
+
       // Redirecionar para a página com o userId na URL
       router.push(`/instructions`);
       setLoading(false);
-    } catch (error: any) {
-      setError(error?.message || "Ocorreu um erro ao criar o usuário."); // Exibir mensagem de erro
+    } catch (error: unknown) {
+      setError((error as Error)?.message || "Ocorreu um erro ao criar o usuário."); // Exibir mensagem de erro
     } finally {
       setLoading(false);
     }

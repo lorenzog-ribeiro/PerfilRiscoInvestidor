@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, Share2, CheckCircle2, Sparkles, Badge } from 'lucide-react';
+import { Loader2, Share2, CheckCircle2, Sparkles, Badge, RefreshCw, Home } from 'lucide-react';
 import { getPersonalizedAdvice } from '@/services/gemini/geminiService';
 import { InvestorData, LiteracyData, DospertData, TradeOffData, DospertResult } from '@/services/types';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/src/components/ui/card';
@@ -13,13 +13,17 @@ interface ResultsScreenProps {
     literacyData: LiteracyData;
     dospertData: DospertData;
     tradeOffData?: TradeOffData | null;
+    onStartOver?: () => void;
+    onRetakeQuiz?: () => void;
 }
 
 export default function ResultsScreen({
     investorData,
     literacyData,
     dospertData,
-    tradeOffData
+    tradeOffData,
+    onStartOver,
+    onRetakeQuiz
 }: ResultsScreenProps) {
     console.log('TradeOff Data:', tradeOffData);
     const [advice, setAdvice] = useState<string>('');
@@ -166,17 +170,74 @@ export default function ResultsScreen({
                             <CardDescription>Suas escolhas entre ganhos e perdas</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-2">
-                                {Object.entries(tradeOffData).map(([key, value]) => (
-                                    <div key={key} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                                        <span className="text-sm font-medium text-gray-700">{key}</span>
-                                        <span className="text-sm text-gray-600">{String(value)}</span>
+                            <div className="space-y-4">
+                                {Object.entries(tradeOffData).map(([scenarioKey, scenarioData]) => (
+                                    <div key={scenarioKey} className="bg-gray-50 p-4 rounded-lg">
+                                        <h4 className="font-semibold text-gray-800 mb-2">
+                                            Cenário {scenarioData.scenario}
+                                        </h4>
+                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <span className="text-gray-600">Valor Final:</span>
+                                                <span className="ml-2 font-medium">
+                                                    R$ {scenarioData.finalValue.toLocaleString('pt-BR')}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-600">Decisões:</span>
+                                                <span className="ml-2 font-medium">
+                                                    {scenarioData.selectionHistory.join(' → ')}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </CardContent>
                     </Card>
                 )}
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <Button 
+                        onClick={handleShare}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                        {copied ? (
+                            <>
+                                <CheckCircle2 className="h-4 w-4 mr-2" />
+                                Copiado!
+                            </>
+                        ) : (
+                            <>
+                                <Share2 className="h-4 w-4 mr-2" />
+                                Compartilhar
+                            </>
+                        )}
+                    </Button>
+                    
+                    {onRetakeQuiz && (
+                        <Button 
+                            onClick={onRetakeQuiz}
+                            variant="outline"
+                            className="flex-1"
+                        >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Refazer Quiz
+                        </Button>
+                    )}
+                    
+                    {onStartOver && (
+                        <Button 
+                            onClick={onStartOver}
+                            variant="outline"
+                            className="flex-1"
+                        >
+                            <Home className="h-4 w-4 mr-2" />
+                            Início
+                        </Button>
+                    )}
+                </div>
             </main>
         </div>
     );

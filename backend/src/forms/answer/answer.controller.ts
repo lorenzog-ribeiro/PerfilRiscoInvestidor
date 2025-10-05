@@ -16,7 +16,7 @@ export class AnswerController {
   submitForm(@Body() answerDto: AnswerDto) {
     return this.answerService.createFormSubmission(
       answerDto.userId,
-      answerDto,
+      answerDto
     );
   }
 

@@ -1,5 +1,19 @@
 import { AxiosInstance } from "./Axios";
-import { FormData } from "@/lib/formBuilder";
+
+// Type definitions that match the backend expectations
+interface FormData {
+  responses: Array<{
+    choice: string | number | boolean;
+    label: string;
+  }>;
+  tradeoffs: Array<{
+    scenario: string;
+    side: string;
+    valueVar: number;
+    question: string;
+    valueFixed: number;
+  }>;
+}
 
 /**
  * Service for submitting form data to the backend

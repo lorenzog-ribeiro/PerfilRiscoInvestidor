@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { TradeOffData, TradeOffScenarioData } from "@/services/types";
+import { QuizCache } from "@/src/lib/quizCache";
 
 const TradeOffForm = dynamic(() => import("./TradeOffForm"), {
   ssr: false,
@@ -36,12 +37,17 @@ export default function ScenarioController({ onTradeOffComplete }: ScenarioContr
 
   useEffect(() => {
     if (currentIndex === 3) {
+      // Store tradeOff data in both session storage and cache
+      sessionStorage.setItem('tradeOffData', JSON.stringify(tradeOffData));
+      QuizCache.save({ 
+        tradeOffData: tradeOffData,
+        currentScreen: 0 // Reset to first quiz screen
+      });
+      
       // Pass the collected tradeOff data to parent or navigate to quiz
       if (onTradeOffComplete) {
         onTradeOffComplete(tradeOffData);
       } else {
-        // Store in sessionStorage for cross-page navigation
-        sessionStorage.setItem('tradeOffData', JSON.stringify(tradeOffData));
         router.push("/quiz");
       }
     }

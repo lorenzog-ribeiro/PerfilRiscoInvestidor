@@ -7,7 +7,10 @@ import RiskTakingQuiz from '@/src/components/quiz/riskTakingQuiz';
 import { Card } from '@/src/components/ui/card';
 import { investorQuestions, literacyQuestions, dospertQuestions } from '@/src/lib/constants';
 import { useState, useEffect } from 'react';
-import ResultPage from '../result/page';
+import { useRouter } from 'next/navigation';
+import { QuizCache } from '@/src/lib/quizCache';
+import { getOrCreateUserId } from '@/src/lib/userUtils';
+import { QuizSubmissionService } from '@/services/QuizSubmissionService';
 
 enum Screen {
     Investor,
@@ -18,40 +21,141 @@ enum Screen {
 }
 
 export default function QuizPage() {
+    const router = useRouter();
     const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.Investor);
     const [investorData, setInvestorData] = useState<InvestorData | null>(null);
     const [literacyData, setLiteracyData] = useState<LiteracyData | null>(null);
     const [dospertData, setDospertData] = useState<DospertData | null>(null);
     const [tradeOffData, setTradeOffData] = useState<TradeOffData | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const quizSubmissionService = new QuizSubmissionService();
     const totalQuestions = investorQuestions.length + literacyQuestions.length + dospertQuestions.length;
 
-    // Load tradeOff data from sessionStorage on component mount
+
     useEffect(() => {
-        const storedTradeOffData = sessionStorage.getItem('tradeOffData');
-        if (storedTradeOffData) {
+        const loadCachedData = () => {
+
+            const cachedProgress = QuizCache.load();
+            if (cachedProgress) {
+                setCurrentScreen(cachedProgress.currentScreen);
+                if (cachedProgress.investorData) setInvestorData(cachedProgress.investorData);
+                if (cachedProgress.literacyData) setLiteracyData(cachedProgress.literacyData);
+                if (cachedProgress.dospertData) setDospertData(cachedProgress.dospertData);
+                if (cachedProgress.tradeOffData) {
+                    setTradeOffData(cachedProgress.tradeOffData);
+                    return; // already have tradeOff data from cache
+                }
+            }
+
+
             try {
-                const parsedData = JSON.parse(storedTradeOffData) as TradeOffData;
-                setTradeOffData(parsedData);
+                const storedTradeOffData = sessionStorage.getItem('tradeOffData');
+                if (storedTradeOffData) {
+                    const parsedData = JSON.parse(storedTradeOffData) as TradeOffData;
+                    setTradeOffData(parsedData);
+                    // Update cache with tradeOff data
+                    QuizCache.save({ tradeOffData: parsedData });
+                }
             } catch (error) {
                 console.error('Error parsing tradeOff data from sessionStorage:', error);
             }
-        }
+        };
+
+        loadCachedData();
     }, []);
+
+    // Save progress whenever data changes
+    useEffect(() => {
+        if (investorData || literacyData || dospertData || tradeOffData) {
+            QuizCache.save({
+                currentScreen,
+                investorData: investorData || undefined,
+                literacyData: literacyData || undefined,
+                dospertData: dospertData || undefined,
+                tradeOffData: tradeOffData || undefined,
+            });
+        }
+    }, [currentScreen, investorData, literacyData, dospertData, tradeOffData]);
 
     const handleInvestorComplete = (data: InvestorData) => {
         setInvestorData(data);
         setCurrentScreen(Screen.Literacy);
+
+        // Save progress to cache
+        QuizCache.save({
+            currentScreen: Screen.Literacy,
+            investorData: data,
+            tradeOffData: tradeOffData || undefined,
+        });
     };
 
     const handleLiteracyComplete = (data: LiteracyData) => {
         setLiteracyData(data);
         setCurrentScreen(Screen.RiskTaking);
+
+        // Save progress to cache
+        QuizCache.save({
+            currentScreen: Screen.RiskTaking,
+            investorData: investorData!,
+            literacyData: data,
+            tradeOffData: tradeOffData || undefined,
+        });
     };
 
-    const handleRiskTakingComplete = (data: DospertData) => {
+    const handleRiskTakingComplete = async (data: DospertData) => {
         setDospertData(data);
-        setCurrentScreen(Screen.Results);
+        setIsSubmitting(true);
+
+        try {
+            // Get or create user ID from cookie
+            const userId = getOrCreateUserId();
+            
+            console.log('Using userId for submission:', userId);
+
+            // Prepare complete quiz data
+            const completeQuizData = {
+                investorData: investorData!,
+                literacyData: literacyData!,
+                dospertData: data,
+                tradeOffData: tradeOffData || undefined,
+                userId,
+            };
+
+            // Submit to backend
+            console.log('Submitting complete quiz data...');
+            const response = await quizSubmissionService.submitCompleteQuiz(completeQuizData);
+            console.log('Quiz submission successful:', response);
+
+            // Save all data to cache before navigating to results
+            QuizCache.save({
+                currentScreen: Screen.Results,
+                investorData: investorData!,
+                literacyData: literacyData!,
+                dospertData: data,
+                tradeOffData: tradeOffData || undefined,
+            });
+
+            // Navigate to isolated results page
+            router.push('/results');
+        } catch (error) {
+            console.error('Error submitting quiz:', error);
+            
+            // Still save to cache and navigate, but show error
+            QuizCache.save({
+                currentScreen: Screen.Results,
+                investorData: investorData!,
+                literacyData: literacyData!,
+                dospertData: data,
+                tradeOffData: tradeOffData || undefined,
+            });
+
+            // You might want to show an error toast here
+            alert('Houve um erro ao salvar seus dados, mas você ainda pode ver seus resultados. Erro: ' + (error as Error).message);
+            router.push('/results');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -78,15 +182,7 @@ export default function QuizPage() {
                         onComplete={handleRiskTakingComplete}
                         totalQuestions={totalQuestions}
                         initialAnsweredCount={investorQuestions.length + literacyQuestions.length}
-                    />
-                )}
-
-                {currentScreen === Screen.Results && investorData && literacyData && dospertData && (
-                    <ResultPage
-                        investorData={investorData}
-                        literacyData={literacyData}
-                        dospertData={dospertData}
-                        tradeOffData={tradeOffData}
+                        isSubmitting={isSubmitting}
                     />
                 )}
             </Card>
