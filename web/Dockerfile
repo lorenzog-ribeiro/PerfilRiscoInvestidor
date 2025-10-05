@@ -6,8 +6,6 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# Copiar arquivos de ambiente
-COPY .env.production .env.production
 # ou criar diretamente:
 RUN echo 'NEXT_PUBLIC_BASE_URL=https://backenddev.duodevs.com.br/' > .env.production
 
