@@ -233,7 +233,7 @@ export default function ResultsScreen({
         className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 pb-24"
       >
         {/* AI Analysis Section */}
-        <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
+        {/* <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Sparkles className="h-5 w-5 text-purple-600" />
@@ -252,7 +252,7 @@ export default function ResultsScreen({
               </p>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* DOSPERT Results */}
         <Card>
