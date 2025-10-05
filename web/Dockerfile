@@ -36,4 +36,4 @@ ENV NEXT_PUBLIC_BASE_URL=https://backenddev.duodevs.com.br/
 EXPOSE 3001
 
 USER node
-CMD ["pnpm", "start", "--", "--port", "3001"]
+CMD ["pnpm", "start", "--port", "3001"]
