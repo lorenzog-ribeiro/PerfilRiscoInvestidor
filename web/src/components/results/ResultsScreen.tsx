@@ -417,6 +417,10 @@ export default function ResultsScreen({
             </Button>
           )}
         </div>
+        <div className="text-center text-sm">
+          Nota: Estes resultados são uma ferramenta de autoconhecimento e não
+          constituem uma recomendação de investimento ou diagnóstico.
+        </div>
       </main>
     </div>
   );
