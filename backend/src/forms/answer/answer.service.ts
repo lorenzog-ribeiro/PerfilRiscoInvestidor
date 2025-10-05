@@ -34,15 +34,12 @@ export class AnswerService {
   /**
    * Creates a form submission with the new FormData structure
    * This method handles both regular responses and tradeoff data
-   * 
+   *
    * @param userId - The user's unique identifier
    * @param answerDto - The form data containing responses and tradeoffs
    * @returns The created result record
    */
-  async createFormSubmission(
-    userId: string,
-    answerDto,
-  ): Promise<any> {
+  async createFormSubmission(userId: string, answerDto): Promise<any> {
     try {
       const result = await this.prisma.result.create({
         data: {

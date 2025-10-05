@@ -16,7 +16,7 @@ A TypeScript module for building dynamic form data objects with support for regu
 The FormBuilder module is part of the application. Import it from:
 
 ```typescript
-import { FormBuilder, useFormBuilder } from '@/lib/formBuilder';
+import { FormBuilder, useFormBuilder } from "@/lib/formBuilder";
 ```
 
 ## Usage
@@ -24,22 +24,22 @@ import { FormBuilder, useFormBuilder } from '@/lib/formBuilder';
 ### Class-based Usage
 
 ```typescript
-import { FormBuilder } from '@/lib/formBuilder';
+import { FormBuilder } from "@/lib/formBuilder";
 
 // Create a new instance
 const formBuilder = new FormBuilder();
 
 // Add regular responses
-formBuilder.addResponse('yes', 'Do you agree?');
-formBuilder.addResponse(25, 'What is your age?');
-formBuilder.addResponse(true, 'Accept terms?');
+formBuilder.addResponse("yes", "Do you agree?");
+formBuilder.addResponse(25, "What is your age?");
+formBuilder.addResponse(true, "Accept terms?");
 
 // Add tradeoff responses
 formBuilder.addTradeoff(
-  'Scenario A vs B',
-  'A',
+  "Scenario A vs B",
+  "A",
   100,
-  'Which option do you prefer?',
+  "Which option do you prefer?",
   50
 );
 
@@ -53,25 +53,20 @@ await api.submitForm(formData);
 ### React Hook Usage
 
 ```typescript
-'use client';
+"use client";
 
-import { useFormBuilder } from '@/lib/formBuilder';
+import { useFormBuilder } from "@/lib/formBuilder";
 
 function MyQuizComponent() {
-  const { 
-    formData, 
-    addResponse, 
-    addTradeoff, 
-    resetForm,
-    hasData 
-  } = useFormBuilder();
+  const { formData, addResponse, addTradeoff, resetForm, hasData } =
+    useFormBuilder();
 
   const handleAnswer = (choice: string, label: string) => {
     addResponse(choice, label);
   };
 
   const handleTradeoff = () => {
-    addTradeoff('Scenario 1', 'A', 100, 'Question 1', 50);
+    addTradeoff("Scenario 1", "A", 100, "Question 1", 50);
   };
 
   const handleSubmit = async () => {
@@ -83,7 +78,7 @@ function MyQuizComponent() {
 
   return (
     <div>
-      <button onClick={() => handleAnswer('yes', 'Do you agree?')}>
+      <button onClick={() => handleAnswer("yes", "Do you agree?")}>
         Submit Answer
       </button>
       <button onClick={handleSubmit}>Submit Form</button>
@@ -191,9 +186,9 @@ The FormBuilder class supports method chaining for fluent API usage:
 
 ```typescript
 const formData = new FormBuilder()
-  .addResponse('yes', 'Question 1')
-  .addResponse(42, 'Question 2')
-  .addTradeoff('Scenario A', 'A', 100, 'Tradeoff 1', 50)
+  .addResponse("yes", "Question 1")
+  .addResponse(42, "Question 2")
+  .addTradeoff("Scenario A", "A", 100, "Tradeoff 1", 50)
   .getFormData();
 ```
 
@@ -202,6 +197,7 @@ const formData = new FormBuilder()
 The FormBuilder automatically validates all inputs:
 
 - **Responses:**
+
   - Choice cannot be null or undefined
   - Label must be a non-empty string
 
@@ -220,11 +216,10 @@ All operations maintain immutability:
 const formBuilder = new FormBuilder();
 
 const snapshot1 = formBuilder.getFormData(); // {}
-formBuilder.addResponse('yes', 'Question');
+formBuilder.addResponse("yes", "Question");
 const snapshot2 = formBuilder.getFormData(); // { responses: [{ choice: 'yes', label: 'Question' }] }
 
 // snapshot1 remains unchanged
-console.log(snapshot1); // {}
 ```
 
 ## Testing
@@ -245,23 +240,23 @@ npm test -- FormBuilder.test.ts
 ## Example: Integration with Quiz Component
 
 ```typescript
-'use client';
+"use client";
 
-import { useFormBuilder } from '@/lib/formBuilder';
-import { useState } from 'react';
+import { useFormBuilder } from "@/lib/formBuilder";
+import { useState } from "react";
 
 export default function QuizPage() {
   const { formData, addResponse, resetForm } = useFormBuilder();
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  
+
   const questions = [
-    { id: 'q1', text: 'Question 1?', choices: ['yes', 'no'] },
-    { id: 'q2', text: 'Question 2?', choices: ['a', 'b', 'c'] },
+    { id: "q1", text: "Question 1?", choices: ["yes", "no"] },
+    { id: "q2", text: "Question 2?", choices: ["a", "b", "c"] },
   ];
 
   const handleAnswer = (choice: string) => {
     addResponse(choice, questions[currentQuestion].text);
-    
+
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -272,14 +267,14 @@ export default function QuizPage() {
 
   const submitForm = async () => {
     try {
-      await fetch('/api/submit', {
-        method: 'POST',
+      await fetch("/api/submit", {
+        method: "POST",
         body: JSON.stringify(formData),
       });
       resetForm();
       // Navigate to results
     } catch (error) {
-      console.error('Submission failed:', error);
+      console.error("Submission failed:", error);
     }
   };
 

@@ -7,7 +7,6 @@ import { UserService } from "../../../services/UserService";
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Card } from "@/src/components/ui/card";
-import { setUserIdInCookie } from "@/src/lib/userUtils";
 
 export default function UserPage() {
   const [name, setName] = useState("");
@@ -49,16 +48,14 @@ export default function UserPage() {
     try {
       const userData = { name, email, birthDate: new Date(birthDate) };
       const response = await userService.createUser(userData);
-      const userId = response.data as string;
 
-      // Set the user ID in cookie for later use
-      setUserIdInCookie(userId);
-
-      // Redirecionar para a página com o userId na URL
+      // Redirecionar para a página de instruções
       router.push(`/instructions`);
       setLoading(false);
     } catch (error: unknown) {
-      setError((error as Error)?.message || "Ocorreu um erro ao criar o usuário."); // Exibir mensagem de erro
+      setError(
+        (error as Error)?.message || "Ocorreu um erro ao criar o usuário."
+      ); // Exibir mensagem de erro
     } finally {
       setLoading(false);
     }

@@ -21,17 +21,22 @@ interface FormData {
 export class FormSubmissionService {
   /**
    * Submit complete form data (responses and tradeoffs) to the backend
-   * 
+   *
    * @param formData - The complete form data object
    * @param userId - The user's unique identifier
    * @returns Promise with the server response
    */
   async submitForm(formData: FormData, userId: string) {
     try {
-      const response = await AxiosInstance.post("/answers/submit", {
-        formData,
-        userId,
-      });
+      const response = await AxiosInstance.post(
+        "/answers/submit",
+        {
+          formData,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       return response;
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -41,15 +46,12 @@ export class FormSubmissionService {
 
   /**
    * Submit only responses (without tradeoffs) - for partial submissions
-   * 
+   *
    * @param responses - Array of form responses
    * @param userId - The user's unique identifier
    * @returns Promise with the server response
    */
-  async submitResponses(
-    responses: FormData["responses"],
-    userId: string
-  ) {
+  async submitResponses(responses: FormData["responses"], userId: string) {
     try {
       const response = await AxiosInstance.post("/answers/submit", {
         formData: {
@@ -67,15 +69,12 @@ export class FormSubmissionService {
 
   /**
    * Submit only tradeoffs (without regular responses) - for partial submissions
-   * 
+   *
    * @param tradeoffs - Array of tradeoff responses
    * @param userId - The user's unique identifier
    * @returns Promise with the server response
    */
-  async submitTradeoffs(
-    tradeoffs: FormData["tradeoffs"],
-    userId: string
-  ) {
+  async submitTradeoffs(tradeoffs: FormData["tradeoffs"], userId: string) {
     try {
       const response = await AxiosInstance.post("/answers/submit", {
         formData: {

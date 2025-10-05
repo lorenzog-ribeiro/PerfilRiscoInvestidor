@@ -11,7 +11,8 @@ export class UsersController {
     @Body() data: Prisma.UserCreateInput,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const user = this.userService.createUser(data);
+    // createUser retorna o userId (string)
+    const userId = await this.userService.createUser(data);
 
     const cookieOptions = {
       httpOnly: true,
@@ -20,11 +21,13 @@ export class UsersController {
       path: '/',
     };
 
-    response.cookie('userId', user, cookieOptions);
+    // Salvar apenas o userId (string) no cookie, não o objeto inteiro
+    response.cookie('userId', userId, cookieOptions);
 
     return {
       success: true,
       message: 'Usuário criado com sucesso',
+      userId: userId, // Retornar o userId na resposta também
     };
   }
 }
