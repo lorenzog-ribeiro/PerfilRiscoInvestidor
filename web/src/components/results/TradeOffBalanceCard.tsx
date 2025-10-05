@@ -58,8 +58,8 @@ const TradeOffBalanceCard: React.FC<TradeOffBalanceCardProps> = ({
   return (
     <>
       <div>
-        <h4 className="text-sm font-semibold text-gray-900 mb-2">Descrição</h4>
-        <p className="text-sm text-gray-700 leading-relaxed">{description}</p>
+        <h4 className="text-sm font-semibold text-green-700 mb-2">Descrição</h4>
+        <p className="text-sm text-green-700 leading-relaxed">{description}</p>
       </div>
     </>
     // <Card>
