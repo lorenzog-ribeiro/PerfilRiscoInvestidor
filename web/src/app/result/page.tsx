@@ -19,8 +19,8 @@ import {
 } from "@/src/components/ui/card";
 import { dospertDomains, TPL_DOSPERT } from "@/src/lib/constants";
 import { Button } from "@/src/components/ui/button";
+
 export const dynamic = "force-dynamic";
-export const getServerSideProps = async () => ({ props: {} });
 
 interface ResultsScreenProps {
   investorData: InvestorData;
@@ -40,6 +40,9 @@ export default function ResultsScreen({
   const [copied, setCopied] = useState<boolean>(false);
 
   const dospertResults: DospertResult[] = useMemo(() => {
+    if (!dospertData || !dospertDomains || typeof dospertData !== "object") {
+      return [];
+    }
     return Object.entries(dospertDomains).map(([domain, info]) => {
       const domainScores = info.items.map((itemId) => dospertData[itemId] || 0);
       const avg = domainScores.reduce((a, b) => a + b, 0) / domainScores.length;
@@ -62,6 +65,9 @@ export default function ResultsScreen({
   }, [dospertData]);
 
   useEffect(() => {
+    if (!investorData || dospertResults.length === 0) {
+      return;
+    }
     const fetchAdvice = async () => {
       setIsLoadingAdvice(true);
       try {
@@ -78,6 +84,14 @@ export default function ResultsScreen({
     };
     fetchAdvice();
   }, [investorData, dospertResults]);
+
+  if (!dospertData || dospertResults.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-600">Carregando resultados...</p>
+      </div>
+    );
+  }
 
   const handleShare = async () => {
     const shareText =
