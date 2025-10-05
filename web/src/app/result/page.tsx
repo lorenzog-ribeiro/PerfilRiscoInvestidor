@@ -19,6 +19,8 @@ import {
 } from "@/src/components/ui/card";
 import { dospertDomains, TPL_DOSPERT } from "@/src/lib/constants";
 import { Button } from "@/src/components/ui/button";
+export const dynamic = "force-dynamic";
+export const getServerSideProps = async () => ({ props: {} });
 
 interface ResultsScreenProps {
   investorData: InvestorData;
