@@ -148,28 +148,76 @@ export default function ResultsScreen({
     fetchAdvice();
   }, [investorData, dospertResults]);
 
-  const handleGeneratePDF = async () => {
-    if (!contentRef.current) return;
+  const handleDownloadPDF = async () => {
+    if (!contentRef.current) {
+      alert("Conteúdo não encontrado para gerar PDF.");
+      return;
+    }
 
     setIsGeneratingPDF(true);
 
     try {
-      const opt = {
-        margin: 10,
-        filename: `perfil-risco-${new Date().toISOString().split("T")[0]}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-        },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
+      const htmlContent = contentRef.current.outerHTML;
 
-      await html2pdf().set(opt).from(contentRef.current).save();
+      // ✅ Capture a largura e altura do elemento
+      const elementWidth = contentRef.current.offsetWidth;
+      const elementHeight = contentRef.current.offsetHeight;
+
+      const styles = Array.from(document.styleSheets)
+        .map((sheet) => {
+          try {
+            return Array.from(sheet.cssRules)
+              .map((rule) => rule.cssText)
+              .join("");
+          } catch (e) {
+            console.warn("Could not read stylesheet rules:", e);
+            return "";
+          }
+        })
+        .join("");
+
+      const fullHtml = `
+      <!DOCTYPE html>
+      <html>
+          <head>
+              <meta charset="UTF-8">
+              <style>${styles}</style>
+          </head>
+          <body>
+              ${htmlContent}
+          </body>
+      </html>
+    `;
+
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // ✅ Inclua as dimensões no corpo da requisição
+        body: JSON.stringify({
+          htmlContent: fullHtml,
+          width: elementWidth,
+          height: elementHeight,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Falha ao gerar o PDF");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `perfil-risco-${Date.now()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Erro ao gerar PDF. Tente novamente.");
+      console.error("Erro ao gerar o PDF:", error);
+      alert("Erro ao gerar o PDF. Por favor, tente novamente.");
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -283,6 +331,32 @@ export default function ResultsScreen({
                         <p className="text-sm text-green-700 mt-1">
                           {investorData.profile.description}
                         </p>
+                        {/* Trade-Off Data */}
+                        {tradeOffData &&
+                          Object.keys(tradeOffData).length > 0 && (
+                            <>
+                              {tradeOffProfile &&
+                              tradeOffProfile.result !== null &&
+                              tradeOffProfile.profileInfo ? (
+                                <div className="space-y-4 pt-4">
+                                  <TradeOffBalanceCard
+                                    tradeOffValue={tradeOffProfile.result}
+                                    profile={
+                                      tradeOffProfile.profileInfo.profile
+                                    }
+                                    description={
+                                      tradeOffProfile.profileInfo.description
+                                    }
+                                  />
+                                </div>
+                              ) : (
+                                <p className="text-sm text-gray-700">
+                                  Não foi possível calcular seu perfil de
+                                  trade-off com os dados fornecidos.
+                                </p>
+                              )}
+                            </>
+                          )}
                       </div>
                     </div>
                   )}
@@ -292,42 +366,10 @@ export default function ResultsScreen({
           </CardContent>
         </Card>
 
-        {/* Trade-Off Data */}
-        {tradeOffData && Object.keys(tradeOffData).length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">
-                Análise de Trade-Offs
-              </CardTitle>
-              <CardDescription>
-                Seu perfil de risco baseado nas escolhas de trade-off
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {tradeOffProfile &&
-              tradeOffProfile.result !== null &&
-              tradeOffProfile.profileInfo ? (
-                <div className="space-y-4">
-                  <TradeOffBalanceCard
-                    tradeOffValue={tradeOffProfile.result}
-                    profile={tradeOffProfile.profileInfo.profile}
-                    description={tradeOffProfile.profileInfo.description}
-                  />
-                </div>
-              ) : (
-                <p className="text-sm text-gray-700">
-                  Não foi possível calcular seu perfil de trade-off com os dados
-                  fornecidos.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
         {/* Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
           <Button
-            onClick={handleGeneratePDF}
+            onClick={handleDownloadPDF}
             disabled={isGeneratingPDF}
             className="bg-green-600 hover:bg-green-700"
           >
