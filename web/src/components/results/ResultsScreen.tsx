@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Loader2,
   Share2,
@@ -9,8 +9,11 @@ import {
   Badge,
   RefreshCw,
   Home,
+  Download,
 } from "lucide-react";
-import { getPersonalizedAdvice } from "@/services/gemini/geminiService";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+//import { getPersonalizedAdvice } from "@/services/gemini/geminiService";
 import {
   InvestorData,
   LiteracyData,
@@ -48,6 +51,9 @@ export default function ResultsScreen({
   const [advice, setAdvice] = useState<string>("");
   const [isLoadingAdvice, setIsLoadingAdvice] = useState<boolean>(true);
   const [copied, setCopied] = useState<boolean>(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
+
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const dospertResults: DospertResult[] = useMemo(() => {
     return Object.entries(dospertDomains).map(([domain, info]) => {
@@ -106,7 +112,6 @@ export default function ResultsScreen({
     ) {
       const ratioThird = numFirstThird / numLastThird;
       const ratioFirst = numFirstFirst / numLastFirst;
-      // avoid division by zero for ratioFirst
       result = ratioFirst !== 0 ? ratioThird / ratioFirst : null;
     }
 
@@ -135,6 +140,54 @@ export default function ResultsScreen({
     };
     fetchAdvice();
   }, [investorData, dospertResults]);
+
+  const handleGeneratePDF = async () => {
+    if (!contentRef.current) return;
+
+    setIsGeneratingPDF(true);
+
+    try {
+      const canvas = await html2canvas(contentRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#f0f4ff",
+        windowWidth: contentRef.current.scrollWidth,
+        windowHeight: contentRef.current.scrollHeight,
+      });
+
+      const imgWidth = 210; // A4 width em mm
+      const pageHeight = 297; // A4 height em mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      const imgData = canvas.toDataURL("image/png");
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const date = new Date().toISOString().split("T")[0];
+      pdf.save(
+        `perfil-risco-${investorData.profile.title
+          .toLowerCase()
+          .replace(/\s+/g, "-")}-${date}.pdf`
+      );
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Erro ao gerar PDF. Tente novamente.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   const handleShare = async () => {
     const shareText =
@@ -175,7 +228,10 @@ export default function ResultsScreen({
         </h1>
       </header>
 
-      <main className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 pb-24">
+      <main
+        ref={contentRef}
+        className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 pb-24"
+      >
         {/* AI Analysis Section */}
         <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
           <CardHeader className="pb-3">
@@ -229,7 +285,6 @@ export default function ResultsScreen({
                     {result.text}
                   </p>
 
-                  {/* Financial Domain - Show Investor Profile */}
                   {result.name === "Financeiro" && (
                     <div className="mt-4 pt-3 border-t border-green-200/60">
                       <h4 className="font-bold text-green-900 mb-2">
@@ -251,7 +306,7 @@ export default function ResultsScreen({
           </CardContent>
         </Card>
 
-        {/* Trade-Off Data (if available) */}
+        {/* Trade-Off Data */}
         {tradeOffData && Object.keys(tradeOffData).length > 0 && (
           <Card>
             <CardHeader>
@@ -283,10 +338,28 @@ export default function ResultsScreen({
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
+          <Button
+            onClick={handleGeneratePDF}
+            disabled={isGeneratingPDF}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            {isGeneratingPDF ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Gerando PDF...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4 mr-2" />
+                Baixar PDF
+              </>
+            )}
+          </Button>
+
           <Button
             onClick={handleShare}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700"
           >
             {copied ? (
               <>
@@ -302,14 +375,14 @@ export default function ResultsScreen({
           </Button>
 
           {onRetakeQuiz && (
-            <Button onClick={onRetakeQuiz} variant="outline" className="flex-1">
+            <Button onClick={onRetakeQuiz} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refazer Quiz
             </Button>
           )}
 
           {onStartOver && (
-            <Button onClick={onStartOver} variant="outline" className="flex-1">
+            <Button onClick={onStartOver} variant="outline">
               <Home className="h-4 w-4 mr-2" />
               Início
             </Button>
