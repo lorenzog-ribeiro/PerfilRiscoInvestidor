@@ -46,4 +46,4 @@ EXPOSE 3001
 
 USER node
 
-CMD ["pnpm", "start", "--", "--port", "3001"]
+CMD ["pnpm", "start", "--port", "3001"]
