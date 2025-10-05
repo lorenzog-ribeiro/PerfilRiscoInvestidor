@@ -142,7 +142,6 @@ export default function InvestorQuiz({ onComplete, totalQuestions, initialAnswer
     return (
         <div className="w-full flex flex-col h-full bg-white relative">
             <header className="p-4 border-b bg-white">
-                <h2 className="text-base font-bold text-center text-gray-800">Questionário</h2>
                 <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />

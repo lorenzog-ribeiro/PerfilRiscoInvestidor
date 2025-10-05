@@ -33,7 +33,6 @@ export default function LiteracyQuiz({ onComplete, totalQuestions, initialAnswer
     return (
         <div className="w-full flex flex-col h-full bg-white relative">
             <header className="p-4 border-b">
-                <h2 className="text-base font-bold text-center text-gray-800">Litenracy</h2>
                 <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
@@ -47,7 +46,6 @@ export default function LiteracyQuiz({ onComplete, totalQuestions, initialAnswer
                         <legend className="text-base font-semibold text-gray-800 mb-4">{currentQuestion.text}</legend>
                         <div className="p-4 border rounded-lg bg-gray-50">
                             <div className="flex justify-center items-center flex-col sm:flex-row gap-4">
-                                <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">Nenhum conhecimento</span>
                                 <div className="flex items-center space-x-2">
                                     {currentQuestion.options.map(value => {
                                         const isSelected = currentResponse === value;
@@ -73,7 +71,6 @@ export default function LiteracyQuiz({ onComplete, totalQuestions, initialAnswer
                                         );
                                     })}
                                 </div>
-                                <span className="text-xs sm:text-sm text-gray-600 font-medium text-center">Conhecimento avançado</span>
                             </div>
                         </div>
                     </fieldset>

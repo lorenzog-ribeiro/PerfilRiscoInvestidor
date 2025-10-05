@@ -27,7 +27,6 @@ export default function RiskTakingQuiz({ onComplete, totalQuestions, initialAnsw
     return (
         <div className="flex flex-col bg-white relative">
             <header className="p-4 border-b">
-                <h2 className="text-base font-bold text-center text-gray-800">Propensão a Assumir Riscos</h2>
                 <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
