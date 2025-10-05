@@ -30,6 +30,8 @@ import {
 } from "@/src/components/ui/card";
 import { dospertDomains, TPL_DOSPERT } from "@/src/lib/constants";
 import { Button } from "@/src/components/ui/button";
+import TradeOffBalanceCard from "./TradeOffBalanceCard";
+import { calculateTradeOffProfile } from "@/src/lib/tradeOffUtils";
 
 interface ResultsScreenProps {
   investorData: InvestorData;
@@ -115,8 +117,12 @@ export default function ResultsScreen({
       result = ratioFirst !== 0 ? ratioThird / ratioFirst : null;
     }
 
+    // Calculate profile using the utility function
+    const profileInfo = result !== null ? calculateTradeOffProfile(result) : null;
+
     return {
       result,
+      profileInfo,
       nums: {
         numFirstThird,
         numLastThird,
@@ -313,19 +319,18 @@ export default function ResultsScreen({
               <CardTitle className="text-lg sm:text-xl">
                 Análise de Trade-Offs
               </CardTitle>
+              <CardDescription>
+                Seu perfil de risco baseado nas escolhas de trade-off
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              {tradeOffProfile && tradeOffProfile.result !== null ? (
-                <div>
-                  <p className="text-sm text-gray-700 mb-2">
-                    Seu perfil de trade-off é:{" "}
-                    <span className="font-bold">
-                      {tradeOffProfile.result.toFixed(2)}
-                    </span>
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    (Valores utilizados: {JSON.stringify(tradeOffProfile.nums)})
-                  </p>
+              {tradeOffProfile && tradeOffProfile.result !== null && tradeOffProfile.profileInfo ? (
+                <div className="space-y-4">
+                  <TradeOffBalanceCard
+                    tradeOffValue={tradeOffProfile.result}
+                    profile={tradeOffProfile.profileInfo.profile}
+                    description={tradeOffProfile.profileInfo.description}
+                  />
                 </div>
               ) : (
                 <p className="text-sm text-gray-700">
