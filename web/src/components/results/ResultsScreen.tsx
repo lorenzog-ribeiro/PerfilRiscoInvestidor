@@ -11,8 +11,8 @@ import {
   Home,
   Download,
 } from "lucide-react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import html2pdf from "html2pdf.js";
+
 //import { getPersonalizedAdvice } from "@/services/gemini/geminiService";
 import {
   InvestorData,
@@ -118,7 +118,8 @@ export default function ResultsScreen({
     }
 
     // Calculate profile using the utility function
-    const profileInfo = result !== null ? calculateTradeOffProfile(result) : null;
+    const profileInfo =
+      result !== null ? calculateTradeOffProfile(result) : null;
 
     return {
       result,
@@ -153,40 +154,19 @@ export default function ResultsScreen({
     setIsGeneratingPDF(true);
 
     try {
-      const canvas = await html2canvas(contentRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#f0f4ff",
-        windowWidth: contentRef.current.scrollWidth,
-        windowHeight: contentRef.current.scrollHeight,
-      });
+      const opt = {
+        margin: 10,
+        filename: `perfil-risco-${new Date().toISOString().split("T")[0]}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+        },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
 
-      const imgWidth = 210; // A4 width em mm
-      const pageHeight = 297; // A4 height em mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      const pdf = new jsPDF("p", "mm", "a4");
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      const imgData = canvas.toDataURL("image/png");
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      const date = new Date().toISOString().split("T")[0];
-      pdf.save(
-        `perfil-risco-${investorData.profile.title
-          .toLowerCase()
-          .replace(/\s+/g, "-")}-${date}.pdf`
-      );
+      await html2pdf().set(opt).from(contentRef.current).save();
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Erro ao gerar PDF. Tente novamente.");
@@ -324,7 +304,9 @@ export default function ResultsScreen({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {tradeOffProfile && tradeOffProfile.result !== null && tradeOffProfile.profileInfo ? (
+              {tradeOffProfile &&
+              tradeOffProfile.result !== null &&
+              tradeOffProfile.profileInfo ? (
                 <div className="space-y-4">
                   <TradeOffBalanceCard
                     tradeOffValue={tradeOffProfile.result}
