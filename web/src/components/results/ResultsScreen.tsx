@@ -52,12 +52,62 @@ export default function ResultsScreen({
         });
     }, [dospertData]);
 
+    const tradeOffProfile = useMemo(() => {
+        if (!tradeOffData) return null;
+        const scenarios = Object.values(tradeOffData);
+        const stageArr = scenarios;
+
+        const getStageBounds = (stageNum: number) => {
+            const items = stageArr.filter(s => Number(s.scenario) === stageNum);
+            if (!items || items.length === 0) return { first: null, last: null };
+            return { first: items[0], last: items[items.length - 1] };
+        };
+
+        const { first: firstThirdStage, last: lastThirdStage } = getStageBounds(3);
+        const { first: firstFirstStage, last: lastFirstStage } = getStageBounds(1);
+
+        const toNum = (v: any) => {
+            const n = Number(v);
+            return Number.isFinite(n) ? n : NaN;
+        };
+
+        const numFirstThird = toNum(firstThirdStage?.selectedValues[0]);
+        const numLastThird = toNum(lastThirdStage?.selectedValues[4]);
+        const numFirstFirst = toNum(firstFirstStage?.selectedValues[0]);
+        const numLastFirst = toNum(lastFirstStage?.selectedValues[4]);
+
+        let result: number | null = null;
+        if (
+            !Number.isNaN(numFirstThird) &&
+            !Number.isNaN(numLastThird) &&
+            !Number.isNaN(numFirstFirst) &&
+            !Number.isNaN(numLastFirst) &&
+            numLastThird !== 0 &&
+            numLastFirst !== 0
+        ) {
+            const ratioThird = numFirstThird / numLastThird;
+            const ratioFirst = numFirstFirst / numLastFirst;
+            // avoid division by zero for ratioFirst
+            result = ratioFirst !== 0 ? ratioThird / ratioFirst : null;
+        }
+
+        return {
+            result,
+            nums: {
+            numFirstThird,
+            numLastThird,
+            numFirstFirst,
+            numLastFirst
+            }
+        };
+        }, [tradeOffData]);
+
     useEffect(() => {
         const fetchAdvice = async () => {
             setIsLoadingAdvice(true);
             try {
-                const result = await getPersonalizedAdvice(investorData, dospertResults);
-                setAdvice(result);
+                // const result = await getPersonalizedAdvice(investorData, dospertResults);
+                // setAdvice(result);
             } catch (error) {
                 setAdvice('Não foi possível gerar a análise personalizada no momento.');
             } finally {
@@ -166,33 +216,21 @@ export default function ResultsScreen({
                 {tradeOffData && Object.keys(tradeOffData).length > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg sm:text-xl">Análise de Trade-Offs</CardTitle>
-                            <CardDescription>Suas escolhas entre ganhos e perdas</CardDescription>
+                            <CardTitle className="text-lg sm:text-xl">Análise de Trade-Offs</CardTitle>                            
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {Object.entries(tradeOffData).map(([scenarioKey, scenarioData]) => (
-                                    <div key={scenarioKey} className="bg-gray-50 p-4 rounded-lg">
-                                        <h4 className="font-semibold text-gray-800 mb-2">
-                                            Cenário {scenarioData.scenario}
-                                        </h4>
-                                        <div className="grid grid-cols-2 gap-4 text-sm">
-                                            <div>
-                                                <span className="text-gray-600">Valor Final:</span>
-                                                <span className="ml-2 font-medium">
-                                                    R$ {scenarioData.finalValue.toLocaleString('pt-BR')}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span className="text-gray-600">Decisões:</span>
-                                                <span className="ml-2 font-medium">
-                                                    {scenarioData.selectionHistory.join(' → ')}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                            {tradeOffProfile && tradeOffProfile.result !== null ? (
+                                <div>
+                                    <p className="text-sm text-gray-700 mb-2">
+                                        Seu perfil de trade-off é: <span className="font-bold">{tradeOffProfile.result.toFixed(2)}</span>
+                                    </p>
+                                    <p className="text-xs text-gray-600">
+                                        (Valores utilizados: {JSON.stringify(tradeOffProfile.nums)})
+                                    </p>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-700">Não foi possível calcular seu perfil de trade-off com os dados fornecidos.</p>
+                            )}
                         </CardContent>
                     </Card>
                 )}

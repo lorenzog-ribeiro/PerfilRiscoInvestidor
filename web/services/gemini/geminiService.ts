@@ -4,7 +4,7 @@ import { DospertResult, InvestorData } from '../types';
 
 export const getPersonalizedAdvice = async (investorData: InvestorData, dospertResults: DospertResult[]): Promise<string> => {
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        // const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
         const investorProfile = investorData.profile;
 
@@ -33,12 +33,12 @@ export const getPersonalizedAdvice = async (investorData: InvestorData, dospertR
             Não use markdown, apenas texto puro.
         `;
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
-        });
+        // const response = await ai.models.generateContent({
+        //     model: 'gemini-2.5-flash',
+        //     contents: prompt,
+        // });
 
-        return response.text;
+        return "";
 
     } catch (error) {
         console.error("Error fetching personalized advice from Gemini:", error);
