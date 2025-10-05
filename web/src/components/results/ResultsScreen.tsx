@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import {
   Loader2,
   Share2,
@@ -11,7 +11,6 @@ import {
   Home,
   Download,
 } from "lucide-react";
-import html2pdf from "html2pdf.js";
 
 //import { getPersonalizedAdvice } from "@/services/gemini/geminiService";
 import {
@@ -52,8 +51,8 @@ export default function ResultsScreen({
 }: ResultsScreenProps) {
   const [advice, setAdvice] = useState<string>("");
   const [isLoadingAdvice, setIsLoadingAdvice] = useState<boolean>(true);
-  const [copied, setCopied] = useState<boolean>(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
+  const [isSharing, setIsSharing] = useState<boolean>(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -117,7 +116,6 @@ export default function ResultsScreen({
       result = ratioFirst !== 0 ? ratioThird / ratioFirst : null;
     }
 
-    // Calculate profile using the utility function
     const profileInfo =
       result !== null ? calculateTradeOffProfile(result) : null;
 
@@ -148,18 +146,15 @@ export default function ResultsScreen({
     fetchAdvice();
   }, [investorData, dospertResults]);
 
-  const handleDownloadPDF = async () => {
+  // ✅ Função auxiliar para gerar o PDF e retornar o blob
+  const getPDFBlob = useCallback(async (): Promise<Blob | null> => {
     if (!contentRef.current) {
       alert("Conteúdo não encontrado para gerar PDF.");
-      return;
+      return null;
     }
-
-    setIsGeneratingPDF(true);
 
     try {
       const htmlContent = contentRef.current.outerHTML;
-
-      // ✅ Capture a largura e altura do elemento
       const elementWidth = contentRef.current.offsetWidth;
       const elementHeight = contentRef.current.offsetHeight;
 
@@ -177,24 +172,23 @@ export default function ResultsScreen({
         .join("");
 
       const fullHtml = `
-      <!DOCTYPE html>
-      <html>
+        <!DOCTYPE html>
+        <html>
           <head>
-              <meta charset="UTF-8">
-              <style>${styles}</style>
+            <meta charset="UTF-8">
+            <style>${styles}</style>
           </head>
           <body>
-              ${htmlContent}
+            ${htmlContent}
           </body>
-      </html>
-    `;
+        </html>
+      `;
 
       const response = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // ✅ Inclua as dimensões no corpo da requisição
         body: JSON.stringify({
           htmlContent: fullHtml,
           width: elementWidth,
@@ -207,6 +201,24 @@ export default function ResultsScreen({
       }
 
       const blob = await response.blob();
+      return blob;
+    } catch (error) {
+      console.error("Erro ao gerar o PDF:", error);
+      alert("Erro ao gerar o PDF. Por favor, tente novamente.");
+      return null;
+    }
+  }, []);
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true);
+
+    try {
+      const blob = await getPDFBlob();
+      if (!blob) {
+        setIsGeneratingPDF(false);
+        return;
+      }
+
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -216,41 +228,56 @@ export default function ResultsScreen({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Erro ao gerar o PDF:", error);
-      alert("Erro ao gerar o PDF. Por favor, tente novamente.");
+      console.error("Erro ao baixar PDF:", error);
+      alert("Erro ao baixar PDF. Por favor, tente novamente.");
     } finally {
       setIsGeneratingPDF(false);
     }
   };
 
   const handleShare = async () => {
-    const shareText =
-      `Meu Perfil de Risco Financeiro:\n\n` +
-      `👤 Perfil de Investidor: ${investorData.profile.title}\n\n` +
-      `📊 Propensão a Riscos:\n` +
-      dospertResults.map((r) => `• ${r.name}: ${r.classification}`).join("\n") +
-      `\n\nDescubra o seu perfil também!`;
+    setIsSharing(true);
 
-    const shareData = {
-      title: "Meu Perfil de Risco Financeiro",
-      text: shareText,
-      url: typeof window !== "undefined" ? window.location.href : "",
-    };
+    try {
+      // Gera o PDF e obtém o blob
+      const blob = await getPDFBlob();
+      if (!blob) {
+        setIsSharing(false);
+        return;
+      }
 
-    if (typeof navigator !== "undefined" && navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (error) {
-        console.error("Error sharing:", error);
+      // Cria o arquivo para compartilhamento
+      const file = new File([blob], "perfil-risco.pdf", {
+        type: "application/pdf",
+      });
+
+      // Verifica se o navegador suporta compartilhamento nativo
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
+        await navigator.share({
+          files: [file],
+          title: "Meu Perfil de Risco Financeiro",
+          text: "Confira minha análise de perfil de risco financeiro!",
+        });
+      } else {
+        // Fallback: faz download do PDF
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `perfil-risco-${Date.now()}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       }
-    } else {
-      try {
-        await navigator.clipboard.writeText(shareText);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
-      } catch (error) {
-        console.error("Error copying to clipboard:", error);
-      }
+    } catch (error) {
+      console.error("Erro ao compartilhar:", error);
+      alert("Erro ao compartilhar. Por favor, tente novamente.");
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -266,28 +293,6 @@ export default function ResultsScreen({
         ref={contentRef}
         className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 pb-24"
       >
-        {/* AI Analysis Section */}
-        {/* <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-              <Sparkles className="h-5 w-5 text-purple-600" />
-              Análise Personalizada
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoadingAdvice ? (
-              <div className="flex items-center gap-2 text-gray-600">
-                <Loader2 className="h-5 w-5 animate-spin" />
-                <span className="text-sm">Gerando sua análise...</span>
-              </div>
-            ) : (
-              <p className="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-line">
-                {advice}
-              </p>
-            )}
-          </CardContent>
-        </Card> */}
-
         {/* DOSPERT Results */}
         <Card>
           <CardHeader>
@@ -370,7 +375,7 @@ export default function ResultsScreen({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
           <Button
             onClick={handleDownloadPDF}
-            disabled={isGeneratingPDF}
+            disabled={isGeneratingPDF || isSharing}
             className="bg-green-600 hover:bg-green-700"
           >
             {isGeneratingPDF ? (
@@ -388,12 +393,13 @@ export default function ResultsScreen({
 
           <Button
             onClick={handleShare}
+            disabled={isGeneratingPDF || isSharing}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            {copied ? (
+            {isSharing ? (
               <>
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                Copiado!
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Compartilhando...
               </>
             ) : (
               <>
@@ -417,9 +423,10 @@ export default function ResultsScreen({
             </Button>
           )}
         </div>
-        <div className="text-center text-sm">
+
+        <div className="text-center text-sm text-gray-600">
           Nota: Estes resultados são uma ferramenta de autoconhecimento e não
-          constituem uma recomendação de investimento ou diagnóstico.
+          constituem uma recomendação de investimento ou diagnóstico.
         </div>
       </main>
     </div>
