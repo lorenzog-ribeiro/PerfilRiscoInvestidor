@@ -6,11 +6,11 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-RUN echo 'NEXT_PUBLIC_BASE_URL=https://backenddev.duodevs.com.br/' > .env.production
+RUN echo 'NEXT_PUBLIC_BASE_URL=https://cvmbackend.duodevs.com.br/' > .env.production
 
 COPY . .
 
-ENV NEXT_PUBLIC_BASE_URL=https://backenddev.duodevs.com.br/
+ENV NEXT_PUBLIC_BASE_URL=https://cvmbackend.duodevs.com.br/
 
 RUN echo 'module.exports = { eslint: { ignoreDuringBuilds: true }, typescript: { ignoreBuildErrors: true }, output: "standalone" };' > next.config.js
 
@@ -43,7 +43,7 @@ COPY --from=build /app/public ./public
 
 ENV PORT=3001
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_BASE_URL=https://backenddev.duodevs.com.br/
+ENV NEXT_PUBLIC_BASE_URL=https://cvmbackend.duodevs.com.br/
 
 EXPOSE 3001
 
