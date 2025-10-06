@@ -1,5 +1,3 @@
-import { DospertDomainInfo } from './types';
-
 export const investorQuestions = [
   {
     id: 'risk_pref_q1',
@@ -63,7 +61,7 @@ export const investorQuestions = [
     id: 'risk_pref_q7',
     text: 'A maior parte do seu patrimônio está em renda fixa, um investimento seguro. Alguns especialistas projetam queda dos juros nos próximos meses e apontam oportunidades de ganhos no mercado de ações, mas também risco real de perdas. O que você faria?',
     options: [
-      { choice: 'a', label: 'Manteria os investimentos de renda fixa,.' },
+      { choice: 'a', label: 'Manteria os os investimentos de renda fixa,.' },
       { choice: 'b', label: 'Venderia metade; aplicaria parte em renda fixa de curto prazo e parte em ações.' },
       { choice: 'c', label: 'Venderia todos os títulos e investiria em ações.' },
       { choice: 'd', label: 'Venderia todos os títulos de renda fixa, investiria em ações e ainda pegaria empréstimo para investir mais.' }
@@ -153,72 +151,12 @@ export const literacyScale = {
 };
 
 export const dospertQuestions = [
-  { id: 1,  domain: 'S',   text: 'Admitir que seus gostos são diferentes dos de um(a) amigo(a).' },
-  { id: 2,  domain: 'R',   text: 'Acampar em um lugar de mata fechada ou isolado.' },
-  { id: 3,  domain: 'F',   text: 'Apostar o equivalente a um dia de salário em corridas de cavalo.' },
-  { id: 4,  domain: 'F',   text: 'Aplicar 10% do que você ganha por ano em um fundo de investimento que não é nem muito seguro, nem muito arriscado.' },
-  { id: 5,  domain: 'H/S', text: 'Beber muito em uma confraternização.' },
-  { id: 6,  domain: 'E',   text: 'Dar um "jeitinho" na declaração do Imposto de Renda para diminuir o valor a pagar.' },
-  { id: 7,  domain: 'S',   text: 'Discordar abertamente da opinião de uma figura de autoridade (ex: chefe, pais, professor) sobre uma questão importante.' },
-  { id: 8,  domain: 'F',   text: 'Apostar o valor de um dia de trabalho em uma partida de pôquer valendo muito dinheiro.' },
-  { id: 9,  domain: 'E',   text: 'Ter um caso com uma pessoa casada.' },
-  { id: 10, domain: 'E',   text: 'Receber crédito pelo trabalho de outra pessoa sem reconhecer o verdadeiro autor.' },
-  { id: 11, domain: 'R',   text: 'Descer de bicicleta uma rua muito íngreme e em alta velocidade, além da sua habilidade.' },
-  { id: 12, domain: 'F',   text: 'Investir 5% da sua renda anual em uma criptomoeda de alto risco que promete retornos rápidos.' },
-  { id: 13, domain: 'R',   text: 'Descer corredeiras de bote em um período de cheia do rio, com correnteza forte.' },
-  { id: 14, domain: 'F',   text: 'Apostar o equivalente a um dia de salário no resultado de uma partida de futebol.' },
-  { id: 15, domain: 'H/S', text: 'Ter relações sexuais sem proteção com alguém que você acabou de conhecer.' },
-  { id: 16, domain: 'E',   text: 'Contar um segredo de um(a) amigo(a) para outra pessoa.' },
-  { id: 17, domain: 'H/S', text: 'Andar de carro sem usar cinto de segurança.' },
-  { id: 18, domain: 'F',   text: 'Investir 10% do que você ganha por ano para começar um empreendimento/negócio.' },
-  { id: 19, domain: 'R',   text: 'Fazer uma aula de paraquedismo.' },
-  { id: 20, domain: 'H/S', text: 'Andar de motocicleta sem capacete.' },
-  { id: 21, domain: 'S',   text: 'Escolher uma carreira que você realmente gosta em vez de uma que ofereça mais segurança ou prestígio.' },
-  { id: 22, domain: 'S',   text: 'Falar abertamente o que pensa sobre um assunto polêmico ou impopular em uma reunião de trabalho.' },
-  { id: 23, domain: 'H/S', text: 'Tomar sol sem usar protetor solar.' },
-  { id: 24, domain: 'R',   text: 'Saltar de bungee-jumping de uma ponte.' },
-  { id: 25, domain: 'R',   text: 'Pilotar um avião de pequeno porte.' },
-  { id: 26, domain: 'H/S', text: 'Andar para casa sozinho(a) à noite em uma região perigosa da cidade.' },
-  { id: 27, domain: 'S',   text: 'Ir morar em uma cidade ou estado longe de sua família.' },
-  { id: 28, domain: 'S',   text: 'Iniciar uma nova carreira aos 35 anos.' },
-  { id: 29, domain: 'E',   text: 'Deixar seus filhos pequenos sozinhos em casa enquanto sai para resolver algo rápido.' },
-  { id: 30, domain: 'E',   text: 'Não devolver uma carteira que você encontrou com R$ 1.000 dentro.' }
+    { id: 1, text: 'Investir 10% de sua renda anual em um novo negócio de risco moderado.' },
+    { id: 2, text: 'Ir a uma festa onde você não conhece ninguém.' },
+    { id: 3, text: 'Falar em público para uma grande audiência.' },
+    { id: 4, text: 'Experimentar um esporte radical como bungee jumping.' },
+    { id: 5, text: 'Mudar de carreira para uma área completamente nova.' },
 ];
 
-export const dospertDomains: Record<string, DospertDomainInfo> = {
-      'E': { name: 'Ético', items: [6, 9, 10, 16, 29, 30], color: 'bg-indigo-100', textColor: 'text-indigo-800' }, 
-      'F': { name: 'Financeiro', items: [3, 4, 8, 12, 14, 18], color: 'bg-green-100', textColor: 'text-green-800' }, 
-      'H/S': { name: 'Saúde/Segurança', items: [5, 15, 17, 20, 23, 26], color: 'bg-red-100', textColor: 'text-red-800' }, 
-      'R': { name: 'Recreativo', items: [2, 11, 13, 19, 24, 25], color: 'bg-yellow-100', textColor: 'text-yellow-800' }, 
-      'S': { name: 'Social', items: [1, 7, 21, 22, 27, 28], color: 'bg-blue-100', textColor: 'text-blue-800' }
-};
 
 export const dospertScale = { labels: [null, 'Extremamente improvável', 'Moderadamente improvável', 'Um pouco improvável', 'Nem improvável nem provável', 'Um pouco provável', 'Moderadamente provável', 'Extremamente provável']};
-
-export const TPL_DOSPERT: Record<string, Record<string, string>> = { 
-    E: { 
-        Alta: 'No domínio ético, você parece tolerar comportamentos que envolvem quebra de normas sociais ou morais. Há tendência a aceitar riscos reputacionais, priorizando ganhos pessoais mesmo em situações eticamente questionáveis, como omitir informações ou apropriar-se de crédito alheio.', 
-        Média: 'No domínio ético, você parece respeitar regras e convenções, mas com certa flexibilidade em contextos específicos. Há tendência a relativizar condutas morais diante de dilemas práticos, o que indica disposição para equilibrar princípios e benefícios imediatos.', 
-        Baixa: 'No domínio ético, você parece valorizar rigidamente normas sociais e morais. Evita transgressões como enganar, trapacear ou explorar situações em benefício próprio, demonstrando tendência a preservar integridade e reputação pessoal. Essa postura sugere forte preocupação com imagem pública e confiança nas relações.' 
-    }, 
-    F: { 
-        Alta: 'No domínio financeiro, você parece inclinado a assumir riscos significativos. Há tendência a investir em ativos especulativos, participar de apostas ou aplicar recursos em empreendimentos incertos, aceitando alta variabilidade nos resultados em busca de maiores ganhos.', 
-        Média: 'No domínio financeiro, você parece moderadamente aberto a riscos. Demonstra tendência a aceitar investimentos diversificados ou novos negócios de forma controlada, avaliando cuidadosamente custos e benefícios antes de se expor a perdas potenciais.', 
-        Baixa: 'No domínio financeiro, você parece conservador. Evita apostas ou investimentos de alto risco, como ações especulativas ou criptomoedas voláteis, e tende a privilegiar segurança e estabilidade em decisões econômicas. Existe tendência a proteger o patrimônio em vez de buscar retornos elevados.' 
-    }, 
-    'H/S': { 
-        Alta: 'No domínio saúde/segurança, você parece tolerar riscos físicos elevados. Demonstra tendência a se envolver em comportamentos perigosos sem medidas de proteção adequadas, aceitando potenciais consequências negativas para saúde e segurança pessoal.', 
-        Média: 'No domínio saúde/segurança, você parece alternar entre cuidados consistentes e comportamentos de risco moderado. Demonstra tendência a se expor em algumas situações, como consumo excessivo de álcool ou trânsito em locais inseguros, mas mantendo certo equilíbrio no cotidiano.', 
-        Baixa: 'No domínio saúde/segurança, você parece adotar postura preventiva. Evita práticas como dirigir sem cinto, praticar sexo sem proteção ou frequentar áreas perigosas, demonstrando tendência a priorizar integridade física e longevidade.' 
-    }, 
-    R: { 
-        Alta: 'No domínio recreativo, você parece inclinado a experiências intensas e radicais. Demonstra forte tendência a participar de atividades como paraquedismo, bungee-jumping ou rafting, valorizando emoção, adrenalina e novidade como elementos centrais do lazer.', 
-        Média: 'No domínio recreativo, você parece buscar novidade em níveis moderados. Demonstra tendência a participar de atividades que envolvem desafio controlado, como trilhas, esportes supervisionados ou viagens a locais menos comuns.', 
-        Baixa: 'No domínio recreativo, você parece preferir lazer seguro e previsível. Demonstra tendência a escolher atividades de baixo risco, como caminhadas, leitura ou práticas culturais, evitando esportes radicais ou experiências imprevisíveis.' 
-    }, 
-    S: { 
-        Alta: 'No domínio social, você parece inclinado a se expor e afirmar posições com firmeza. Demonstra tendência a confrontar autoridades, mudar de carreira ou ambiente social com facilidade e valorizar autenticidade e independência, mesmo diante de críticas ou oposição.', 
-        Média: 'No domínio social, você parece equilibrado. Demonstra tendência a se posicionar quando necessário, expressando opiniões de forma assertiva, mas sem exageros confrontativos, ajustando seu comportamento ao contexto.', 
-        Baixa: 'No domínio social, você parece adotar postura cautelosa. Demonstra tendência a evitar conflitos e preservar a harmonia em interações, mesmo que precise silenciar opiniões pessoais ou evitar confrontos com autoridades.' 
-    }
-};
