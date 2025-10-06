@@ -12,7 +12,7 @@ async function bootstrap() {
     'http://localhost:3001', // Dev local (frontend)
     'https://devsof.duodevs.com.br', // Produção frontend
     'https://perfilderiscosof.duodevs.com.br',
-    'https://cvmbackend.duodevs.com.br',
+    'https://perfil.spaceorion.com.br',
     process.env.FRONTEND_URL, // Dinâmico
   ].filter(Boolean); // Remove undefined
 
