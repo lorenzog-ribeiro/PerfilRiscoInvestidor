@@ -7,7 +7,7 @@ export default function InstructionsPage() {
 
   return (
     <InstructionsScreen
-      onContinue={() => router.push("/instructions-tradeoff")}
+      onContinue={() => router.push("/quiz")}
     />
   );
 }

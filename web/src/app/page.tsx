@@ -26,28 +26,37 @@ export default function Home() {
         <hr />
         <div className="flex flex-col items-center justify-center">
           <div>
-            <span className="text-sm font-semibold">REALIZAÇÃO:</span>
+            <span className="text-sm font-semibold">Realização:</span>
             <div className="m-2">
               <Image
-                src="copyright/sof/realizacao.svg"
+                src="copyright/cvm/CVM_realizaçao.svg"
                 alt="Investidor"
-                width={800}
-                height={150}
+                width={300}
+                height={80}
                 className="rounded-lg"
               />
             </div>
           </div>
           <div>
-            <div className="flex justify-between w-72 mb-2">
-              <span className="text-sm font-semibold">Patrocinio:</span>
-              <span className="text-sm font-semibold">APOIO:</span>
-            </div>
-            <div className="flex items-center">
+            <span className="text-sm font-semibold">Apoio:</span>
+            <div className="m-2">
               <Image
-                src="copyright/sof/apoiadores.svg"
+                src="copyright/cvm/CVM_apoio.svg"
                 alt="Investidor"
-                width={700}
-                height={150}
+                width={300}
+                height={80}
+                className="rounded-lg"
+              />
+            </div>
+          </div>
+          <div>
+            <span className="text-sm font-semibold">Parceiros:</span>
+            <div className="m-2">
+              <Image
+                src="copyright/cvm/CVM_parceiros.svg"
+                alt="Investidor"
+                width={500}
+                height={80}
                 className="rounded-lg"
               />
             </div>
