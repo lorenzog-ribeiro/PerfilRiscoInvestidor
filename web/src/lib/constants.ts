@@ -207,6 +207,34 @@ export const investorQuestions = [
 
 export const EconomiesQuestions = [
   {
+    id: "q003",
+    text: "Quais das seguintes alternativas descreve melhor a forma como você se identifica hoje?",
+    respostas: [
+      "Mulher",
+      "Homem",
+      "Queer, não-binário ou gênero fluido",
+      "Prefiro me autodescrever",
+    ],
+    options: [
+      {
+        choice: "a",
+        label: "Mulher",
+      },
+      {
+        choice: "b",
+        label: "Homem",
+      },
+      {
+        choice: "c",
+        label: "Queer, não-binário ou gênero fluido",
+      },
+      {
+        choice: "d",
+        label: "Prefiro me autodescrever",
+      },
+    ],
+  },
+  {
     id: "q001",
     text: "Qual é o seu estado civil?",
     options: [
