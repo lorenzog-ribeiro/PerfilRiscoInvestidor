@@ -98,9 +98,13 @@ export default function ResultsScreen({
     };
 
     const numFirstThird = toNum(firstThirdStage?.selectedValues[0]);
-    const numLastThird = toNum(lastThirdStage?.selectedValues[4]);
+    const numLastThird = toNum(
+      lastThirdStage?.selectedValues[lastThirdStage?.selectedValues.length - 1]
+    );
     const numFirstFirst = toNum(firstFirstStage?.selectedValues[0]);
-    const numLastFirst = toNum(lastFirstStage?.selectedValues[4]);
+    const numLastFirst = toNum(
+      lastFirstStage?.selectedValues[lastFirstStage.selectedValues.length - 1]
+    );
 
     let result: number | null = null;
     if (
