@@ -1,48 +1,31 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Badge, CheckCircle2, XCircle } from 'lucide-react';
+import { Badge, CheckCircle2, XCircle, Share2, RefreshCw, Home } from 'lucide-react';
+import {
+  InvestorData,
+  LiteracyData,
+  DospertData,
+  TradeOffData,
+  EconomyData,
+} from '@/services/types';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../ui/card';
-import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
-
-// Types (you'll need to import these from your types file)
-interface InvestorData {
-  score: number;
-}
-
-interface LiteracyData {
-  [key: string]: string;
-}
-
-interface ISFBResult {
-  index0to100: number;
-  profile: {
-    title: string;
-    description: string;
-    recommendation?: string;
-  };
-}
+import { literacyQuestions, literacyAnswers } from '@/src/lib/constants';
+import { calculateISFB_Part1_Only, ISFBResult, ISFBData } from '@/src/lib/isfb';
+import TradeOffBalanceCard from './TradeOffBalanceCard';
+import { calculateTradeOffProfile } from '@/src/lib/tradeOffUtils';
 
 interface ResultsScreenProps {
+  economyData?: EconomyData | null;
   investorData: InvestorData;
   literacyData: LiteracyData;
-  isfbResult: ISFBResult;
-  onRestart: () => void;
+  isfbData?: ISFBData | null;
+  dospertData?: DospertData;
+  tradeOffData?: TradeOffData | null;
+  onStartOver?: () => void;
+  onRetakeQuiz?: () => void;
 }
-
-// Constants (import from your constants file)
-const literacyQuestions = [
-  { id: 'q1', type: 'multiple-choice' },
-  { id: 'q2', type: 'multiple-choice' },
-  { id: 'q3', type: 'multiple-choice' },
-];
-
-const literacyAnswers = {
-  q1: 'correct_answer_1',
-  q2: 'correct_answer_2',
-  q3: 'correct_answer_3',
-};
 
 // ===================================================================
 // Risk Matrix Logic and Components
@@ -185,11 +168,45 @@ const Recommendation: React.FC<{ text: string }> = ({ text }) => {
 };
 
 const ResultsScreen: React.FC<ResultsScreenProps> = ({ 
+  economyData,
   investorData, 
-  literacyData, 
-  isfbResult, 
-  onRestart 
+  literacyData,
+  isfbData,
+  dospertData,
+  tradeOffData,
+  onStartOver,
+  onRetakeQuiz
 }) => {
+  // Calculate ISFB from isfbData (preferred) or economyData (fallback)
+  const isfbResult: ISFBResult = useMemo(() => {
+    // First try to use isfbData directly
+    if (isfbData && Object.keys(isfbData).length > 0) {
+      return calculateISFB_Part1_Only(isfbData);
+    }
+    
+    // Fallback to economyData if available
+    if (economyData && Object.keys(economyData).length > 0) {
+      // Convert EconomyData (numbers) to ISFBData (strings)
+      const convertedIsfbData: Record<string, string> = {};
+      Object.entries(economyData).forEach(([key, value]) => {
+        // Convert number back to choice letter
+        convertedIsfbData[key] = String.fromCharCode('a'.charCodeAt(0) + value);
+      });
+      return calculateISFB_Part1_Only(convertedIsfbData);
+    }
+    
+    // Default ISFB if no data
+    return {
+      part1Sum: 24,
+      index0to100: 50,
+      band: 'Ok',
+      profile: {
+        title: 'Ok',
+        description: 'Sua situação financeira está em um nível intermediário.',
+      }
+    };
+  }, [isfbData, economyData]);
+
   const matrixResult = useMemo(() => {
     const MIN_INVESTOR_SCORE = 13;
     const MAX_INVESTOR_SCORE = 47;
@@ -324,15 +341,12 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">{isfbResult.profile.description}</p>
                   {isfbResult.profile.recommendation && (
-                    <>
-                      <Separator />
-                      <div>
-                        <h4 className="text-sm font-semibold mb-2">Sugestão:</h4>
-                        <p className="text-sm text-muted-foreground">
-                          <Recommendation text={isfbResult.profile.recommendation} />
-                        </p>
-                      </div>
-                    </>
+                    <div className="mt-4 pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-2">Sugestão:</h4>
+                      <p className="text-sm text-muted-foreground">
+                        <Recommendation text={isfbResult.profile.recommendation} />
+                      </p>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -392,11 +406,11 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                     </div>
                   </div>
                   
-                  <Separator />
-                  
-                  <p className="text-sm font-medium text-foreground/90">
-                    Priorizar estudo dos tópicos marcados como incorretos antes de aumentar a exposição a risco.
-                  </p>
+                  <div className="mt-4 pt-4 border-t">
+                    <p className="text-sm font-medium text-foreground/90">
+                      Priorizar estudo dos tópicos marcados como incorretos antes de aumentar a exposição a risco.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -410,14 +424,30 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
             <p className="text-xs text-muted-foreground text-center mb-4">
               Nota: Estes resultados são uma ferramenta de autoconhecimento e não constituem uma recomendação de investimento.
             </p>
-            <Button 
-              onClick={onRestart} 
-              className="w-full"
-              size="lg"
-              aria-label="Refazer Quiz"
-            >
-              Refazer Quiz
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              {onRetakeQuiz && (
+                <Button 
+                  onClick={onRetakeQuiz} 
+                  variant="outline"
+                  className="flex-1"
+                  size="lg"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refazer Quiz
+                </Button>
+              )}
+              {onStartOver && (
+                <Button 
+                  onClick={onStartOver} 
+                  className="flex-1"
+                  size="lg"
+                  aria-label="Voltar ao início"
+                >
+                  <Home className="h-4 w-4 mr-2" />
+                  Início
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </footer>

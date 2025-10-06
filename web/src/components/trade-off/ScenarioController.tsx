@@ -48,7 +48,7 @@ export default function ScenarioController({ onTradeOffComplete }: ScenarioContr
       if (onTradeOffComplete) {
         onTradeOffComplete(tradeOffData);
       } else {
-        router.push("/quiz");
+        router.push("/result");
       }
     }
   }, [currentIndex, router, onTradeOffComplete, tradeOffData]);

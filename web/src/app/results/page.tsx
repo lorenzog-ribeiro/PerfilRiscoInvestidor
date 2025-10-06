@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
 import { QuizCache } from '@/src/lib/quizCache';
-import { InvestorData, LiteracyData, DospertData, TradeOffData } from '@/services/types';
+import { InvestorData, LiteracyData, DospertData, TradeOffData, EconomyData } from '@/services/types';
+import { ISFBData } from '@/src/lib/isfb';
 import { Card, CardContent } from '@/src/components/ui/card';
 import { Button } from '@/src/components/ui/button';
 import ResultsScreen from '../../components/results/ResultsScreen';
@@ -14,9 +15,11 @@ export default function ResultsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasValidData, setHasValidData] = useState(false);
   const [resultData, setResultData] = useState<{
+    economyData?: EconomyData;
     investorData: InvestorData;
     literacyData: LiteracyData;
-    dospertData: DospertData;
+    isfbData?: ISFBData;
+    dospertData?: DospertData;
     tradeOffData?: TradeOffData;
   } | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -45,9 +48,11 @@ export default function ResultsPage() {
       }
 
       setResultData({
+        economyData: progress.economyData,
         investorData: progress.investorData!,
         literacyData: progress.literacyData!,
-        dospertData: progress.dospertData!,
+        isfbData: progress.isfbData,
+        dospertData: progress.dospertData,
         tradeOffData,
       });
       setHasValidData(true);
@@ -157,8 +162,10 @@ export default function ResultsPage() {
       )}
       
       <ResultsScreen
+        economyData={resultData.economyData}
         investorData={resultData.investorData}
         literacyData={resultData.literacyData}
+        isfbData={resultData.isfbData}
         dospertData={resultData.dospertData}
         tradeOffData={resultData.tradeOffData}
         onStartOver={handleStartOver}

@@ -4,12 +4,16 @@ import {
   LiteracyData,
   DospertData,
   TradeOffData,
+  EconomyData,
 } from "@/services/types";
+import { ISFBData } from "@/src/lib/isfb";
 
 export interface CompleteQuizData {
+  economyData?: EconomyData;
   investorData: InvestorData;
   literacyData: LiteracyData;
-  dospertData: DospertData;
+  isfbData?: ISFBData;
+  dospertData?: DospertData;
   tradeOffData?: TradeOffData;
   userId: string;
 }
@@ -41,6 +45,16 @@ export class QuizSubmissionService {
   private formatQuizData(data: CompleteQuizData): SubmissionPayload {
     const responses: FormResponse[] = [];
     const tradeoffs: TradeoffResponse[] = [];
+
+    // Convert Economy data if available
+    if (data.economyData) {
+      Object.entries(data.economyData).forEach(([questionId, response]) => {
+        responses.push({
+          choice: response,
+          label: `economy_${questionId}`,
+        });
+      });
+    }
 
     // Convert Investor data
     Object.entries(data.investorData.responses).forEach(
@@ -74,13 +88,25 @@ export class QuizSubmissionService {
       });
     });
 
-    // Convert Dospert data
-    Object.entries(data.dospertData).forEach(([questionId, response]) => {
-      responses.push({
-        choice: response,
-        label: `dospert_${questionId}`,
+    // Convert ISFB data if available
+    if (data.isfbData) {
+      Object.entries(data.isfbData).forEach(([questionId, response]) => {
+        responses.push({
+          choice: response,
+          label: `isfb_${questionId}`,
+        });
       });
-    });
+    }
+
+    // Convert Dospert data if available
+    if (data.dospertData) {
+      Object.entries(data.dospertData).forEach(([questionId, response]) => {
+        responses.push({
+          choice: response,
+          label: `dospert_${questionId}`,
+        });
+      });
+    }
 
     // Convert TradeOff data if available
     if (data.tradeOffData) {

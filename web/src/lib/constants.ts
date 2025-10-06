@@ -205,7 +205,7 @@ export const investorQuestions = [
   },
 ];
 
-export const EconomiesQuestions = [
+export const economiesQuestions = [
   {
     id: "q001",
     text: "Quais das seguintes alternativas descreve melhor a forma como você se identifica hoje?",

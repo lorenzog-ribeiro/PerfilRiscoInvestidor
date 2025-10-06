@@ -7,16 +7,18 @@ import {
   TradeOffData,
   EconomyData,
 } from "@/services/types";
+import { ISFBData } from "@/src/lib/isfb";
+import EconomyQuiz from "@/src/components/quiz/economyQuiz";
 import InvestorQuiz from "@/src/components/quiz/investorQuiz";
 import LiteracyQuiz from "@/src/components/quiz/literacyQuiz";
-import RiskTakingQuiz from "@/src/components/quiz/riskTakingQuiz";
+import ISFBQuiz from "@/src/components/quiz/isfbQuiz";
 import { Card } from "@/src/components/ui/card";
 import {
   investorQuestions,
   literacyQuestions,
-  dospertQuestions,
-  EconomiesQuestions,
+  economiesQuestions,
 } from "@/src/lib/constants";
+import { isfbPart1Questions } from "@/src/lib/isfb";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { QuizCache } from "@/src/lib/quizCache";
@@ -24,44 +26,46 @@ import { getOrCreateUserId } from "@/src/lib/userUtils";
 import { QuizSubmissionService } from "@/services/QuizSubmissionService";
 
 enum Screen {
+  Economy,
   Investor,
   Literacy,
-  RiskTaking,
-  Results,
-  Instructions,
-  Economy,
+  ISFB,
 }
 
 export default function QuizPage() {
   const router = useRouter();
-  const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.Investor);
+  const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.Economy);
+  const [economyData, setEconomyData] = useState<EconomyData | null>(null);
   const [investorData, setInvestorData] = useState<InvestorData | null>(null);
   const [literacyData, setLiteracyData] = useState<LiteracyData | null>(null);
+  const [isfbData, setISFBData] = useState<ISFBData | null>(null);
   const [dospertData, setDospertData] = useState<DospertData | null>(null);
   const [tradeOffData, setTradeOffData] = useState<TradeOffData | null>(null);
-  const [economyData, setEconomyData] = useState<EconomyData | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const quizSubmissionService = new QuizSubmissionService();
   const totalQuestions =
+    economiesQuestions.length +
     investorQuestions.length +
     literacyQuestions.length +
-    EconomiesQuestions.length;
+    isfbPart1Questions.length;
 
   useEffect(() => {
     const loadCachedData = () => {
       const cachedProgress = QuizCache.load();
       if (cachedProgress) {
         setCurrentScreen(cachedProgress.currentScreen);
+        if (cachedProgress.economyData)
+          setEconomyData(cachedProgress.economyData);
         if (cachedProgress.investorData)
           setInvestorData(cachedProgress.investorData);
         if (cachedProgress.literacyData)
           setLiteracyData(cachedProgress.literacyData);
+        if (cachedProgress.isfbData)
+          setISFBData(cachedProgress.isfbData);
         if (cachedProgress.dospertData)
           setDospertData(cachedProgress.dospertData);
-        if (cachedProgress.economyData)
-          setEconomyData(cachedProgress.economyData);
         if (cachedProgress.tradeOffData) {
           setTradeOffData(cachedProgress.tradeOffData);
           return; // already have tradeOff data from cache
@@ -90,30 +94,32 @@ export default function QuizPage() {
   // Save progress whenever data changes
   useEffect(() => {
     if (
+      economyData ||
       investorData ||
       literacyData ||
+      isfbData ||
       dospertData ||
-      tradeOffData ||
-      economyData
+      tradeOffData
     ) {
       QuizCache.save({
         currentScreen,
+        economyData: economyData || undefined,
         investorData: investorData || undefined,
         literacyData: literacyData || undefined,
+        isfbData: isfbData || undefined,
         dospertData: dospertData || undefined,
         tradeOffData: tradeOffData || undefined,
-        economyData: economyData || undefined,
       });
     }
-  }, [currentScreen, investorData, literacyData, dospertData, tradeOffData]);
+  }, [currentScreen, economyData, investorData, literacyData, isfbData, dospertData, tradeOffData]);
 
   const handleEconomyComplete = (data: EconomyData) => {
     setEconomyData(data);
-    setCurrentScreen(Screen.Literacy);
+    setCurrentScreen(Screen.Investor);
 
     // Save progress to cache
     QuizCache.save({
-      currentScreen: Screen.Literacy,
+      currentScreen: Screen.Investor,
       economyData: data,
       tradeOffData: tradeOffData || undefined,
     });
@@ -134,11 +140,11 @@ export default function QuizPage() {
 
   const handleLiteracyComplete = (data: LiteracyData) => {
     setLiteracyData(data);
-    setCurrentScreen(Screen.RiskTaking);
+    setCurrentScreen(Screen.ISFB);
 
     // Save progress to cache
     QuizCache.save({
-      currentScreen: Screen.RiskTaking,
+      currentScreen: Screen.ISFB,
       economyData: economyData!,
       investorData: investorData!,
       literacyData: data,
@@ -146,68 +152,28 @@ export default function QuizPage() {
     });
   };
 
-  const handleRiskTakingComplete = async (data: DospertData) => {
-    setDospertData(data);
-    setIsSubmitting(true);
-
-    try {
-      // Get or create user ID from cookie
-      const userId = getOrCreateUserId();
-
-      // Prepare complete quiz data
-      const completeQuizData = {
-        economyData: economyData!,
-        investorData: investorData!,
-        literacyData: literacyData!,
-        dospertData: data,
-        tradeOffData: tradeOffData || undefined,
-        userId,
-      };
-
-      // Submit to backend
-      const response = await quizSubmissionService.submitCompleteQuiz(
-        completeQuizData
-      );
-
-      // Save all data to cache before navigating to results
-      QuizCache.save({
-        currentScreen: Screen.Results,
-        investorData: investorData!,
-        literacyData: literacyData!,
-        dospertData: data,
-        tradeOffData: tradeOffData || undefined,
-      });
-
-      // Navigate to isolated results page
-      router.push("/results");
-    } catch (error) {
-      console.error("Error submitting quiz:", error);
-
-      // Still save to cache and navigate, but show error
-      QuizCache.save({
-        currentScreen: Screen.Results,
-        investorData: investorData!,
-        literacyData: literacyData!,
-        dospertData: data,
-        tradeOffData: tradeOffData || undefined,
-      });
-
-      // You might want to show an error toast here
-      alert(
-        "Houve um erro ao salvar seus dados, mas você ainda pode ver seus resultados. Erro: " +
-          (error as Error).message
-      );
-      router.push("/results");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleISFBComplete = async (data: ISFBData) => {
+    setISFBData(data);
+    
+    // Save ISFB data to cache before redirecting
+    QuizCache.save({
+      currentScreen: Screen.ISFB,
+      economyData: economyData!,
+      investorData: investorData!,
+      literacyData: literacyData!,
+      isfbData: data,
+      tradeOffData: tradeOffData || undefined,
+    });
+    
+    // Redirect to TradeOff page
+    router.push("/tradeOff");
   };
 
   return (
     <main className="min-h-screen max-w-4xl mx-auto flex flex-col justify-center p-3">
       <Card className="w-full h-full">
         {currentScreen === Screen.Economy && (
-          <InvestorQuiz
+          <EconomyQuiz
             onComplete={handleEconomyComplete}
             totalQuestions={totalQuestions}
             initialAnsweredCount={0}
@@ -218,7 +184,7 @@ export default function QuizPage() {
           <InvestorQuiz
             onComplete={handleInvestorComplete}
             totalQuestions={totalQuestions}
-            initialAnsweredCount={0}
+            initialAnsweredCount={economiesQuestions.length}
           />
         )}
 
@@ -226,18 +192,17 @@ export default function QuizPage() {
           <LiteracyQuiz
             onComplete={handleLiteracyComplete}
             totalQuestions={totalQuestions}
-            initialAnsweredCount={investorQuestions.length}
+            initialAnsweredCount={economiesQuestions.length + investorQuestions.length}
           />
         )}
 
-        {currentScreen === Screen.RiskTaking && (
-          <RiskTakingQuiz
-            onComplete={handleRiskTakingComplete}
+        {currentScreen === Screen.ISFB && (
+          <ISFBQuiz
+            onComplete={handleISFBComplete}
             totalQuestions={totalQuestions}
             initialAnsweredCount={
-              investorQuestions.length + literacyQuestions.length
+              economiesQuestions.length + investorQuestions.length + literacyQuestions.length
             }
-            isSubmitting={isSubmitting}
           />
         )}
       </Card>

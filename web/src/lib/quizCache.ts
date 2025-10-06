@@ -5,14 +5,16 @@ import {
   TradeOffData,
   EconomyData,
 } from "@/services/types";
+import { ISFBData } from "./isfb";
 
 export interface QuizProgress {
-  currentScreen: number; // 0: Investor, 1: Literacy, 2: RiskTaking, 3: Results
+  currentScreen: number; // 0: Economy, 1: Investor, 2: Literacy, 3: ISFB, 4: Results
+  economyData?: EconomyData;
   investorData?: InvestorData;
   literacyData?: LiteracyData;
+  isfbData?: ISFBData;
   dospertData?: DospertData;
   tradeOffData?: TradeOffData;
-  economyData?: EconomyData;
   timestamp: number;
   expiresAt: number;
 }
