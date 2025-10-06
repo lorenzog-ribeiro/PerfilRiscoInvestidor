@@ -81,7 +81,7 @@ export const investorQuestions = [
     id: "risk_pref_q7",
     text: "A maior parte do seu patrimônio está em renda fixa, um investimento seguro. Alguns especialistas projetam queda dos juros nos próximos meses e apontam oportunidades de ganhos no mercado de ações, mas também risco real de perdas. O que você faria?",
     options: [
-      { choice: "a", label: "Manteria os os investimentos de renda fixa,." },
+      { choice: "a", label: "Manteria os os investimentos de renda fixa." },
       {
         choice: "b",
         label:

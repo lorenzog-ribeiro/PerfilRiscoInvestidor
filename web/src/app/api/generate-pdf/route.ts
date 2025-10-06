@@ -1,5 +1,3 @@
-// app/api/generate-pdf/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import puppeteer from "puppeteer";
 
