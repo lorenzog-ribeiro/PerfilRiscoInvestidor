@@ -207,14 +207,8 @@ export const investorQuestions = [
 
 export const EconomiesQuestions = [
   {
-    id: "q003",
+    id: "q001",
     text: "Quais das seguintes alternativas descreve melhor a forma como você se identifica hoje?",
-    respostas: [
-      "Mulher",
-      "Homem",
-      "Queer, não-binário ou gênero fluido",
-      "Prefiro me autodescrever",
-    ],
     options: [
       {
         choice: "a",
@@ -235,7 +229,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q001",
+    id: "q002",
     text: "Qual é o seu estado civil?",
     options: [
       {
@@ -261,7 +255,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q002",
+    id: "q003",
     text: "Sobre sua situação financeira, qual das seguintes opções melhor descreve seu cenário atual?",
     options: [
       {
@@ -282,7 +276,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q003",
+    id: "q004",
     text: "Qual faixa de renda mensal melhor representa sua situação financeira atual?",
     options: [
       {
@@ -312,7 +306,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q004",
+    id: "q005",
     text: "Qual é o maior nível de educação que você concluiu?",
     options: [
       {
@@ -334,7 +328,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q005",
+    id: "q006",
     text: "Você trabalha/trabalhou em alguma posição diretamente relacionada ao mercado financeiro (agente autônomo, gestor de carteira, analista, acadêmico de finanças, etc.)?",
     options: [
       {
@@ -348,7 +342,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q006",
+    id: "q007",
     text: "Com que frequência você consegue economizar dinheiro?",
     options: [
       {
@@ -368,7 +362,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q007",
+    id: "q008",
     text: "Qual frase melhor descreve sua situação?",
     options: [
       {
@@ -387,7 +381,7 @@ export const EconomiesQuestions = [
     ],
   },
   {
-    id: "q008",
+    id: "q009",
     text: "Você possui atualmente alguma aplicação financeira, como investimentos, poupança, previdência privada, ações, ou outros instrumentos financeiros?",
     options: [
       {
