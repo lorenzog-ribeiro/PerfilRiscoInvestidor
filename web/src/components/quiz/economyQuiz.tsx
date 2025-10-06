@@ -36,9 +36,6 @@ export default function EconomyQuiz({ onComplete, totalQuestions, initialAnswere
     return (
         <div className="w-full flex flex-col h-full bg-white relative">
             <header className="p-4 border-b bg-white">
-                <h2 className="text-xl font-bold text-gray-800 text-center mb-2">
-                    Questionário Socioeconômico
-                </h2>
                 <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
@@ -46,9 +43,6 @@ export default function EconomyQuiz({ onComplete, totalQuestions, initialAnswere
                             style={{ width: `${progress}%` }} 
                         />
                     </div>
-                    <p className="text-xs text-gray-500 text-center mt-1">
-                        Questão {currentStep + 1} de {economiesQuestions.length}
-                    </p>
                 </div>
             </header>
 

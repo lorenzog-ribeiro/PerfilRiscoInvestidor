@@ -137,9 +137,6 @@ const ISFBQuiz: React.FC<ISFBQuizProps> = ({ onComplete, totalQuestions, initial
     return (
         <div className="w-full flex flex-col h-full bg-white relative">
             <header className="p-4 border-b bg-white">
-                <h2 className="text-xl font-bold text-gray-800 text-center mb-2">
-                    Saúde Financeira
-                </h2>
                 <div className="mt-2">
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
@@ -147,9 +144,6 @@ const ISFBQuiz: React.FC<ISFBQuizProps> = ({ onComplete, totalQuestions, initial
                             style={{ width: `${progress}%` }}
                         />
                     </div>
-                    <p className="text-xs text-gray-500 text-center mt-1">
-                        Questão {currentStep + 1} de {isfbPart1Questions.length}
-                    </p>
                 </div>
             </header>
             
