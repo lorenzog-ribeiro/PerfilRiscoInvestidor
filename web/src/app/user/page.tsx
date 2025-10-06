@@ -29,6 +29,7 @@ export default function UserPage() {
       setError("Os termos devem ser aceitos para continuar.");
       return false;
     }
+
     // Validação simples de e-mail
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -36,8 +37,23 @@ export default function UserPage() {
       return false;
     }
 
-    setError(""); // Limpa qualquer erro anterior
-    setEmailError(""); // Limpa erro de e-mail
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDifference = today.getMonth() - birthDateObj.getMonth();
+    const dayDifference = today.getDate() - birthDateObj.getDate();
+
+    if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+      age--;
+    }
+
+    if (age < 18) {
+      setError("Você deve ter pelo menos 18 anos para se cadastrar.");
+      return false;
+    }
+
+    setError("");
+    setEmailError("");
     return true;
   };
 
