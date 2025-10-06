@@ -1,4 +1,10 @@
-import { InvestorData, LiteracyData, DospertData, TradeOffData } from '@/services/types';
+import {
+  InvestorData,
+  LiteracyData,
+  DospertData,
+  TradeOffData,
+  EconomyData,
+} from "@/services/types";
 
 export interface QuizProgress {
   currentScreen: number; // 0: Investor, 1: Literacy, 2: RiskTaking, 3: Results
@@ -6,11 +12,12 @@ export interface QuizProgress {
   literacyData?: LiteracyData;
   dospertData?: DospertData;
   tradeOffData?: TradeOffData;
+  economyData?: EconomyData;
   timestamp: number;
   expiresAt: number;
 }
 
-const CACHE_KEY = 'quiz_progress';
+const CACHE_KEY = "quiz_progress";
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 export class QuizCache {
@@ -18,7 +25,7 @@ export class QuizCache {
     try {
       const now = Date.now();
       const existing = this.load();
-      
+
       const updatedProgress: QuizProgress = {
         currentScreen: 0,
         timestamp: now,
@@ -30,7 +37,7 @@ export class QuizCache {
       sessionStorage.setItem(CACHE_KEY, JSON.stringify(updatedProgress));
       localStorage.setItem(CACHE_KEY, JSON.stringify(updatedProgress)); // Backup in localStorage
     } catch (error) {
-      console.error('Error saving quiz progress:', error);
+      console.error("Error saving quiz progress:", error);
     }
   }
 
@@ -49,7 +56,7 @@ export class QuizCache {
       if (!cached) return null;
 
       const progress: QuizProgress = JSON.parse(cached);
-      
+
       // Check if cache has expired
       if (Date.now() > progress.expiresAt) {
         this.clear();
@@ -58,7 +65,7 @@ export class QuizCache {
 
       return progress;
     } catch (error) {
-      console.error('Error loading quiz progress:', error);
+      console.error("Error loading quiz progress:", error);
       return null;
     }
   }
@@ -68,9 +75,9 @@ export class QuizCache {
       sessionStorage.removeItem(CACHE_KEY);
       localStorage.removeItem(CACHE_KEY);
       // Also clear individual tradeOff data
-      sessionStorage.removeItem('tradeOffData');
+      sessionStorage.removeItem("tradeOffData");
     } catch (error) {
-      console.error('Error clearing quiz cache:', error);
+      console.error("Error clearing quiz cache:", error);
     }
   }
 
@@ -89,7 +96,11 @@ export class QuizCache {
 
   static hasCompleteData(): boolean {
     const progress = this.load();
-    return !!(progress?.investorData && progress?.literacyData && progress?.dospertData);
+    return !!(
+      progress?.investorData &&
+      progress?.literacyData &&
+      progress?.dospertData
+    );
   }
 
   static getTimeRemaining(): number {

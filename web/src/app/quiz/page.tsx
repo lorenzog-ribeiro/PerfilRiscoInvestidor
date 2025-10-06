@@ -5,6 +5,7 @@ import {
   LiteracyData,
   DospertData,
   TradeOffData,
+  EconomyData,
 } from "@/services/types";
 import InvestorQuiz from "@/src/components/quiz/investorQuiz";
 import LiteracyQuiz from "@/src/components/quiz/literacyQuiz";
@@ -14,6 +15,7 @@ import {
   investorQuestions,
   literacyQuestions,
   dospertQuestions,
+  EconomiesQuestions,
 } from "@/src/lib/constants";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -27,6 +29,7 @@ enum Screen {
   RiskTaking,
   Results,
   Instructions,
+  Economy,
 }
 
 export default function QuizPage() {
@@ -36,13 +39,15 @@ export default function QuizPage() {
   const [literacyData, setLiteracyData] = useState<LiteracyData | null>(null);
   const [dospertData, setDospertData] = useState<DospertData | null>(null);
   const [tradeOffData, setTradeOffData] = useState<TradeOffData | null>(null);
+  const [economyData, setEconomyData] = useState<EconomyData | null>(null);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const quizSubmissionService = new QuizSubmissionService();
   const totalQuestions =
     investorQuestions.length +
     literacyQuestions.length +
-    dospertQuestions.length;
+    EconomiesQuestions.length;
 
   useEffect(() => {
     const loadCachedData = () => {
@@ -55,6 +60,8 @@ export default function QuizPage() {
           setLiteracyData(cachedProgress.literacyData);
         if (cachedProgress.dospertData)
           setDospertData(cachedProgress.dospertData);
+        if (cachedProgress.economyData)
+          setEconomyData(cachedProgress.economyData);
         if (cachedProgress.tradeOffData) {
           setTradeOffData(cachedProgress.tradeOffData);
           return; // already have tradeOff data from cache
@@ -82,16 +89,35 @@ export default function QuizPage() {
 
   // Save progress whenever data changes
   useEffect(() => {
-    if (investorData || literacyData || dospertData || tradeOffData) {
+    if (
+      investorData ||
+      literacyData ||
+      dospertData ||
+      tradeOffData ||
+      economyData
+    ) {
       QuizCache.save({
         currentScreen,
         investorData: investorData || undefined,
         literacyData: literacyData || undefined,
         dospertData: dospertData || undefined,
         tradeOffData: tradeOffData || undefined,
+        economyData: economyData || undefined,
       });
     }
   }, [currentScreen, investorData, literacyData, dospertData, tradeOffData]);
+
+  const handleEconomyComplete = (data: EconomyData) => {
+    setEconomyData(data);
+    setCurrentScreen(Screen.Literacy);
+
+    // Save progress to cache
+    QuizCache.save({
+      currentScreen: Screen.Literacy,
+      economyData: data,
+      tradeOffData: tradeOffData || undefined,
+    });
+  };
 
   const handleInvestorComplete = (data: InvestorData) => {
     setInvestorData(data);
@@ -100,6 +126,7 @@ export default function QuizPage() {
     // Save progress to cache
     QuizCache.save({
       currentScreen: Screen.Literacy,
+      economyData: economyData!,
       investorData: data,
       tradeOffData: tradeOffData || undefined,
     });
@@ -112,6 +139,7 @@ export default function QuizPage() {
     // Save progress to cache
     QuizCache.save({
       currentScreen: Screen.RiskTaking,
+      economyData: economyData!,
       investorData: investorData!,
       literacyData: data,
       tradeOffData: tradeOffData || undefined,
@@ -128,6 +156,7 @@ export default function QuizPage() {
 
       // Prepare complete quiz data
       const completeQuizData = {
+        economyData: economyData!,
         investorData: investorData!,
         literacyData: literacyData!,
         dospertData: data,
@@ -177,6 +206,14 @@ export default function QuizPage() {
   return (
     <main className="min-h-screen max-w-4xl mx-auto flex flex-col justify-center p-3">
       <Card className="w-full h-full">
+        {currentScreen === Screen.Economy && (
+          <InvestorQuiz
+            onComplete={handleEconomyComplete}
+            totalQuestions={totalQuestions}
+            initialAnsweredCount={0}
+          />
+        )}
+
         {currentScreen === Screen.Investor && (
           <InvestorQuiz
             onComplete={handleInvestorComplete}

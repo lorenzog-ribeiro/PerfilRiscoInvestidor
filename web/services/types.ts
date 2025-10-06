@@ -1,4 +1,3 @@
-
 export enum Screen {
   Instructions,
   Investor,
@@ -20,6 +19,7 @@ export interface InvestorData {
 
 export type LiteracyData = Record<string, string>;
 export type DospertData = Record<string, number>;
+export type EconomyData = Record<string, number>;
 
 export interface TradeOffScenarioData {
   scenario: number;
@@ -31,18 +31,18 @@ export interface TradeOffScenarioData {
 export type TradeOffData = Record<number, TradeOffScenarioData>;
 
 export interface DospertDomainInfo {
-    name: string;
-    items: number[];
-    color: string;
-    textColor: string;
+  name: string;
+  items: number[];
+  color: string;
+  textColor: string;
 }
 
 export interface DospertResult {
-    domain: string;
-    name: string;
-    avg: number;
-    classification: string;
-    text: string;
-    color: string;
-    textColor: string;
+  domain: string;
+  name: string;
+  avg: number;
+  classification: string;
+  text: string;
+  color: string;
+  textColor: string;
 }
