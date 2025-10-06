@@ -15,6 +15,7 @@ import { literacyQuestions, literacyAnswers } from '@/src/lib/constants';
 import { calculateISFB_Part1_Only, ISFBResult, ISFBData } from '@/src/lib/isfb';
 import TradeOffBalanceCard from './TradeOffBalanceCard';
 import { calculateTradeOffProfile } from '@/src/lib/tradeOffUtils';
+import { combinedRisk } from '@/src/lib/risk';
 
 interface ResultsScreenProps {
   economyData?: EconomyData | null;
@@ -80,8 +81,8 @@ const getProfileForCell = (x: number, y: number): ProfileKey => {
 };
 
 const RiskMatrix: React.FC<{ x: number; y: number; }> = ({ x, y }) => {
-  const yTicks = Array.from({ length: 10 }, (_, i) => 10 - i);
-  const xTicks = Array.from({ length: 10 }, (_, i) => i + 1);
+  const yTicks = Array.from({length: 10}, (_, i) => 10 - i);
+  const xTicks = Array.from({length: 10}, (_, i) => i + 1);
 
   return (
     <div className="flex flex-col items-center">
@@ -90,7 +91,7 @@ const RiskMatrix: React.FC<{ x: number; y: number; }> = ({ x, y }) => {
         <div className="flex items-center justify-center -rotate-180" style={{ writingMode: 'vertical-rl' }}>
           <span className="text-sm font-semibold text-gray-600 tracking-wider">Tolerância ao Risco →</span>
         </div>
-
+        
         <div className="flex-grow ml-2">
           <div className="grid grid-cols-10 grid-rows-10 gap-0.5 aspect-square">
             {yTicks.map(gridY => (
@@ -101,10 +102,10 @@ const RiskMatrix: React.FC<{ x: number; y: number; }> = ({ x, y }) => {
                 return (
                   <div
                     key={`${gridX}-${gridY}`}
-                    className={`w-full h-full rounded-sm ${color} flex items-center justify-center ${isUserPos ? 'ring-2 ring-offset-2 ring-primary scale-110 z-10' : ''}`}
+                    className={`w-full h-full rounded-sm ${color} flex items-center justify-center ${isUserPos ? 'ring-2 ring-offset-2 ring-blue-600 scale-110 z-10' : ''}`}
                     title={`Competência (X): ${gridX}, Tolerância (Y): ${gridY}, Perfil: ${profile}`}
                   >
-                    {isUserPos && <span className="text-lg font-bold text-primary">★</span>}
+                    {isUserPos && <span className="text-lg font-bold text-blue-700">★</span>}
                   </div>
                 );
               })
@@ -112,7 +113,7 @@ const RiskMatrix: React.FC<{ x: number; y: number; }> = ({ x, y }) => {
           </div>
           <div className="grid grid-cols-10 gap-0.5 mt-1">
             {xTicks.map((label, i) => (
-              <div key={i} className="text-center text-[10px] text-muted-foreground">{label}</div>
+              <div key={i} className="text-center text-[10px] text-gray-500">{label}</div>
             ))}
           </div>
         </div>
@@ -120,47 +121,21 @@ const RiskMatrix: React.FC<{ x: number; y: number; }> = ({ x, y }) => {
       <div className="mt-2">
         <span className="text-sm font-semibold text-gray-600 tracking-wider">→ Competência Financeira</span>
       </div>
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-4 text-xs">
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-4 text-xs text-gray-700">
         <div className="flex items-center">
           <div className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Conservador.bg}`}></div>
-          <span className="text-muted-foreground">Conservador</span>
+          <span>Conservador</span>
         </div>
         <div className="flex items-center">
           <div className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Moderado.bg}`}></div>
-          <span className="text-muted-foreground">Moderado</span>
+          <span>Moderado</span>
         </div>
         <div className="flex items-center">
           <div className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Agressivo.bg}`}></div>
-          <span className="text-muted-foreground">Agressivo</span>
+          <span>Agressivo</span>
         </div>
       </div>
     </div>
-  );
-};
-
-const Recommendation: React.FC<{ text: string }> = ({ text }) => {
-  const parts = text.split(/(\[.*?\]\(.*?\))/g);
-  return (
-    <>
-      {parts.map((part, index) => {
-        const match = part.match(/\[(.*?)\]\((.*?)\)/);
-        if (match) {
-          const [, linkText, url] = match;
-          return (
-            <a
-              href={url}
-              key={index}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline font-semibold"
-            >
-              {linkText}
-            </a>
-          );
-        }
-        return part;
-      })}
-    </>
   );
 };
 
@@ -361,12 +336,65 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
     const getBin10 = (v: number) => Math.min(10, Math.max(1, Math.ceil(v * 10)));
 
+    // Calculate LA coefficient from TradeOff data
+    let LAcoefficient = 1.0; // Default value (neutral)
+    if (tradeOffData && Object.keys(tradeOffData).length > 0) {
+      const scenarios = Object.values(tradeOffData);
+      const getStageBounds = (stageNum: number) => {
+        const items = scenarios.filter((s) => Number(s.scenario) === stageNum);
+        if (!items || items.length === 0) return { first: null, last: null };
+        return { first: items[0], last: items[items.length - 1] };
+      };
+
+      const { first: firstThirdStage, last: lastThirdStage } = getStageBounds(3);
+      const { first: firstFirstStage, last: lastFirstStage } = getStageBounds(1);
+
+      const toNum = (v: any) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : NaN;
+      };
+
+      const numFirstThird = toNum(firstThirdStage?.selectedValues[0]);
+      const numLastThird = toNum(
+        lastThirdStage?.selectedValues[lastThirdStage?.selectedValues.length - 1]
+      );
+      const numFirstFirst = toNum(firstFirstStage?.selectedValues[0]);
+      const numLastFirst = toNum(
+        lastFirstStage?.selectedValues[lastFirstStage.selectedValues.length - 1]
+      );
+
+      if (
+        !Number.isNaN(numFirstThird) &&
+        !Number.isNaN(numLastThird) &&
+        !Number.isNaN(numFirstFirst) &&
+        !Number.isNaN(numLastFirst) &&
+        numLastThird !== 0 &&
+        numLastFirst !== 0
+      ) {
+        const ratioThird = numFirstThird / numLastThird;
+        const ratioFirst = numFirstFirst / numLastFirst;
+        if (ratioFirst !== 0) {
+          LAcoefficient = ratioThird / ratioFirst;
+        }
+      }
+    }
+
+    // Use combinedRisk to calculate the Y coordinate (tolerance with LA adjustment)
+    let y_bin = getBin10(toleranceNorm); // Default if combinedRisk fails
+    let riskResult = null;
+    
+    try {
+      riskResult = combinedRisk(LAcoefficient, toleranceScore, 1, 1, true);
+      y_bin = riskResult.S_int; // Use the calculated risk score as Y coordinate
+    } catch (error) {
+      console.warn('Error calculating combined risk, using default Y:', error);
+    }
+
     const toleranceRaw = Math.round(toleranceNorm * 100);
     const toleranceClassBin = getBin10(toleranceNorm);
     const tolLabels10 = ['Muito Baixa', 'Muito Baixa', 'Baixa', 'Baixa', 'Média', 'Média', 'Alta', 'Alta', 'Muito Alta', 'Muito Alta'];
     const toleranceClassLabel = tolLabels10[toleranceClassBin - 1];
 
-    const y_bin = getBin10(toleranceNorm);
     const x_bin = getBin10(competenceNorm);
 
     const finalProfileKey = getProfileForCell(x_bin, y_bin);
@@ -388,9 +416,11 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
       toleranceRaw,
       toleranceClassBin,
       toleranceClassLabel,
-      knowledgeCheck
+      knowledgeCheck,
+      LAcoefficient,
+      riskResult
     };
-  }, [investorData.score, literacyData, isfbResult.index0to100]);
+  }, [investorData.score, literacyData, isfbResult.index0to100, tradeOffData]);
 
   const {
     x_bin,
