@@ -1,21 +1,35 @@
-'use client';
+"use client";
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Badge, CheckCircle2, XCircle, Share2, RefreshCw, Home, Download } from 'lucide-react';
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import {
+  Badge,
+  CheckCircle2,
+  XCircle,
+  Share2,
+  RefreshCw,
+  Home,
+  Download,
+} from "lucide-react";
 import {
   InvestorData,
   LiteracyData,
   DospertData,
   TradeOffData,
   EconomyData,
-} from '@/services/types';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../ui/card';
-import { Button } from '../ui/button';
-import { literacyQuestions, literacyAnswers } from '@/src/lib/constants';
-import { calculateISFB_Part1_Only, ISFBResult, ISFBData } from '@/src/lib/isfb';
-import TradeOffBalanceCard from './TradeOffBalanceCard';
-import { calculateTradeOffProfile } from '@/src/lib/tradeOffUtils';
-import { combinedRisk } from '@/src/lib/risk';
+} from "@/services/types";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { literacyQuestions, literacyAnswers } from "@/src/lib/constants";
+import { calculateISFB_Part1_Only, ISFBResult, ISFBData } from "@/src/lib/isfb";
+import TradeOffBalanceCard from "./TradeOffBalanceCard";
+import { calculateTradeOffProfile } from "@/src/lib/tradeOffUtils";
+import { combinedRisk } from "@/src/lib/risk";
 
 interface ResultsScreenProps {
   economyData?: EconomyData | null;
@@ -28,43 +42,45 @@ interface ResultsScreenProps {
   onRetakeQuiz?: () => void;
 }
 
-
 const profileDescriptions = {
   Conservador: {
     title: "Perfil Conservador",
-    description: "Você prioriza a segurança do seu capital. Sua combinação de tolerância ao risco e competência financeira indica uma preferência por investimentos de baixa volatilidade, mesmo que isso signifique retornos mais modestos."
+    description:
+      "Você prioriza a segurança do seu capital. Sua combinação de tolerância ao risco e competência financeira indica uma preferência por investimentos de baixa volatilidade, mesmo que isso signifique retornos mais modestos.",
   },
   Moderado: {
     title: "Perfil Moderado",
-    description: "Você busca um equilíbrio entre segurança e crescimento. Sua matriz de risco mostra que você está disposto(a) a aceitar alguma volatilidade em troca de um potencial de retorno maior, tomando decisões de forma ponderada."
+    description:
+      "Você busca um equilíbrio entre segurança e crescimento. Sua matriz de risco mostra que você está disposto(a) a aceitar alguma volatilidade em troca de um potencial de retorno maior, tomando decisões de forma ponderada.",
   },
   Agressivo: {
     title: "Perfil Agressivo",
-    description: "Você tem uma alta tolerância ao risco e busca maximizar o potencial de retorno dos seus investimentos. Sua competência financeira lhe dá confiança para navegar em mercados mais voláteis em busca de oportunidades de alto crescimento."
+    description:
+      "Você tem uma alta tolerância ao risco e busca maximizar o potencial de retorno dos seus investimentos. Sua competência financeira lhe dá confiança para navegar em mercados mais voláteis em busca de oportunidades de alto crescimento.",
   },
 };
 
 const profileColors = {
   Conservador: {
-    bg: 'bg-indigo-100',
-    border: 'border-indigo-300',
-    cardBg: 'bg-indigo-50',
-    cardBorder: 'border-indigo-200',
-    badge: 'bg-indigo-100 text-indigo-800 hover:bg-indigo-100'
+    bg: "bg-indigo-100",
+    border: "border-indigo-300",
+    cardBg: "bg-indigo-50",
+    cardBorder: "border-indigo-200",
+    badge: "bg-indigo-100 text-indigo-800 hover:bg-indigo-100",
   },
   Moderado: {
-    bg: 'bg-amber-100',
-    border: 'border-amber-300',
-    cardBg: 'bg-amber-50',
-    cardBorder: 'border-amber-200',
-    badge: 'bg-amber-100 text-amber-800 hover:bg-amber-100'
+    bg: "bg-amber-100",
+    border: "border-amber-300",
+    cardBg: "bg-amber-50",
+    cardBorder: "border-amber-200",
+    badge: "bg-amber-100 text-amber-800 hover:bg-amber-100",
   },
   Agressivo: {
-    bg: 'bg-teal-100',
-    border: 'border-teal-300',
-    cardBg: 'bg-teal-50',
-    cardBorder: 'border-teal-200',
-    badge: 'bg-teal-100 text-teal-800 hover:bg-teal-100'
+    bg: "bg-teal-100",
+    border: "border-teal-300",
+    cardBg: "bg-teal-50",
+    cardBorder: "border-teal-200",
+    badge: "bg-teal-100 text-teal-800 hover:bg-teal-100",
   },
 };
 
@@ -72,66 +88,87 @@ type ProfileKey = keyof typeof profileDescriptions;
 
 const getProfileForCell = (x: number, y: number): ProfileKey => {
   if ((y >= 9 && x >= 7) || (y >= 7 && x >= 9)) {
-    return 'Agressivo';
+    return "Agressivo";
   }
   if (y <= 3 || (y === 4 && x <= 6) || (y >= 5 && x <= 3)) {
-    return 'Conservador';
+    return "Conservador";
   }
-  return 'Moderado';
+  return "Moderado";
 };
 
-const RiskMatrix: React.FC<{ x: number; y: number; }> = ({ x, y }) => {
-  const yTicks = Array.from({length: 10}, (_, i) => 10 - i);
-  const xTicks = Array.from({length: 10}, (_, i) => i + 1);
+const RiskMatrix: React.FC<{ x: number; y: number }> = ({ x, y }) => {
+  const yTicks = Array.from({ length: 10 }, (_, i) => 10 - i);
+  const xTicks = Array.from({ length: 10 }, (_, i) => i + 1);
 
   return (
     <div className="flex flex-col items-center">
       <h3 className="text-lg font-bold text-gray-800 mb-4">Matriz de Riscos</h3>
       <div className="flex w-full max-w-sm mx-auto">
-        <div className="flex items-center justify-center -rotate-180" style={{ writingMode: 'vertical-rl' }}>
-          <span className="text-sm font-semibold text-gray-600 tracking-wider">Tolerância ao Risco →</span>
+        <div
+          className="flex items-center justify-center -rotate-180"
+          style={{ writingMode: "vertical-rl" }}
+        >
+          <span className="text-sm font-semibold text-gray-600 tracking-wider">
+            Tolerância ao Risco →
+          </span>
         </div>
-        
+
         <div className="flex-grow ml-2">
           <div className="grid grid-cols-10 grid-rows-10 gap-0.5 aspect-square">
-            {yTicks.map(gridY => (
-              xTicks.map(gridX => {
+            {yTicks.map((gridY) =>
+              xTicks.map((gridX) => {
                 const isUserPos = gridX === x && gridY === y;
                 const profile = getProfileForCell(gridX, gridY);
                 const color = profileColors[profile].bg;
                 return (
                   <div
                     key={`${gridX}-${gridY}`}
-                    className={`w-full h-full rounded-sm ${color} flex items-center justify-center ${isUserPos ? 'ring-2 ring-offset-2 ring-blue-600 scale-110 z-10' : ''}`}
+                    className={`w-full h-full rounded-sm ${color} flex items-center justify-center ${
+                      isUserPos
+                        ? "ring-2 ring-offset-2 ring-blue-600 scale-110 z-10"
+                        : ""
+                    }`}
                     title={`Competência (X): ${gridX}, Tolerância (Y): ${gridY}, Perfil: ${profile}`}
                   >
-                    {isUserPos && <span className="text-lg font-bold text-blue-700">★</span>}
+                    {isUserPos && (
+                      <span className="text-lg font-bold text-blue-700">★</span>
+                    )}
                   </div>
                 );
               })
-            ))}
+            )}
           </div>
           <div className="grid grid-cols-10 gap-0.5 mt-1">
             {xTicks.map((label, i) => (
-              <div key={i} className="text-center text-[10px] text-gray-500">{label}</div>
+              <div key={i} className="text-center text-[10px] text-gray-500">
+                {label}
+              </div>
             ))}
           </div>
         </div>
       </div>
       <div className="mt-2">
-        <span className="text-sm font-semibold text-gray-600 tracking-wider">→ Competência Financeira</span>
+        <span className="text-sm font-semibold text-gray-600 tracking-wider">
+          → Competência Financeira
+        </span>
       </div>
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-4 text-xs text-gray-700">
         <div className="flex items-center">
-          <div className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Conservador.bg}`}></div>
+          <div
+            className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Conservador.bg}`}
+          ></div>
           <span>Conservador</span>
         </div>
         <div className="flex items-center">
-          <div className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Moderado.bg}`}></div>
+          <div
+            className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Moderado.bg}`}
+          ></div>
           <span>Moderado</span>
         </div>
         <div className="flex items-center">
-          <div className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Agressivo.bg}`}></div>
+          <div
+            className={`w-3 h-3 rounded-sm mr-2 ${profileColors.Agressivo.bg}`}
+          ></div>
           <span>Agressivo</span>
         </div>
       </div>
@@ -147,9 +184,8 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
   dospertData,
   tradeOffData,
   onStartOver,
-  onRetakeQuiz
+  onRetakeQuiz,
 }) => {
-
   const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
   const [isSharing, setIsSharing] = useState<boolean>(false);
 
@@ -302,7 +338,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
       const convertedIsfbData: Record<string, string> = {};
       Object.entries(economyData).forEach(([key, value]) => {
         // Convert number back to choice letter
-        convertedIsfbData[key] = String.fromCharCode('a'.charCodeAt(0) + value);
+        convertedIsfbData[key] = String.fromCharCode("a".charCodeAt(0) + value);
       });
       return calculateISFB_Part1_Only(convertedIsfbData);
     }
@@ -311,11 +347,11 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
     return {
       part1Sum: 24,
       index0to100: 50,
-      band: 'Ok',
+      band: "Ok",
       profile: {
-        title: 'Ok',
-        description: 'Sua situação financeira está em um nível intermediário.',
-      }
+        title: "Ok",
+        description: "Sua situação financeira está em um nível intermediário.",
+      },
     };
   }, [isfbData, economyData]);
 
@@ -323,18 +359,34 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
     const MIN_INVESTOR_SCORE = 13;
     const MAX_INVESTOR_SCORE = 47;
     const toleranceScore = investorData.score;
-    const toleranceNorm = Math.max(0, Math.min(1, (toleranceScore - MIN_INVESTOR_SCORE) / (MAX_INVESTOR_SCORE - MIN_INVESTOR_SCORE)));
+    const toleranceNorm = Math.max(
+      0,
+      Math.min(
+        1,
+        (toleranceScore - MIN_INVESTOR_SCORE) /
+          (MAX_INVESTOR_SCORE - MIN_INVESTOR_SCORE)
+      )
+    );
 
     const healthNorm = isfbResult.index0to100 / 100;
 
-    const knowledgeQuestions = literacyQuestions.filter(q => q.type !== 'likert-5');
-    const correctAnswers = knowledgeQuestions.reduce((count, q) =>
-      (literacyData[q.id] === literacyAnswers[q.id] ? count + 1 : count), 0);
-    const knowledgeNorm = knowledgeQuestions.length > 0 ? correctAnswers / knowledgeQuestions.length : 0;
+    const knowledgeQuestions = literacyQuestions.filter(
+      (q) => q.type !== "likert-5"
+    );
+    const correctAnswers = knowledgeQuestions.reduce(
+      (count, q) =>
+        literacyData[q.id] === literacyAnswers[q.id] ? count + 1 : count,
+      0
+    );
+    const knowledgeNorm =
+      knowledgeQuestions.length > 0
+        ? correctAnswers / knowledgeQuestions.length
+        : 0;
 
     const competenceNorm = 0.7 * healthNorm + 0.3 * knowledgeNorm;
 
-    const getBin10 = (v: number) => Math.min(10, Math.max(1, Math.ceil(v * 10)));
+    const getBin10 = (v: number) =>
+      Math.min(10, Math.max(1, Math.ceil(v * 10)));
 
     // Calculate LA coefficient from TradeOff data
     let LAcoefficient = 1.0; // Default value (neutral)
@@ -346,8 +398,10 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
         return { first: items[0], last: items[items.length - 1] };
       };
 
-      const { first: firstThirdStage, last: lastThirdStage } = getStageBounds(3);
-      const { first: firstFirstStage, last: lastFirstStage } = getStageBounds(1);
+      const { first: firstThirdStage, last: lastThirdStage } =
+        getStageBounds(3);
+      const { first: firstFirstStage, last: lastFirstStage } =
+        getStageBounds(1);
 
       const toNum = (v: any) => {
         const n = Number(v);
@@ -356,7 +410,9 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
       const numFirstThird = toNum(firstThirdStage?.selectedValues[0]);
       const numLastThird = toNum(
-        lastThirdStage?.selectedValues[lastThirdStage?.selectedValues.length - 1]
+        lastThirdStage?.selectedValues[
+          lastThirdStage?.selectedValues.length - 1
+        ]
       );
       const numFirstFirst = toNum(firstFirstStage?.selectedValues[0]);
       const numLastFirst = toNum(
@@ -382,17 +438,28 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
     // Use combinedRisk to calculate the Y coordinate (tolerance with LA adjustment)
     let y_bin = getBin10(toleranceNorm); // Default if combinedRisk fails
     let riskResult = null;
-    
+
     try {
       riskResult = combinedRisk(LAcoefficient, toleranceScore, 1, 1, true);
       y_bin = riskResult.S_int; // Use the calculated risk score as Y coordinate
     } catch (error) {
-      console.warn('Error calculating combined risk, using default Y:', error);
+      console.warn("Error calculating combined risk, using default Y:", error);
     }
 
     const toleranceRaw = Math.round(toleranceNorm * 100);
     const toleranceClassBin = getBin10(toleranceNorm);
-    const tolLabels10 = ['Muito Baixa', 'Muito Baixa', 'Baixa', 'Baixa', 'Média', 'Média', 'Alta', 'Alta', 'Muito Alta', 'Muito Alta'];
+    const tolLabels10 = [
+      "Muito Baixa",
+      "Muito Baixa",
+      "Baixa",
+      "Baixa",
+      "Média",
+      "Média",
+      "Alta",
+      "Alta",
+      "Muito Alta",
+      "Muito Alta",
+    ];
     const toleranceClassLabel = tolLabels10[toleranceClassBin - 1];
 
     const x_bin = getBin10(competenceNorm);
@@ -401,9 +468,9 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
     const finalProfile = profileDescriptions[finalProfileKey];
 
     const knowledgeCheck = {
-      juros: literacyData['q1'] === literacyAnswers['q1'],
-      inflacao: literacyData['q2'] === literacyAnswers['q2'],
-      diversificacao: literacyData['q3'] === literacyAnswers['q3'],
+      juros: literacyData["q1"] === literacyAnswers["q1"],
+      inflacao: literacyData["q2"] === literacyAnswers["q2"],
+      diversificacao: literacyData["q3"] === literacyAnswers["q3"],
     };
 
     return {
@@ -418,7 +485,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
       toleranceClassLabel,
       knowledgeCheck,
       LAcoefficient,
-      riskResult
+      riskResult,
     };
   }, [investorData.score, literacyData, isfbResult.index0to100, tradeOffData]);
 
@@ -432,7 +499,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
     toleranceRaw,
     toleranceClassBin,
     toleranceClassLabel,
-    knowledgeCheck
+    knowledgeCheck,
   } = matrixResult;
 
   return (
@@ -444,16 +511,20 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
       data-tolerancia-classe={toleranceClassBin}
     >
       <header className="p-6 text-center border-b">
-        <h1 className="text-3xl font-bold tracking-tight">Seu Perfil de Investidor</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Seu Perfil de Investidor
+        </h1>
       </header>
 
-      <main 
+      <main
         ref={contentRef}
-        className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full" 
+        className="flex-grow overflow-y-auto p-4 md:p-6 space-y-6 max-w-4xl mx-auto w-full"
         aria-live="polite"
       >
         {/* Profile Card */}
-        <Card className={`${profileColors[finalProfileKey].cardBg} ${profileColors[finalProfileKey].cardBorder}`}>
+        <Card
+          className={`${profileColors[finalProfileKey].cardBg} ${profileColors[finalProfileKey].cardBorder}`}
+        >
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-2xl">{finalProfile.title}</CardTitle>
@@ -486,18 +557,25 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
             {/* Risk Tolerance */}
             <Card className="bg-green-50 border-green-200">
               <CardHeader>
-                <CardTitle className="text-base">Tolerância ao Risco Financeiro</CardTitle>
+                <CardTitle className="text-base">
+                  Tolerância ao Risco Financeiro
+                </CardTitle>
                 <CardDescription className="text-foreground/80">
-                  Índice: {toleranceRaw}/100 • Classificação: {toleranceClassLabel}
+                  Índice: {toleranceRaw}/100 • Classificação:{" "}
+                  {toleranceClassLabel}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Sua tolerância ao risco foi classificada como muito alta. Essa medida reflete o grau de conforto com volatilidade e perdas potenciais no curto prazo. Recomenda-se alinhar a alocação de ativos a esse nível para evitar decisões impulsivas em cenários de estresse.
+                  Sua tolerância ao risco foi classificada como muito alta. Essa
+                  medida reflete o grau de conforto com volatilidade e perdas
+                  potenciais no curto prazo. Recomenda-se alinhar a alocação de
+                  ativos a esse nível para evitar decisões impulsivas em
+                  cenários de estresse.
                 </p>
 
                 {/* Investor Profile and TradeOff embedded here */}
-                <div className="mt-4 pt-3 border-t border-green-200">
+                {/* <div className="mt-4 pt-3 border-t border-green-200">
                   <h4 className="font-bold text-green-900 mb-2">
                     Perfil de Investidor
                   </h4>
@@ -509,7 +587,6 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                       {investorData.profile.description}
                     </p>
 
-                    {/* Trade-Off Balance Card */}
                     {tradeOffData && Object.keys(tradeOffData).length > 0 && (() => {
                       const scenarios = Object.values(tradeOffData);
                       const getStageBounds = (stageNum: number) => {
@@ -570,7 +647,7 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                       );
                     })()}
                   </div>
-                </div>
+                </div> */}
               </CardContent>
             </Card>
 
@@ -580,12 +657,16 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                 <CardHeader>
                   <CardTitle className="text-base">Saúde Financeira</CardTitle>
                   <CardDescription className="text-foreground/80">
-                    Índice: {isfbResult.index0to100}/100 • Classificação: {isfbResult.profile.title}
+                    Índice: {isfbResult.index0to100}/100 • Classificação:{" "}
+                    {isfbResult.profile.title}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    Parabéns, você alcançou o equilíbrio! Suas contas estão em dia. O próximo passo é transformar esse equilíbrio em segurança, construindo uma reserva para imprevistos e começando a planejar seus objetivos maiores.
+                    Parabéns, você alcançou o equilíbrio! Suas contas estão em
+                    dia. O próximo passo é transformar esse equilíbrio em
+                    segurança, construindo uma reserva para imprevistos e
+                    começando a planejar seus objetivos maiores.
                   </p>
                 </CardContent>
               </Card>
@@ -595,7 +676,9 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
             {Object.keys(literacyData).length > 0 && (
               <Card className="bg-yellow-50 border-yellow-200">
                 <CardHeader>
-                  <CardTitle className="text-base">Conhecimento Financeiro</CardTitle>
+                  <CardTitle className="text-base">
+                    Conhecimento Financeiro
+                  </CardTitle>
                   <CardDescription className="text-foreground/80">
                     Acertos: {correctAnswers} de {knowledgeQuestionsCount}
                   </CardDescription>
@@ -610,10 +693,12 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                       )}
                       <div className="flex-1">
                         <p className="font-semibold text-sm">
-                          Juros compostos: {knowledgeCheck.juros ? 'Correto' : 'Incorreto'}
+                          Juros compostos:{" "}
+                          {knowledgeCheck.juros ? "Correto" : "Incorreto"}
                         </p>
                         <p className="text-xs text-muted-foreground italic">
-                          &quot;Capacidade de calcular crescimento de capital e diferenciar taxa nominal de efetiva.&quot;
+                          &quot;Capacidade de calcular crescimento de capital e
+                          diferenciar taxa nominal de efetiva.&quot;
                         </p>
                       </div>
                     </div>
@@ -626,10 +711,12 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                       )}
                       <div className="flex-1">
                         <p className="font-semibold text-sm">
-                          Inflação: {knowledgeCheck.inflacao ? 'Correto' : 'Incorreto'}
+                          Inflação:{" "}
+                          {knowledgeCheck.inflacao ? "Correto" : "Incorreto"}
                         </p>
                         <p className="text-xs text-muted-foreground italic">
-                          &quot;Entendimento do impacto no poder de compra e na taxa real de retorno.&quot;
+                          &quot;Entendimento do impacto no poder de compra e na
+                          taxa real de retorno.&quot;
                         </p>
                       </div>
                     </div>
@@ -642,10 +729,14 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
                       )}
                       <div className="flex-1">
                         <p className="font-semibold text-sm">
-                          Diversificação: {knowledgeCheck.diversificacao ? 'Correto' : 'Incorreto'}
+                          Diversificação:{" "}
+                          {knowledgeCheck.diversificacao
+                            ? "Correto"
+                            : "Incorreto"}
                         </p>
                         <p className="text-xs text-muted-foreground italic">
-                          &quot;Compreensão de correlação entre ativos e redução de risco não sistemático.&quot;
+                          &quot;Compreensão de correlação entre ativos e redução
+                          de risco não sistemático.&quot;
                         </p>
                       </div>
                     </div>
@@ -653,7 +744,8 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
 
                   <div className="mt-4 pt-4 border-t border-yellow-200">
                     <p className="text-sm text-muted-foreground">
-                      Priorizar estudo dos tópicos marcados como incorretos antes de aumentar a exposição a risco.
+                      Priorizar estudo dos tópicos marcados como incorretos
+                      antes de aumentar a exposição a risco.
                     </p>
                   </div>
                 </CardContent>
@@ -667,7 +759,8 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs text-muted-foreground text-center mb-4">
-              Nota: Estes resultados são uma ferramenta de autoconhecimento e não constituem uma recomendação de investimento.
+              Nota: Estes resultados são uma ferramenta de autoconhecimento e
+              não constituem uma recomendação de investimento.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Button
