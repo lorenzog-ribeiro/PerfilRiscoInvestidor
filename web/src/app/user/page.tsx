@@ -13,9 +13,9 @@ export default function UserPage() {
   const [email, setEmail] = useState("");
   const [birthDate, setbirthDate] = useState("");
   const [aceito, setAceito] = useState(false);
-  const [loading, setLoading] = useState(false); // Adicionando estado para controlar o carregamento
-  const [error, setError] = useState(""); // Estado para exibir erros
-  const [emailError, setEmailError] = useState(""); // Novo estado para exibir erros de email
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const userService = useMemo(() => new UserService(), []);
   const router = useRouter();
 
@@ -60,18 +60,17 @@ export default function UserPage() {
   const handleCreateUser = async () => {
     if (!validateForm()) return;
 
-    setLoading(true); // Ativar carregamento
+    setLoading(true);
     try {
       const userData = { name, email, birthDate: new Date(birthDate) };
       const response = await userService.createUser(userData);
 
-      // Redirecionar para a página de instruções
       router.push(`/instructions`);
       setLoading(false);
     } catch (error: unknown) {
       setError(
         (error as Error)?.message || "Ocorreu um erro ao criar o usuário."
-      ); // Exibir mensagem de erro
+      );
     } finally {
       setLoading(false);
     }
@@ -90,7 +89,17 @@ export default function UserPage() {
           <h1 className="text-xl font-bold color text-blue-800">
             Qual é o seu perfil de investidor?{" "}
           </h1>
-          {/* Exibe a mensagem de erro, se houver */}
+
+          {/* Exibe a mensagem de erro geral */}
+          {error && (
+            <div
+              className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+              role="alert"
+            >
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="name">Nome</Label>
             <Input
@@ -102,21 +111,29 @@ export default function UserPage() {
               disabled={loading}
             />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="name">Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
               value={email}
-              max={new Date().toISOString().split("T")[0]}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError(""); // Limpa o erro ao digitar
+              }}
               placeholder="Escreva seu email"
               className={emailError ? "border-red-500" : ""}
               disabled={loading}
             />
+            {/* Exibe o erro de email abaixo do campo */}
+            {emailError && (
+              <p className="text-sm text-red-600 mt-1">{emailError}</p>
+            )}
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="name">Data de Nascimento</Label>
+            <Label htmlFor="birthDate">Data de Nascimento</Label>
             <Input
               id="birthDate"
               type="date"
@@ -126,6 +143,7 @@ export default function UserPage() {
               disabled={loading}
             />
           </div>
+
           <div>
             <p className="text-sm text-left">
               Para participar da pesquisa, leia atentamente o Termo de
@@ -139,6 +157,7 @@ export default function UserPage() {
               </u>
             </p>
           </div>
+
           <div className="flex gap-2 itens-left">
             <Checkbox
               className="border-black-800 border-1"
@@ -153,6 +172,7 @@ export default function UserPage() {
               Eu li e concordo com os termos do TCLE.
             </Label>
           </div>
+
           <Button
             type="submit"
             className="bg-blue-800 hover:bg-blue-600 text-white"
