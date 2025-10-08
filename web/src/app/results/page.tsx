@@ -63,7 +63,6 @@ export default function ResultsPage() {
 
     loadResultData();
 
-    // Update time remaining every minute
     const interval = setInterval(() => {
       const remaining = QuizCache.getTimeRemaining();
       setTimeRemaining(remaining);

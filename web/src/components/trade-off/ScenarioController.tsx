@@ -37,14 +37,12 @@ export default function ScenarioController({ onTradeOffComplete }: ScenarioContr
 
   useEffect(() => {
     if (currentIndex === 3) {
-      // Store tradeOff data in both session storage and cache
       sessionStorage.setItem('tradeOffData', JSON.stringify(tradeOffData));
       QuizCache.save({ 
         tradeOffData: tradeOffData,
         currentScreen: 0 // Reset to first quiz screen
       });
       
-      // Pass the collected tradeOff data to parent or navigate to quiz
       if (onTradeOffComplete) {
         onTradeOffComplete(tradeOffData);
       } else {

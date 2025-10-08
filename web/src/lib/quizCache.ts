@@ -8,7 +8,7 @@ import {
 import { ISFBData } from "./isfb";
 
 export interface QuizProgress {
-  currentScreen: number; // 0: Economy, 1: Investor, 2: Literacy, 3: ISFB, 4: Results
+  currentScreen: number;
   economyData?: EconomyData;
   investorData?: InvestorData;
   literacyData?: LiteracyData;
@@ -45,12 +45,10 @@ export class QuizCache {
 
   static load(): QuizProgress | null {
     try {
-      // Try sessionStorage first, then localStorage as backup
       let cached = sessionStorage.getItem(CACHE_KEY);
       if (!cached) {
         cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
-          // Restore to sessionStorage
           sessionStorage.setItem(CACHE_KEY, cached);
         }
       }
@@ -59,7 +57,6 @@ export class QuizCache {
 
       const progress: QuizProgress = JSON.parse(cached);
 
-      // Check if cache has expired
       if (Date.now() > progress.expiresAt) {
         this.clear();
         return null;
@@ -76,7 +73,6 @@ export class QuizCache {
     try {
       sessionStorage.removeItem(CACHE_KEY);
       localStorage.removeItem(CACHE_KEY);
-      // Also clear individual tradeOff data
       sessionStorage.removeItem("tradeOffData");
     } catch (error) {
       console.error("Error clearing quiz cache:", error);

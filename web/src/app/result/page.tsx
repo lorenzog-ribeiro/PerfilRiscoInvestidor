@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, RefreshCw, Home } from "lucide-react";
 import { QuizCache } from "@/src/lib/quizCache";
@@ -27,7 +27,8 @@ export default function ResultPage() {
   const [hasValidData, setHasValidData] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [hasSubmitted, setHasSubmitted] = useState(false); // Track if already submitted in this session
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const hasAttemptedSubmission = useRef(false); // Prevent double submission
   const [resultData, setResultData] = useState<{
     economyData?: EconomyData;
     investorData: InvestorData;
@@ -38,20 +39,69 @@ export default function ResultPage() {
 
   useEffect(() => {
     const loadData = async () => {
+      console.log('🔄 useEffect triggered - hasAttemptedSubmission:', hasAttemptedSubmission.current, 'hasSubmitted:', hasSubmitted);
+      
+      // Prevent double execution with useRef
+      if (hasAttemptedSubmission.current) {
+        console.log('🛑 Submission already attempted, skipping');
+        return;
+      }
+
       // Check if already submitted in this session
       if (hasSubmitted) {
         console.log('⏭️ Submission already done in this session, skipping');
         return;
       }
 
-      const hasSubmittedFlag = sessionStorage.getItem('quizSubmitted');
+      console.log('🔍 Checking submission timestamp...');
       
-      if (hasSubmittedFlag === 'true') {
-        console.log('⏭️ Quiz already submitted (flag found), skipping submission');
-        setHasSubmitted(true); // Mark as submitted in state too
-        setIsLoading(false);
-        // Continue loading data for display
+      // Check for submission timestamp to prevent duplicates across page reloads
+      const submissionTimestamp = localStorage.getItem('quizSubmissionTimestamp');
+      const now = Date.now();
+      
+      if (submissionTimestamp) {
+        console.log('📅 Found submission timestamp:', new Date(parseInt(submissionTimestamp, 10)).toISOString());
       }
+      
+      // If submitted less than 5 minutes ago, skip
+      if (submissionTimestamp) {
+        const timeSinceSubmission = now - parseInt(submissionTimestamp, 10);
+        console.log('⏱️ Time since last submission:', Math.floor(timeSinceSubmission / 1000), 'seconds');
+        
+        if (timeSinceSubmission < 5 * 60 * 1000) { // 5 minutes
+          console.log('⏭️ Quiz recently submitted (within 5 minutes), skipping');
+          setHasSubmitted(true);
+          hasAttemptedSubmission.current = true;
+          setIsLoading(false);
+          // Load data for display but don't submit
+          const progress = QuizCache.load();
+          if (progress && progress.investorData && progress.literacyData) {
+            const tradeOffDataString = sessionStorage.getItem('tradeOffData');
+            let loadedTradeOffData: TradeOffData | undefined;
+            if (tradeOffDataString) {
+              try {
+                loadedTradeOffData = JSON.parse(tradeOffDataString);
+              } catch (error) {
+                console.error('❌ Error parsing TradeOff data:', error);
+              }
+            }
+            setResultData({
+              economyData: progress.economyData,
+              investorData: progress.investorData,
+              literacyData: progress.literacyData,
+              isfbData: progress.isfbData,
+              tradeOffData: loadedTradeOffData
+            });
+            setHasValidData(true);
+          }
+          return;
+        }
+      }
+
+      console.log('✅ No recent submission found, proceeding...');
+      
+      // Mark that we're attempting submission
+      hasAttemptedSubmission.current = true;
 
       const progress = QuizCache.load();
 
@@ -89,14 +139,14 @@ export default function ResultPage() {
       setIsLoading(false);
 
       // Only submit if not already submitted
-      if (hasSubmittedFlag !== 'true' && !hasSubmitted) {
+      if (!hasSubmitted) {
         console.log('📤 Starting quiz submission...');
         setIsSubmitting(true);
         setSubmitError(null);
 
         try {
           const submissionService = new QuizSubmissionService();
-          
+
           // Get userId from localStorage (you may need to adjust this based on your auth system)
           const userId = localStorage.getItem('userId') || 'anonymous';
 
@@ -114,19 +164,15 @@ export default function ResultPage() {
           });
 
           console.log('✅ Quiz submission successful:', result);
-          
-          // Mark as submitted
+
+          // Mark as submitted with timestamp
+          const timestamp = Date.now().toString();
+          localStorage.setItem('quizSubmissionTimestamp', timestamp);
           sessionStorage.setItem('quizSubmitted', 'true');
           setHasSubmitted(true);
-          
-          // Success notification - you can use a toast library or console
-          console.log('✅ Dados salvos com sucesso!');
         } catch (error) {
           console.error('❌ Error submitting quiz:', error);
           setSubmitError(error instanceof Error ? error.message : 'Erro ao salvar dados');
-          
-          // Error notification
-          console.error('❌ Erro ao salvar dados. Tente novamente.');
         } finally {
           setIsSubmitting(false);
         }
@@ -140,6 +186,7 @@ export default function ResultPage() {
     QuizCache.clear();
     sessionStorage.removeItem('quizSubmitted');
     sessionStorage.removeItem('tradeOffData');
+    localStorage.removeItem('quizSubmissionTimestamp'); // Clear timestamp
     router.push('/');
   };
 
@@ -147,6 +194,7 @@ export default function ResultPage() {
     QuizCache.clear();
     sessionStorage.removeItem('quizSubmitted');
     sessionStorage.removeItem('tradeOffData');
+    localStorage.removeItem('quizSubmissionTimestamp'); // Clear timestamp
     router.push('/quiz');
   };
 
@@ -176,13 +224,13 @@ export default function ResultPage() {
               Seus dados não foram encontrados. Por favor, complete os questionários primeiro.
             </p>
             <div className="space-y-3 w-full">
-              <Button 
+              <Button
                 onClick={handleRetakeQuiz}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
                 Fazer Questionários
               </Button>
-              <Button 
+              <Button
                 onClick={handleStartOver}
                 variant="outline"
                 className="w-full"
@@ -199,28 +247,6 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {isSubmitting && (
-        <div className="fixed top-4 right-4 z-50">
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="flex items-center gap-2 p-3">
-              <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
-              <span className="text-sm text-blue-700">Salvando resultados...</span>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-      
-      {submitError && (
-        <div className="fixed top-4 right-4 z-50">
-          <Card className="bg-red-50 border-red-200">
-            <CardContent className="flex items-center gap-2 p-3">
-              <AlertCircle className="h-4 w-4 text-red-600" />
-              <span className="text-sm text-red-700">Erro ao salvar: {submitError}</span>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-      
       <ResultsScreen
         economyData={resultData.economyData}
         investorData={resultData.investorData}
