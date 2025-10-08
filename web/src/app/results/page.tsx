@@ -34,7 +34,6 @@ export default function ResultsPage() {
         return;
       }
 
-      // Load tradeOff data from sessionStorage as backup
       let tradeOffData: TradeOffData | undefined = progress.tradeOffData;
       if (!tradeOffData) {
         try {
@@ -59,7 +58,6 @@ export default function ResultsPage() {
       setIsLoading(false);
       setTimeRemaining(QuizCache.getTimeRemaining());
 
-      // Extend cache expiration when viewing results
       QuizCache.extendExpiration();
     };
 

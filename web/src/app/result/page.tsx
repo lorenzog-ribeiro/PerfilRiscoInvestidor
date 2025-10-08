@@ -17,6 +17,7 @@ import {
 } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import ResultsScreen from "@/src/components/results/ResultsScreen";
+import { QuizSubmissionService } from "@/services/QuizSubmissionService";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,9 @@ export default function ResultPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [hasValidData, setHasValidData] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false); // Track if already submitted in this session
   const [resultData, setResultData] = useState<{
     economyData?: EconomyData;
     investorData: InvestorData;
@@ -33,49 +37,116 @@ export default function ResultPage() {
   } | null>(null);
 
   useEffect(() => {
-    const loadResultData = () => {
-      const progress = QuizCache.load();
+    const loadData = async () => {
+      // Check if already submitted in this session
+      if (hasSubmitted) {
+        console.log('⏭️ Submission already done in this session, skipping');
+        return;
+      }
+
+      const hasSubmittedFlag = sessionStorage.getItem('quizSubmitted');
       
+      if (hasSubmittedFlag === 'true') {
+        console.log('⏭️ Quiz already submitted (flag found), skipping submission');
+        setHasSubmitted(true); // Mark as submitted in state too
+        setIsLoading(false);
+        // Continue loading data for display
+      }
+
+      const progress = QuizCache.load();
+
+      // Check if progress is null or missing required data
       if (!progress || !progress.investorData || !progress.literacyData) {
+        console.warn('Missing required quiz data');
         setHasValidData(false);
         setIsLoading(false);
         return;
       }
 
-      // Load tradeOff data from sessionStorage as backup
-      let tradeOffData: TradeOffData | undefined = progress.tradeOffData;
-      if (!tradeOffData) {
+      // Try to load TradeOff data from sessionStorage as fallback
+      const tradeOffDataString = sessionStorage.getItem('tradeOffData');
+      let loadedTradeOffData: TradeOffData | undefined;
+
+      if (tradeOffDataString) {
         try {
-          const storedTradeOff = sessionStorage.getItem('tradeOffData');
-          if (storedTradeOff) {
-            tradeOffData = JSON.parse(storedTradeOff);
-          }
+          loadedTradeOffData = JSON.parse(tradeOffDataString);
+          console.log('✅ TradeOff data loaded from sessionStorage:', loadedTradeOffData);
         } catch (error) {
-          console.error('Error loading tradeOff data:', error);
+          console.error('❌ Error parsing TradeOff data from sessionStorage:', error);
         }
       }
 
-      setResultData({
+      const data = {
         economyData: progress.economyData,
-        investorData: progress.investorData!,
-        literacyData: progress.literacyData!,
+        investorData: progress.investorData,
+        literacyData: progress.literacyData,
         isfbData: progress.isfbData,
-        tradeOffData,
-      });
+        tradeOffData: loadedTradeOffData
+      };
+
+      setResultData(data);
       setHasValidData(true);
       setIsLoading(false);
+
+      // Only submit if not already submitted
+      if (hasSubmittedFlag !== 'true' && !hasSubmitted) {
+        console.log('📤 Starting quiz submission...');
+        setIsSubmitting(true);
+        setSubmitError(null);
+
+        try {
+          const submissionService = new QuizSubmissionService();
+          
+          // Get userId from localStorage (you may need to adjust this based on your auth system)
+          const userId = localStorage.getItem('userId') || 'anonymous';
+
+          console.log('📦 Submitting complete quiz data:', {
+            economyData: data.economyData,
+            investorData: data.investorData,
+            literacyData: data.literacyData,
+            isfbData: data.isfbData,
+            tradeOffData: data.tradeOffData
+          });
+
+          const result = await submissionService.submitCompleteQuiz({
+            ...data,
+            userId
+          });
+
+          console.log('✅ Quiz submission successful:', result);
+          
+          // Mark as submitted
+          sessionStorage.setItem('quizSubmitted', 'true');
+          setHasSubmitted(true);
+          
+          // Success notification - you can use a toast library or console
+          console.log('✅ Dados salvos com sucesso!');
+        } catch (error) {
+          console.error('❌ Error submitting quiz:', error);
+          setSubmitError(error instanceof Error ? error.message : 'Erro ao salvar dados');
+          
+          // Error notification
+          console.error('❌ Erro ao salvar dados. Tente novamente.');
+        } finally {
+          setIsSubmitting(false);
+        }
+      }
     };
 
-    loadResultData();
-  }, []);
+    loadData();
+  }, [hasSubmitted]); // Add hasSubmitted as dependency
 
   const handleStartOver = () => {
     QuizCache.clear();
+    sessionStorage.removeItem('quizSubmitted');
+    sessionStorage.removeItem('tradeOffData');
     router.push('/');
   };
 
   const handleRetakeQuiz = () => {
     QuizCache.clear();
+    sessionStorage.removeItem('quizSubmitted');
+    sessionStorage.removeItem('tradeOffData');
     router.push('/quiz');
   };
 
@@ -128,6 +199,28 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {isSubmitting && (
+        <div className="fixed top-4 right-4 z-50">
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="flex items-center gap-2 p-3">
+              <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+              <span className="text-sm text-blue-700">Salvando resultados...</span>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
+      {submitError && (
+        <div className="fixed top-4 right-4 z-50">
+          <Card className="bg-red-50 border-red-200">
+            <CardContent className="flex items-center gap-2 p-3">
+              <AlertCircle className="h-4 w-4 text-red-600" />
+              <span className="text-sm text-red-700">Erro ao salvar: {submitError}</span>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
       <ResultsScreen
         economyData={resultData.economyData}
         investorData={resultData.investorData}
