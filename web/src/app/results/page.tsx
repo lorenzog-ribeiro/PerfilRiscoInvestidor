@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
-import { QuizCache } from '@/src/lib/quizCache';
-import { InvestorData, LiteracyData, DospertData, TradeOffData, EconomyData } from '@/services/types';
-import { ISFBData } from '@/src/lib/isfb';
-import { Card, CardContent } from '@/src/components/ui/card';
-import { Button } from '@/src/components/ui/button';
-import ResultsScreen from '../../components/results/ResultsScreen';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { AlertCircle, RefreshCw, Home } from "lucide-react";
+import { QuizCache } from "@/src/lib/quizCache";
+import {
+  InvestorData,
+  LiteracyData,
+  DospertData,
+  TradeOffData,
+  EconomyData,
+} from "@/services/types";
+import { ISFBData } from "@/src/lib/isfb";
+import { Card, CardContent } from "@/src/components/ui/card";
+import { Button } from "@/src/components/ui/button";
+import ResultsScreen from "../../components/results/ResultsScreen";
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -25,27 +31,25 @@ export default function ResultsPage() {
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   useEffect(() => {
+    // Apenas carrega os dados, não faz submissão ao backend nesta página
     const loadResultData = () => {
       const progress = QuizCache.load();
-      
       if (!progress || !QuizCache.hasCompleteData()) {
         setHasValidData(false);
         setIsLoading(false);
         return;
       }
-
       let tradeOffData: TradeOffData | undefined = progress.tradeOffData;
       if (!tradeOffData) {
         try {
-          const storedTradeOff = sessionStorage.getItem('tradeOffData');
+          const storedTradeOff = sessionStorage.getItem("tradeOffData");
           if (storedTradeOff) {
             tradeOffData = JSON.parse(storedTradeOff);
           }
         } catch (error) {
-          console.error('Error loading tradeOff data:', error);
+          console.error("Error loading tradeOff data:", error);
         }
       }
-
       setResultData({
         economyData: progress.economyData,
         investorData: progress.investorData!,
@@ -57,34 +61,28 @@ export default function ResultsPage() {
       setHasValidData(true);
       setIsLoading(false);
       setTimeRemaining(QuizCache.getTimeRemaining());
-
       QuizCache.extendExpiration();
     };
-
     loadResultData();
-
     const interval = setInterval(() => {
       const remaining = QuizCache.getTimeRemaining();
       setTimeRemaining(remaining);
-      
-      // If cache expired, clear data
       if (remaining === 0) {
         setHasValidData(false);
         setResultData(null);
       }
     }, 60000);
-
     return () => clearInterval(interval);
   }, []);
 
   const handleStartOver = () => {
     QuizCache.clear();
-    router.push('/');
+    router.push("/");
   };
 
   const handleRetakeQuiz = () => {
     QuizCache.clear();
-    router.push('/tradeOff');
+    router.push("/tradeOff");
   };
 
   const formatTimeRemaining = (ms: number): string => {
@@ -120,7 +118,8 @@ export default function ResultsPage() {
               Resultados Não Encontrados
             </h2>
             <p className="text-gray-600 mb-6">
-              Seus dados expiraram ou não foram encontrados. Isso pode acontecer se:
+              Seus dados expiraram ou não foram encontrados. Isso pode acontecer
+              se:
             </p>
             <ul className="text-sm text-gray-500 mb-6 text-left space-y-1">
               <li>• Você não completou todos os questionários</li>
@@ -128,13 +127,13 @@ export default function ResultsPage() {
               <li>• O cache do navegador foi limpo</li>
             </ul>
             <div className="space-y-3 w-full">
-              <Button 
+              <Button
                 onClick={handleRetakeQuiz}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
                 Refazer Questionário
               </Button>
-              <Button 
+              <Button
                 onClick={handleStartOver}
                 variant="outline"
                 className="w-full"
@@ -157,7 +156,7 @@ export default function ResultsPage() {
           Seus resultados expiram em: {formatTimeRemaining(timeRemaining)}
         </div>
       )}
-      
+
       <ResultsScreen
         economyData={resultData.economyData}
         investorData={resultData.investorData}
