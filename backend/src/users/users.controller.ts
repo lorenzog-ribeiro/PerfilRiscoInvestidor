@@ -19,7 +19,6 @@ export class UsersController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax' as const,
       path: '/',
-      domain: 'spaceorion.com.br', // ajuste para o domínio do frontend
     };
 
     // Salvar apenas o userId (string) no cookie, não o objeto inteiro
