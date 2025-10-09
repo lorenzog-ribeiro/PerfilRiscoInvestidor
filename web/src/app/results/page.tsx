@@ -37,17 +37,22 @@ export default function ResultsPage() {
 
   useEffect(() => {
     const loadDataAndSubmit = async () => {
-      console.log('🔄 Results page - hasAttemptedSubmission:', hasAttemptedSubmission.current, 'hasSubmitted:', hasSubmitted);
-      
+      console.log(
+        "🔄 Results page - hasAttemptedSubmission:",
+        hasAttemptedSubmission.current,
+        "hasSubmitted:",
+        hasSubmitted
+      );
+
       // Prevent double execution
       if (hasAttemptedSubmission.current) {
-        console.log('🛑 Submission already attempted, skipping');
+        console.log("🛑 Submission already attempted, skipping");
         return;
       }
 
       // Check if already submitted in this session
       if (hasSubmitted) {
-        console.log('⏭️ Submission already done in this session, skipping');
+        console.log("⏭️ Submission already done in this session, skipping");
         return;
       }
 
@@ -86,13 +91,18 @@ export default function ResultsPage() {
       QuizCache.extendExpiration();
 
       // Check submission timestamp to prevent duplicates
-      const submissionTimestamp = localStorage.getItem('quizSubmissionTimestamp');
+      const submissionTimestamp = localStorage.getItem(
+        "quizSubmissionTimestamp"
+      );
       const now = Date.now();
-      
+
       if (submissionTimestamp) {
         const timeSinceSubmission = now - parseInt(submissionTimestamp, 10);
-        if (timeSinceSubmission < 5 * 60 * 1000) { // 5 minutes
-          console.log('⏭️ Quiz recently submitted (within 5 minutes), skipping submission');
+        if (timeSinceSubmission < 5 * 60 * 1000) {
+          // 5 minutes
+          console.log(
+            "⏭️ Quiz recently submitted (within 5 minutes), skipping submission"
+          );
           setHasSubmitted(true);
           hasAttemptedSubmission.current = true;
           return;
@@ -104,31 +114,31 @@ export default function ResultsPage() {
 
       // Submit data to backend
       if (!hasSubmitted) {
-        console.log('📤 Starting quiz submission from results page...');
+        console.log("📤 Starting quiz submission from results page...");
         setIsSubmitting(true);
         setSubmitError(null);
 
         try {
           const submissionService = new QuizSubmissionService();
-          const userId = localStorage.getItem('userId') || 'anonymous';
 
-          console.log('📦 Submitting complete quiz data:', data);
+          console.log("📦 Submitting complete quiz data:", data);
 
           const result = await submissionService.submitCompleteQuiz({
             ...data,
-            userId
           });
 
-          console.log('✅ Quiz submission successful:', result);
+          console.log("✅ Quiz submission successful:", result);
 
           // Mark as submitted with timestamp
           const timestamp = Date.now().toString();
-          localStorage.setItem('quizSubmissionTimestamp', timestamp);
-          sessionStorage.setItem('quizSubmitted', 'true');
+          localStorage.setItem("quizSubmissionTimestamp", timestamp);
+          sessionStorage.setItem("quizSubmitted", "true");
           setHasSubmitted(true);
         } catch (error) {
-          console.error('❌ Error submitting quiz:', error);
-          setSubmitError(error instanceof Error ? error.message : 'Erro ao salvar dados');
+          console.error("❌ Error submitting quiz:", error);
+          setSubmitError(
+            error instanceof Error ? error.message : "Erro ao salvar dados"
+          );
         } finally {
           setIsSubmitting(false);
         }
@@ -151,17 +161,17 @@ export default function ResultsPage() {
 
   const handleStartOver = () => {
     QuizCache.clear();
-    sessionStorage.removeItem('quizSubmitted');
-    sessionStorage.removeItem('tradeOffData');
-    localStorage.removeItem('quizSubmissionTimestamp');
+    sessionStorage.removeItem("quizSubmitted");
+    sessionStorage.removeItem("tradeOffData");
+    localStorage.removeItem("quizSubmissionTimestamp");
     router.push("/");
   };
 
   const handleRetakeQuiz = () => {
     QuizCache.clear();
-    sessionStorage.removeItem('quizSubmitted');
-    sessionStorage.removeItem('tradeOffData');
-    localStorage.removeItem('quizSubmissionTimestamp');
+    sessionStorage.removeItem("quizSubmitted");
+    sessionStorage.removeItem("tradeOffData");
+    localStorage.removeItem("quizSubmissionTimestamp");
     router.push("/tradeOff");
   };
 

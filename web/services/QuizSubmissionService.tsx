@@ -15,7 +15,6 @@ export interface CompleteQuizData {
   isfbData?: ISFBData;
   dospertData?: DospertData;
   tradeOffData?: TradeOffData;
-  userId: string;
 }
 
 export interface FormResponse {
