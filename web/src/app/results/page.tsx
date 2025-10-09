@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, RefreshCw, Home } from "lucide-react";
 import { QuizCache } from "@/src/lib/quizCache";
@@ -15,11 +15,16 @@ import { ISFBData } from "@/src/lib/isfb";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import ResultsScreen from "../../components/results/ResultsScreen";
+import { QuizSubmissionService } from "@/services/QuizSubmissionService";
 
 export default function ResultsPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [hasValidData, setHasValidData] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const hasAttemptedSubmission = useRef(false);
   const [resultData, setResultData] = useState<{
     economyData?: EconomyData;
     investorData: InvestorData;
@@ -31,14 +36,28 @@ export default function ResultsPage() {
   const [timeRemaining, setTimeRemaining] = useState(0);
 
   useEffect(() => {
-    // Apenas carrega os dados, não faz submissão ao backend nesta página
-    const loadResultData = () => {
+    const loadDataAndSubmit = async () => {
+      console.log('🔄 Results page - hasAttemptedSubmission:', hasAttemptedSubmission.current, 'hasSubmitted:', hasSubmitted);
+      
+      // Prevent double execution
+      if (hasAttemptedSubmission.current) {
+        console.log('🛑 Submission already attempted, skipping');
+        return;
+      }
+
+      // Check if already submitted in this session
+      if (hasSubmitted) {
+        console.log('⏭️ Submission already done in this session, skipping');
+        return;
+      }
+
       const progress = QuizCache.load();
       if (!progress || !QuizCache.hasCompleteData()) {
         setHasValidData(false);
         setIsLoading(false);
         return;
       }
+
       let tradeOffData: TradeOffData | undefined = progress.tradeOffData;
       if (!tradeOffData) {
         try {
@@ -50,20 +69,74 @@ export default function ResultsPage() {
           console.error("Error loading tradeOff data:", error);
         }
       }
-      setResultData({
+
+      const data = {
         economyData: progress.economyData,
         investorData: progress.investorData!,
         literacyData: progress.literacyData!,
         isfbData: progress.isfbData,
         dospertData: progress.dospertData,
         tradeOffData,
-      });
+      };
+
+      setResultData(data);
       setHasValidData(true);
       setIsLoading(false);
       setTimeRemaining(QuizCache.getTimeRemaining());
       QuizCache.extendExpiration();
+
+      // Check submission timestamp to prevent duplicates
+      const submissionTimestamp = localStorage.getItem('quizSubmissionTimestamp');
+      const now = Date.now();
+      
+      if (submissionTimestamp) {
+        const timeSinceSubmission = now - parseInt(submissionTimestamp, 10);
+        if (timeSinceSubmission < 5 * 60 * 1000) { // 5 minutes
+          console.log('⏭️ Quiz recently submitted (within 5 minutes), skipping submission');
+          setHasSubmitted(true);
+          hasAttemptedSubmission.current = true;
+          return;
+        }
+      }
+
+      // Mark that we're attempting submission
+      hasAttemptedSubmission.current = true;
+
+      // Submit data to backend
+      if (!hasSubmitted) {
+        console.log('📤 Starting quiz submission from results page...');
+        setIsSubmitting(true);
+        setSubmitError(null);
+
+        try {
+          const submissionService = new QuizSubmissionService();
+          const userId = localStorage.getItem('userId') || 'anonymous';
+
+          console.log('📦 Submitting complete quiz data:', data);
+
+          const result = await submissionService.submitCompleteQuiz({
+            ...data,
+            userId
+          });
+
+          console.log('✅ Quiz submission successful:', result);
+
+          // Mark as submitted with timestamp
+          const timestamp = Date.now().toString();
+          localStorage.setItem('quizSubmissionTimestamp', timestamp);
+          sessionStorage.setItem('quizSubmitted', 'true');
+          setHasSubmitted(true);
+        } catch (error) {
+          console.error('❌ Error submitting quiz:', error);
+          setSubmitError(error instanceof Error ? error.message : 'Erro ao salvar dados');
+        } finally {
+          setIsSubmitting(false);
+        }
+      }
     };
-    loadResultData();
+
+    loadDataAndSubmit();
+
     const interval = setInterval(() => {
       const remaining = QuizCache.getTimeRemaining();
       setTimeRemaining(remaining);
@@ -72,16 +145,23 @@ export default function ResultsPage() {
         setResultData(null);
       }
     }, 60000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [hasSubmitted]);
 
   const handleStartOver = () => {
     QuizCache.clear();
+    sessionStorage.removeItem('quizSubmitted');
+    sessionStorage.removeItem('tradeOffData');
+    localStorage.removeItem('quizSubmissionTimestamp');
     router.push("/");
   };
 
   const handleRetakeQuiz = () => {
     QuizCache.clear();
+    sessionStorage.removeItem('quizSubmitted');
+    sessionStorage.removeItem('tradeOffData');
+    localStorage.removeItem('quizSubmissionTimestamp');
     router.push("/tradeOff");
   };
 
