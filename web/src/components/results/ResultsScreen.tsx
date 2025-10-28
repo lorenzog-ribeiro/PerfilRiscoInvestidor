@@ -1,18 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import {
   Loader2,
   Share2,
-  CheckCircle2,
-  Sparkles,
   Badge,
   RefreshCw,
   Home,
   Download,
 } from "lucide-react";
 
-//import { getPersonalizedAdvice } from "@/services/gemini/geminiService";
 import {
   InvestorData,
   LiteracyData,
@@ -55,6 +52,8 @@ export default function ResultsScreen({
   const [isSharing, setIsSharing] = useState<boolean>(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
+
+
 
   const dospertResults: DospertResult[] = useMemo(() => {
     return Object.entries(dospertDomains).map(([domain, info]) => {
@@ -135,22 +134,7 @@ export default function ResultsScreen({
     };
   }, [tradeOffData]);
 
-  useEffect(() => {
-    const fetchAdvice = async () => {
-      setIsLoadingAdvice(true);
-      try {
-        // const result = await getPersonalizedAdvice(investorData, dospertResults);
-        // setAdvice(result);
-      } catch (error) {
-        setAdvice("Não foi possível gerar a análise personalizada no momento.");
-      } finally {
-        setIsLoadingAdvice(false);
-      }
-    };
-    fetchAdvice();
-  }, [investorData, dospertResults]);
 
-  // ✅ Função auxiliar para gerar o PDF e retornar o blob
   const getPDFBlob = useCallback(async (): Promise<Blob | null> => {
     if (!contentRef.current) {
       alert("Conteúdo não encontrado para gerar PDF.");
@@ -317,9 +301,8 @@ export default function ResultsScreen({
                       {result.name}
                     </h3>
                     <Badge
-                      className={`${result.color.replace("100", "200")} ${
-                        result.textColor
-                      }`}
+                      className={`${result.color.replace("100", "200")} ${result.textColor
+                        }`}
                     >
                       {result.classification}
                     </Badge>
@@ -345,8 +328,8 @@ export default function ResultsScreen({
                           Object.keys(tradeOffData).length > 0 && (
                             <>
                               {tradeOffProfile &&
-                              tradeOffProfile.result !== null &&
-                              tradeOffProfile.profileInfo ? (
+                                tradeOffProfile.result !== null &&
+                                tradeOffProfile.profileInfo ? (
                                 <div className="space-y-4 pt-4">
                                   <TradeOffBalanceCard
                                     tradeOffValue={tradeOffProfile.result}
