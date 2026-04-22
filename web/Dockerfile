@@ -12,8 +12,8 @@ COPY . .
 
 ENV NEXT_PUBLIC_BASE_URL=https://backend.duodevs.com.br/
 
-RUN echo 'module.exports = { eslint: { ignoreDuringBuilds: true }, typescript: { ignoreBuildErrors: true }, output: "standalone" };' > next.config.js
-
+# O comando de build já deve considerar o standalone por causa do next.config.ts se configurado corretamente lá, 
+# mas preservamos a sobrescrita se for necessário.
 RUN pnpm build
 
 FROM node:20-alpine AS runtime
@@ -38,17 +38,21 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
-COPY --from=build /app/.next ./.next
+
+# Copiar os arquivos necessários do standalone build
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 
 ENV PORT=3001
+ENV HOSTNAME="0.0.0.0"
 ENV NODE_ENV=production
 ENV NEXT_PUBLIC_BASE_URL=https://backend.duodevs.com.br/
 
 EXPOSE 3001
 
 # ✅ Criar usuário node se não existir e ajustar permissões
-RUN addgroup -g 1001 -S nodejs || true
+RUN addgroup -S nodejs -g 1001 || true
 RUN adduser -S nextjs -u 1001 || true
 RUN chown -R nextjs:nodejs /app
 
