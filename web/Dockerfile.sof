@@ -6,11 +6,11 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-RUN echo 'NEXT_PUBLIC_BASE_URL=https://backend.duodevs.com.br/' > .env.production
+RUN echo 'NEXT_PUBLIC_BASE_URL=https://sofbackend.duodevs.com.br/' > .env.production
 
 COPY . .
 
-ENV NEXT_PUBLIC_BASE_URL=https://backend.duodevs.com.br/
+ENV NEXT_PUBLIC_BASE_URL=https://sofbackend.duodevs.com.br/
 
 # O comando de build já deve considerar o standalone por causa do next.config.ts se configurado corretamente lá, 
 # mas preservamos a sobrescrita se for necessário.
@@ -47,7 +47,7 @@ COPY --from=build /app/public ./public
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_BASE_URL=https://backend.duodevs.com.br/
+ENV NEXT_PUBLIC_BASE_URL=https://sofbackend.duodevs.com.br/
 
 EXPOSE 3001
 
