@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Análise de Perfil do Investidor",
   description: "Avalie seu perfil de investidor",
+  other: {
+    google: "notranslate",
+  },
 };
 
 export default function RootLayout({
