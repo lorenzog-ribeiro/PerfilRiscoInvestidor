@@ -27,7 +27,10 @@ import {
 import { dospertDomains, TPL_DOSPERT } from "@/src/lib/constants";
 import { Button } from "@/src/components/ui/button";
 import TradeOffBalanceCard from "./TradeOffBalanceCard";
-import { calculateTradeOffProfile } from "@/src/lib/tradeOffUtils";
+import {
+  calculateTradeOffIndices,
+  calculateTradeOffProfile,
+} from "@/src/lib/tradeOffUtils";
 
 interface ResultsScreenProps {
   investorData: InvestorData;
@@ -78,59 +81,13 @@ export default function ResultsScreen({
   }, [dospertData]);
 
   const tradeOffProfile = useMemo(() => {
-    if (!tradeOffData) return null;
-    const scenarios = Object.values(tradeOffData);
-    const stageArr = scenarios;
-
-    const getStageBounds = (stageNum: number) => {
-      const items = stageArr.filter((s) => Number(s.scenario) === stageNum);
-      if (!items || items.length === 0) return { first: null, last: null };
-      return { first: items[0], last: items[items.length - 1] };
-    };
-
-    const { first: firstThirdStage, last: lastThirdStage } = getStageBounds(3);
-    const { first: firstFirstStage, last: lastFirstStage } = getStageBounds(1);
-
-    const toNum = (v: any) => {
-      const n = Number(v);
-      return Number.isFinite(n) ? n : NaN;
-    };
-
-    const numFirstThird = toNum(firstThirdStage?.selectedValues[0]);
-    const numLastThird = toNum(
-      lastThirdStage?.selectedValues[lastThirdStage?.selectedValues.length - 1]
-    );
-    const numFirstFirst = toNum(firstFirstStage?.selectedValues[0]);
-    const numLastFirst = toNum(
-      lastFirstStage?.selectedValues[lastFirstStage.selectedValues.length - 1]
-    );
-
-    let result: number | null = null;
-    if (
-      !Number.isNaN(numFirstThird) &&
-      !Number.isNaN(numLastThird) &&
-      !Number.isNaN(numFirstFirst) &&
-      !Number.isNaN(numLastFirst) &&
-      numLastThird !== 0 &&
-      numLastFirst !== 0
-    ) {
-      const ratioThird = numFirstThird / numLastThird;
-      const ratioFirst = numFirstFirst / numLastFirst;
-      result = ratioFirst !== 0 ? ratioThird / ratioFirst : null;
-    }
-
-    const profileInfo =
-      result !== null ? calculateTradeOffProfile(result) : null;
+    const indices = calculateTradeOffIndices(tradeOffData);
+    if (!indices) return null;
 
     return {
-      result,
-      profileInfo,
-      nums: {
-        numFirstThird,
-        numLastThird,
-        numFirstFirst,
-        numLastFirst,
-      },
+      result: indices.value,
+      profileInfo: calculateTradeOffProfile(indices.value),
+      indices,
     };
   }, [tradeOffData]);
 
@@ -328,9 +285,8 @@ export default function ResultsScreen({
                           Object.keys(tradeOffData).length > 0 && (
                             <>
                               {tradeOffProfile &&
-                                tradeOffProfile.result !== null &&
-                                tradeOffProfile.profileInfo ? (
-                                <div className="space-y-4 pt-4">
+                              tradeOffProfile.result !== null &&
+                              tradeOffProfile.profileInfo ? (
                                   <TradeOffBalanceCard
                                     tradeOffValue={tradeOffProfile.result}
                                     profile={
@@ -340,7 +296,6 @@ export default function ResultsScreen({
                                       tradeOffProfile.profileInfo.description
                                     }
                                   />
-                                </div>
                               ) : (
                                 <p className="text-sm text-gray-700">
                                   Não foi possível calcular seu perfil de
