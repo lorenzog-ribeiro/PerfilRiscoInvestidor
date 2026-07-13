@@ -28,7 +28,10 @@ import { Button } from "../ui/button";
 import { literacyQuestions, literacyAnswers } from "@/src/lib/constants";
 import { calculateISFB_Part1_Only, ISFBResult, ISFBData } from "@/src/lib/isfb";
 import TradeOffBalanceCard from "./TradeOffBalanceCard";
-import { calculateTradeOffProfile } from "@/src/lib/tradeOffUtils";
+import {
+  calculateTradeOffIndices,
+  calculateTradeOffProfile,
+} from "@/src/lib/tradeOffUtils";
 import { combinedRisk } from "@/src/lib/risk";
 
 interface ResultsScreenProps {
@@ -388,52 +391,11 @@ const ResultsScreen: React.FC<ResultsScreenProps> = ({
     const getBin10 = (v: number) =>
       Math.min(10, Math.max(1, Math.ceil(v * 10)));
 
-    // Calculate LA coefficient from TradeOff data
-    let LAcoefficient = 1.0; // Default value (neutral)
-    if (tradeOffData && Object.keys(tradeOffData).length > 0) {
-      const scenarios = Object.values(tradeOffData);
-      const getStageBounds = (stageNum: number) => {
-        const items = scenarios.filter((s) => Number(s.scenario) === stageNum);
-        if (!items || items.length === 0) return { first: null, last: null };
-        return { first: items[0], last: items[items.length - 1] };
-      };
-
-      const { first: firstThirdStage, last: lastThirdStage } =
-        getStageBounds(3);
-      const { first: firstFirstStage, last: lastFirstStage } =
-        getStageBounds(1);
-
-      const toNum = (v: any) => {
-        const n = Number(v);
-        return Number.isFinite(n) ? n : NaN;
-      };
-
-      const numFirstThird = toNum(firstThirdStage?.selectedValues[0]);
-      const numLastThird = toNum(
-        lastThirdStage?.selectedValues[
-          lastThirdStage?.selectedValues.length - 1
-        ]
-      );
-      const numFirstFirst = toNum(firstFirstStage?.selectedValues[0]);
-      const numLastFirst = toNum(
-        lastFirstStage?.selectedValues[lastFirstStage.selectedValues.length - 1]
-      );
-
-      if (
-        !Number.isNaN(numFirstThird) &&
-        !Number.isNaN(numLastThird) &&
-        !Number.isNaN(numFirstFirst) &&
-        !Number.isNaN(numLastFirst) &&
-        numLastThird !== 0 &&
-        numLastFirst !== 0
-      ) {
-        const ratioThird = numFirstThird / numLastThird;
-        const ratioFirst = numFirstFirst / numLastFirst;
-        if (ratioFirst !== 0) {
-          LAcoefficient = ratioThird / ratioFirst;
-        }
-      }
-    }
+    // Coeficiente de aversão à perda, do cenário misto do trade-off.
+    // rLA_fromLAcoef() espera o LA clássico: quanto o ganho precisa superar a
+    // perda para o participante aceitar a aposta (1000 / |CE2|), domínio [0,5; 5,0].
+    const tradeOffIndices = calculateTradeOffIndices(tradeOffData);
+    const LAcoefficient = tradeOffIndices?.lossAversion ?? 1.0; // 1.0 = neutro
 
     // Use combinedRisk to calculate the Y coordinate (tolerance with LA adjustment)
     let y_bin = getBin10(toleranceNorm); // Default if combinedRisk fails
