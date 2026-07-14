@@ -1,14 +1,14 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { UsersService } from './users.service';
-import { Prisma } from '@prisma/client';
+import { CreateUserDto } from './create-user.dto';
 
 @Controller('user')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
   @Post('create-user')
   async create(
-    @Body() data: Prisma.UserCreateInput,
+    @Body() data: CreateUserDto,
     @Res({ passthrough: true }) response: Response,
   ) {
     const user = this.userService.createUser(data);
