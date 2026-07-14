@@ -11,6 +11,7 @@ import { AnswerService } from './answer.service';
 import { AnswerDto } from './create-answer.dto';
 import { TradeOffRequestDto } from './tradeoff.dto';
 import { UserCookieGuard } from '../../guards/user-cookie.guard';
+import { AdminGuard } from '../../guards/admin.guard';
 import { Request } from 'express';
 
 // Interface customizada para Request com userId
@@ -21,11 +22,6 @@ interface RequestWithUser extends Request {
 @Controller('answers')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
-
-  @Post('create')
-  create(@Body() createAnswerDto: AnswerDto, @Body('userId') userId: string) {
-    return this.answerService.create(userId, createAnswerDto);
-  }
 
   @Post('submit')
   @UseGuards(UserCookieGuard)
@@ -41,6 +37,7 @@ export class AnswerController {
   }
 
   @Get('all')
+  @UseGuards(AdminGuard)
   findAllUserAnswers() {
     return this.answerService.findAllUserAnswers();
   }

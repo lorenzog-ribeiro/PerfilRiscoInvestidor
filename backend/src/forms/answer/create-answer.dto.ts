@@ -58,8 +58,10 @@ export class AnswerDto {
   @Type(() => FormDataDto)
   formData: FormDataDto;
 
+  // Em /answers/submit o userId vem do cookie (via UserCookieGuard), não do body.
+  @IsOptional()
   @IsString()
-  userId: string;
+  userId?: string;
 }
 
 // Legacy DTO classes for backward compatibility
