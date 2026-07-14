@@ -10,8 +10,9 @@ export class TradeOffRequestDto {
   @IsNumber()
   valueVar: number;
 
+  @IsOptional()
   @IsString()
-  userId: string;
+  userId?: string;
 
   @IsNumber()
   question: number;

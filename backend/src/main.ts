@@ -1,10 +1,21 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
+
+  // Remove campos não declarados nos DTOs (impede mass assignment) e
+  // converte tipos conforme as anotações class-validator/class-transformer.
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
 
   // Aceitar múltiplas origens
   const allowedOrigins = [
@@ -17,13 +28,15 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Permite requests sem origin (ex: Postman, mobile apps)
+      // Sem Origin (curl/health-check) não é um pedido cross-site do browser:
+      // libera, mas continua sem credenciais úteis pois não há cookie de origem.
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        // Não vaza detalhe do CORS; apenas nega a origem.
+        callback(null, false);
       }
     },
     credentials: true,
