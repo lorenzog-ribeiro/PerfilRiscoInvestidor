@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AnswerService } from './answer.service';
 import { AnswerDto } from './create-answer.dto';
 import { TradeOffRequestDto } from './tradeoff.dto';
+import { AdminGuard } from '../../guards/admin.guard';
 
 @Controller('answers')
 export class AnswerController {
@@ -13,12 +14,13 @@ export class AnswerController {
   }
 
   @Get('all')
+  @UseGuards(AdminGuard)
   findAllUserAnswers() {
     return this.answerService.findAllUserAnswers();
   }
 
   @Post('tradeOff')
-  TradeOff(@Body() data) {
+  TradeOff(@Body() data: TradeOffRequestDto) {
     return this.answerService.tradeOff(data);
   }
 }
