@@ -1,0 +1,21 @@
+# Contexto de build = raiz do repo (Dokploy). Dockerfiles copiam de web/ ou backend/.
+.git
+.gitignore
+.DS_Store
+**/.DS_Store
+**/node_modules
+**/.pnpm-store
+**/.next
+**/out
+**/dist
+**/build
+**/coverage
+**/.turbo
+**/.cache
+**/*.log
+**/.env
+**/.env*.local
+**/.vscode
+**/.idea
+*.jpeg
+*.jpg
